@@ -1,0 +1,25 @@
+---
+title: "eDiscovery is pattern recognition and eyeballs are expensive"
+author: "Richard Careaga"
+date: '2019-06-03'
+slug: ediscovery-is-pattern-recognition-and-eyeballs-are-expensive
+tags:
+- Business
+- Innovation
+categories: Data Science
+---
+<center>
+![Enron email reduced](https://tuva.s3-us-west-2.amazonaws.com/EnronPruning.png)
+</center>
+
+Clients are transforming their businesses with the tools of data science. How long do you suppose they will pay $50/hour for humans to read tons of ediscovery?
+
+The legal profession owes a great debt to the 19th century mathemetician Georg Boole whose work became the genesis of the boolean algebra that every lawyer is familiar through the use of keyword searches. For decades, it has helped us wade through more than we could read.
+
+Boolean searches are, alas, a form of simple pattern recognition that relatively simple computing techniques can do with greater speed and accuracy at lower cost. Another time, I will write on the more advanced toolsets of natural language processing capable of detecting case relevant patterns that our keyword searches miss.
+
+This time, however, let's highlight the power of social network analysis. Imagine a room filled with sealled envelopes with nothing more than *From* and *To*, universal metadata in emails. By treating each *From* and each *To* as nodes, and the envelope as an edge connecting them, it is relatively simple to classify users into groups, and identify the users in those groups on the basis of measures of prominence. Having identified groups in this way, I opened the envelopes and discovered that my three groups had differences in vocabulary. One group's vocabuary contained approximately 20% of words found in neither of group, one group had 10% and a third group none.
+
+[My HarvardX term paper](https://tuva.s3-us-west-2.amazonaws.com/EnronSNA.pdf) puts the problem in context for my academic audience, and the technical analysis, which was my primary purpose, is decribed in a way that I hope most litigators will find accessible.
+
+As a whole, the legal profession is behind the curve for the application of the applied statistsical methods of data science to its work. It is not difficult to foresee re-arranement of the AMLAW 100 in the coming decade that reflects differences among firms in catching up.

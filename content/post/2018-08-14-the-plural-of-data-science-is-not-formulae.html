@@ -1,0 +1,26 @@
+---
+title: The plural of data science is not formulae
+author: Richard Careaga
+date: '2018-08-14'
+slug: the-plural-of-data-science-is-not-formulae
+categories:
+  - Data Science
+tags:
+  - meta
+---
+
+
+
+<p>The WSJ report of academic research on career hot streaks has snagged a lot of LinkedIn eyeballs today (Career ‘hot steaks’ are real 1h ago • 3,526 readers).</p>
+<p>Reading the paper (<a href="https://goo.gl/2Mwqjn" class="uri">https://goo.gl/2Mwqjn</a>), you can see that it is an observational study of a convenience sample (these were the people about whom data were available, in the thousands or tens of thousands, an impressive collection).</p>
+<p>Two mysteries: Why were the data not stratified into a training set and a test set? How could temporal auto-correlation fail to be addressed?</p>
+<p><span class="math display">\[f(x)=y\]</span></p>
+<p>isn’t data science. And observational data of temporal patterns in somewhat simplistic metrics of an arbitrarily selected population tells you <em>menos de zero</em> about individuals outside the population.</p>
+<p>Finally, you need a theory to account for your results – a chain of reasoning that takes you from what you see to what you can reliably predict with your shiny new analysis.</p>
+<p>The academics have no robes, and I am failing adequately to defer to their superior credentials and posts. Too bad, because I would liked to have learned something useful.</p>
+<p>Reading further, there’s no indication that the nominal prices were inflation adjusted. Whatever the latest auction price was recorded was used.</p>
+<p>Cinema directors include assistant directors and art directors, who have primarily administrative, not creative, roles. The authors measure director success by the IMDB user ratings. I don’t know how IMDB handles it, but it’s easy to imagine that as users come and go, and tastes change, the scores from that source may not share a common scale.</p>
+<p>Academics get measured by citation. Often for good reason, a researcher will cite her previous related publications. Are those “self-citations” included or excluded?</p>
+<p>We aren’t even told whether the three measures of “goodness” were standardized to have a mean of 1 and standard deviation of 0.</p>
+<p>The data and code, however, are provided at <a href="https://goo.gl/p8WYqH" class="uri">https://goo.gl/p8WYqH</a>. Because the code won’t load, due to a couple of type errors, the results can’t be checks. Although scipy.stats is imported, it’s not used, so it’s unlikely that the data were standardized.</p>
+<p>Such is <em>Nature,</em> I suppose.</p>

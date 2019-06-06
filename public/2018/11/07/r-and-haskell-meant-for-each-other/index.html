@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.55.5" />
+
+
+<title>R and Haskell, meant for each other? - Locus: Richard Careaga</title>
+<meta property="og:title" content="R and Haskell, meant for each other? - Locus: Richard Careaga">
+
+
+  <link href='/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/technocrat">GitHub</a></li>
+    
+    <li><a href="https://linkedin.com/in/richardcareaga">LinkedIn</a></li>
+    
+    <li><a href="https://twitter.com/technocrat">Twitter</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">2 min read</span>
+    
+
+    <h1 class="article-title">R and Haskell, meant for each other?</h1>
+
+    
+    <span class="article-date">2018-11-07</span>
+    
+
+    <div class="article-content">
+      
+
+
+<p><strong>R</strong> has a notoriously steep learning curve. I once moaned that help() needed it’s own help(help), which it does, but did nothing to help me understand the paradigm of function signatures. And why were control loops like <strong>for</strong> so frowned upon. All sorts of great functionality, but how do you, like <em>program</em> it.</p>
+<p>As I progressed in my ability to overcome my underlying lack of grok, I took a dip in <strong>Haskell,</strong> and discovered the concept of a functional language, essentially everything is <span class="math inline">\(f(x) = y\)</span> as opposed to an imperative/procedural language – first do this, then do that, then perform some operation on both of them, and then, and then … .</p>
+<p>A lonely neuron potentiated its axon and discharged a signal that tapped into several related networks that did their hidden layer human intelligence thing and agreed: <strong>R is a functional language, like Haskell</strong>.</p>
+<p>Suddenly I learned to take <strong>R</strong> function signatures much, much more seriously, along with linear alegbra type operations as the efficient substitute for control loops.</p>
+<p><strong>R</strong> being an interpreted language is sometimes called upon to perform calculations that push its available memory and speed past the point of usefulness. For that, we have the ability to plug in compiled modules, to expose their functionality to the interpreter. <em>See</em> <strong><a href="https://goo.gl/prQvhZ">rccp</a></strong></p>
+<p>Another lonely neuron fired today. In scaling many <strong>R</strong> scripts to large-production scale, at least outside of the RShiny Server gui context, the script, its packages, dependences, functions, transformations and logic have to be reverse engineered into C++ or another compiled language. That involves the trailing sea anchor of translating a functional language into an imperative language. And, if you’re conscientious, building and maintaining libraries for the frequently used algorithms so you don’t have to start from scratch everytime, documenting them in native fashion while also being <strong>R</strong> friendly to enable the original developers to follow along.</p>
+<p><em>Why not do this in <strong>Haskell</strong> a compiled functional language?</em> Write an “<strong>Rh</strong>” package similar to <em>Rcpp</em> and give back to the <strong>R</strong> author as a hook to a faster implementation of standard R? In time, you would have a domain specific dialect of <strong>R</strong> that was essentially compiled. <strong>Haskell</strong> is also said (above my pay grade) to have features of Curry-Howard correspondence, a sort of self-proving program paradigm with the potential, as I understand it, to minimize the possibilities of logical errors and the stated aim of precluding side effects.</p>
+<p>#rstats #haskell</p>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+    
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+

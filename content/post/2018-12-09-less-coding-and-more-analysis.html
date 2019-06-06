@@ -1,0 +1,23 @@
+---
+title: Less coding and more analysis
+author: Richard Careaga
+date: '2018-12-09'
+slug: less-coding-and-more-analysis
+categories:
+  - Data Science
+  - Visualization
+tags:
+  - EDA
+---
+
+
+
+<p>I urge you to <code>install.packages("ExPanDaR")</code> and then try the following:</p>
+<pre>
+<code>
+library(ExPanDaR)
+wb <- read.csv("https://joachim-gassen.github.io/data/wb_condensed.csv")
+ExPanD(wb, cs_id = "country", ts_id = "year")
+</code>
+</pre>
+<p>from <a href="https://joachim-gassen.github.io/2018/12/interactive-panel-eda-with-3-lines-of-code/">Interactive panel EDA with 3 lines of code</a>, which doesn’t show the output to its best advantage, for which see <a href="https://jgassen.shinyapps.io/expand_preston/">online demo</a></p>

@@ -1,0 +1,34 @@
+---
+title: Cognitive Bias and the Data Scientist
+author: Richard Careaga
+date: '2018-10-11'
+slug: cognitive-bias-and-the-data-scientist
+categories:
+  - Data Science
+tags:
+  - meta
+---
+
+As data scientists, we are not immune from cognitive bias. We do a lot to minimize it, we may even try to quantify it. But it is a part of our protoplasm and, especially, the protoplasm of our untrained clients.
+
+A good place to start is the *Monty Hall Problem.* The pre-historic *Let's Make a Deal* game show on broadcast television featured a host, Monty Hall, and contestants who were offered the chance to win fabulous prizes if they picked the right curtain, 1, 2, or 3. No clues were provided, it was pure guesswork. The possibilities were either a fabulous all expense paid Caribbean cruise, sometimes a consolation microwave and there was always a joke prize, such as a goat.
+
+When the contestant made her choice, Monty did not open the curtain, but made an offer: *Give up the chance to see what was behind your curtain? Or choose between the two curtains?* And then he opened one curtain to show the goat or the microwave. *Keep your curtain or switch?*
+
+This put the contestant in an emotional race state between greed and risk aversion. *How bad would I feel if I gave up the fabulous prize for either the joke or the consolation prize.* As any data scientist would expect, one-third of the time the contestant suffered regret by discovering that she had selected either the goat or the microwave and lost the chance at the dream of a lifetime.
+
+After a while, the popular media asked a woman, reputed to be a super-genius, for the solution, to which she replied that statistically it made sense to take the offer to give up your initial choice and switch. **No! The consensus was that there was a 50-50 chance that the contestant** *already* had the winner, which had to be behind one of the two curtains. The concensus, sadly, included many statisticians who should have known better.
+
+Parts of the statistical community, in common with the comman man, raised the irrefutable objection that as between the two curtains there was a 50-50 chance that the prize was hidden behind one of them. Which, of course, was a valid assertation as far as it went, which was not far enough.
+
+*Ab initio* as those fond of showing obsolete erudition might say, or, more appropriately, at the beginning, the contestant had odds of 1:3 to choose the right door. Meaning, she also had odds of 2:3 of choosing the wrong door. She chose sides, as she was compelled to do, as to which was the right door. She knew that the joint probability of the other two doors containing the prize were 2:3. 
+
+Now, comes the hard part. She already knew that only one of the other doors could have the real prize if she didn't, and since there were two of them, the chances were 50-50, *between them*. Gaining the knowledge of *which one* of the doors did *not* have the winning 50% chance changed her estimate of the odds of the *remaining* door relative to the open door, but it did nothing (or should have done nothing) to change the estimate of *her* door relative to the **joint** probability of the other two doors.
+
+More simply, she started with a 1:3 chance of winning. She still has a 1:3 chance of winning, but **she now knows** that the remaining alternative has a 2:3 chance of winning. Therefore, she doubles her chances by switching.
+
+Do the math. It's not hard, except emotionally. A lot of data science problems have that potential. 
+
+In the words of Paul Simon
+
+> A man sees what he wants to see and disregards the rest.

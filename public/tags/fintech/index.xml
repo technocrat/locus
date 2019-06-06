@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>fintech on Locus: Richard Careaga</title>
+    <link>/tags/fintech/</link>
+    <description>Recent content in fintech on Locus: Richard Careaga</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 20 Oct 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/fintech/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Month arithmetic in R, a quick guide</title>
+      <link>/2018/10/20/month-arithmetic-in-r-a-quick-guide/</link>
+      <pubDate>Sat, 20 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/10/20/month-arithmetic-in-r-a-quick-guide/</guid>
+      <description>Here are questions you might want to ask about months: How many more months until September 1? months_to How many more calendar months until September 1? cal_months_to How many months between this month and September 1? months_between How many more calendar months between this month and September 1? cal_months_between In how many calendar months must I wait until September 1? months_inclusive  Assume we are asking the question on February 1 of a non-leap year.</description>
+    </item>
+    
+  </channel>
+</rss>

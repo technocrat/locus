@@ -1,0 +1,118 @@
+---
+title: Is this the original revised data or the revised revised data
+author: Richard Careaga
+date: '2018-10-18'
+slug: is-this-the-original-revised-data-or-the-revised-revised-data
+categories:
+  - Data Science
+tags:
+  - R
+  - meta
+---
+
+Keeping track of the provenance of data can be a challenge, especially when drawing on published sources. Keeping a record of the origin, the date accessed, the transformations applied (*e.g.,* converting from .xls to cvs and converting character strings such as "$1,250,321.21" to floats or date strings to date objects), subsequent changes, who handled the data object and where it can be found in a repository are all things that enhance the analyst's **own** ability to reproduce results. 
+
+Unfortunately, notes go missing, files get mis-filed and all the other hazards that can befall research can happen. Often, one wishes for R objects with built-in metadata for that purpose.
+
+# Using mostattributes() to do this (now preferred)
+Update 2015-08-01: Scott Chamerlain at ropensci.org brought **attr* to my attention, which is the built-in way I was looking for originally. He also pointed me to [EML], a much more elaborate approach suited for publication projects.
+
+# A minimal example
+* Create data frame and a separate metadata list
+```{r}
+fips <- read.csv("data/state_fips_postal.csv", header = FALSE)
+fips
+names(fips) = c("state", "fip", 'id')
+require(rjson) # easier to use JSON to write metadata
+meta <- fromJSON(file = "data/meta.json")
+meta
+```
+
+# Associate the metadata with the data frame using **attr**
+```{r}
+# invisibly with attr
+x <- fips
+attr(x, "meta") <- meta
+```
+
+# By default, metadata is not displayed
+```{r}
+x
+```
+
+# Metadata has to be invoked by name
+```{r}
+attr(x, "meta")
+```
+
+# Associate the metadata with the data frame using **mostattributes**
+```{r}
+x <- fips
+mostattributes(x) <- list(meta = meta)
+```
+
+# The metadata now displays with the data frame
+```{r}
+x
+```
+
+
+# My now deprecated approach
+
+Metadata are surprisingly easy to create through **S4** classes, which was my original thought.
+
+# The Rise of the Objects
+
+After encountering S4[^S4] classes in the **sp[^sp]** and related packages, I hoped to find an R package that provided a similar way of attaching metadata to data frames as the geospatial tools used to attach features to a coordinates data frame. The search was unsuccessful, so the next step was to look into S4 to write something on my own. Several sources helped: [Gatto], [Genolini] and the omnipresent [Wickham].
+
+# A Simple Example Use
+
+In using U.S. state map data, polygons are sometimes keyed to state names, sometimes to postal codes and sometimes to a census *FIPS* code. A data frame with all three and the *merge* function allows easily adding a different key to state identity to data to match the merge field to be used with the related geospatial file. 
+
+```{r}
+
+fips <- read.csv("/Users/rc/Desktop/gitmo/playpen/r/csv/state_fips_postal.csv", header = FALSE)
+fips
+names(fips) = c("state", "fip", 'id')
+```
+
+Documenting something so simple seems like overkill until the inevitable question arises *is that even right?* I used a simple JSON file to make[^rjson] a record
+```{r}
+require(rjson)
+meta <- fromJSON(file = "data/meta.json")
+meta
+```
+
+The functions rquired for creating an S4 class are in {base}, so there are no more dependencies.
+
+```{r}
+# create the class
+Mframe <- setClass("Mframe",slots = c(meta = "list", data = "data.frame"))
+# instantiate it
+mf <- Mframe(data = fips, meta = meta)
+# show it
+str(mf)
+```
+
+Elaborating this approach to an entire dataset of related objects would be more challenging but this simple application imposes minimal extra work beyond slightly different functions to access the data payload.
+
+```{r}
+mf@data
+#Note @ delimiter; mf$state would also work, but hasn't been set up in the class definition
+sessionInfo()
+
+```
+
+
+[^S4]: *See* S3-style Objects and S4-class Objects in the [R] documentation with *help(S4)*
+[^rjson]: Alex Couture-Beil (2014). rjson: JSON for R. R package version 0.2.15. [rjson]
+[^sp]: Pebesma, E.J., R.S. Bivand, 2005. Classes and methods for spatial data in R. R News 5 (2), http://cran.r-project.org/doc/Rnews/. Roger S. Bivand, Edzer Pebesma, Virgilio Gomez-Rubio, 2013. Applied spatial data analysis with R, Second edition. Springer, NY. [asdar]
+
+
+[asdar]:http://www.asdar-book.org/
+[Gatto]: http://bioconductor.org/help/course-materials/2013/CSAMA2013/friday/afternoon/S4-tutorial.pdf
+[Genolini]: https://cran.r-project.org/doc/contrib/Genolini-S4tutorialV0-5en.pdf
+[R]: http://rproject.org
+[rjson]: http://CRAN.R-project.org/package=rjson
+[Wickham]: http://adv-r.had.co.nz/S4.html
+[EML]: https://github.com/ropensci/EML#writing-r-data-into-eml

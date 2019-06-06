@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Visualization on Locus: Richard Careaga</title>
+    <link>/categories/visualization/</link>
+    <description>Recent content in Visualization on Locus: Richard Careaga</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 09 Dec 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/visualization/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Less coding and more analysis</title>
+      <link>/2018/12/09/less-coding-and-more-analysis/</link>
+      <pubDate>Sun, 09 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/12/09/less-coding-and-more-analysis/</guid>
+      <description>I urge you to install.packages(&#34;ExPanDaR&#34;) and then try the following:
+  library(ExPanDaR) wb  from Interactive panel EDA with 3 lines of code, which doesn’t show the output to its best advantage, for which see online demo</description>
+    </item>
+    
+    <item>
+      <title>Color Map Atlas for Continuously Scaled Maps</title>
+      <link>/2018/12/03/color-map-atlas-for-continuously-scaled-maps/</link>
+      <pubDate>Mon, 03 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/12/03/color-map-atlas-for-continuously-scaled-maps/</guid>
+      <description>## Please note: Alaska and Hawaii are being shifted and are not to scale. ## Please note: Alaska and Hawaii are being shifted and are not to scale. Color, Design and Communication Graphic design standards, especially for color, are an official Good Thing. Branding, visual cueing, consistency. Map colors are hard, especially when dealing with continuous data.
+ An example of continuous data The U.S. Bureau of Economic Analysis publishes quarterly statistics on gross domestic product by state.</description>
+    </item>
+    
+    <item>
+      <title>WaPo has some effective visualizations</title>
+      <link>/2018/09/09/wapo-has-some-effective-visualizations/</link>
+      <pubDate>Sun, 09 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/09/09/wapo-has-some-effective-visualizations/</guid>
+      <description>One of the annoyances of online newspapers such as the NYT and WaPo is that they recycle content, usually off-the-news-cycle. But this sometimes gets offset by finding something you missed the first time.
+In a recent article on six common occcupations that have changed from above-average to below average pay, the 2018-09-04 article by Andrew Van Dam and Heather Long is illustrated by some effective techniques.
+One technique is using the colors in the caption to serve as a legend to color coding in the graphic.</description>
+    </item>
+    
+  </channel>
+</rss>

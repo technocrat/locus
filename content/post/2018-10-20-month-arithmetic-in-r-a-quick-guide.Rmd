@@ -1,0 +1,157 @@
+---
+title: Month arithmetic in R, a quick guide
+author: Richard Careaga
+date: '2018-10-20'
+slug: month-arithmetic-in-r-a-quick-guide
+categories:
+  - Data Science
+tags:
+  - R
+  - tools
+  - fintech
+---
+
+## Here are questions you might want to ask about months:
+
+1. How many more months until September 1? *months_to*
+2. How many more calendar months until September 1? *cal_months_to*
+3. How many months between this month and September 1? *months_between*
+4. How many more calendar months between this month and September 1? *cal_months_between*
+5. In how many calendar months must I wait until September 1? *months_inclusive*
+
+Assume we are asking the question on February 1 of a non-leap year.
+
+Don't worry; I'm not going to give a tedious account of all the potential ambiguities and subtle points of calculation. I just want to focus on the last question, which is common in the everyday worlds of finance and accounting, and point out that many software functions allow you to calculate *months_between*, but leave you hanging for *months_inclusive.* 
+
+Here are the months: February, March, April, May, June, July, August, September, eight different months of which six are not February or September. 
+
+My motivation is in knowing of payments due on the first of each month, what percentage were paid. Because payments were due on each of the eight months, I need not *months_between,* but *months_inclusive,* and not only **half** inclusive -- I want to include *both* February and September.
+
+What I found is a cautionary tale of embedded assumptions, some of which are made explicit, some of which are implied and others of which are opaque. Let's look at how various *months_between* functions work in some popular environments.
+
+## First, Excel.
+
+![Excel example](/post/2018-10-20-month-arithmetic-in-r-a-quick-guide_files/2018-10-20-ExcelMonthDate.png)
+
+ 
+This has to fall in the opaque category: semi-inclusive with two date pairs and non-inclusive with one.
+
+## Python
+
+    IPython 6.5.0 -- An enhanced Interactive Python. Type '?' for help.
+
+    In [1]: %paste
+    from datetime import datetime
+
+    def diff_month(d1, d2):
+        return (d1.year - d2.year) * 12 + d1.month - d2.month
+
+    d1 = datetime(2018,2,1,0,0)
+
+    d2 = datetime(2017,8,1,0,0)
+    ## -- End pasted text --
+
+    In [2]: diff_month(d1,d2)
+    Out[2]: 6
+
+Credit: John La Rooy https://goo.gl/PhJeKb
+
+This implementation, which was the simplest I found, but consistent with the others I looked at, is a straight forward *months_between*.
+
+## MySQL
+
+    MariaDB [dlf]> create table temp (
+        -> id int not null,
+        -> start date,
+        -> end date
+        -> );
+    Query OK, 0 rows affected (0.011 sec)
+
+    MariaDB [dlf]>
+    MariaDB [dlf]> INSERT INTO temp (id, start, end) VALUES (1, '2018-02-01', '2017-09-01');
+    Query OK, 1 row affected (0.002 sec)
+
+    MariaDB [dlf]>
+    MariaDB [dlf]> select month(end) - month(start) as 'Elapsed' from temp;
+    +---------+
+    | Elapsed |
+    +---------+
+    |       7 |
+    +---------+
+    1 row in set (0.000 sec)
+    
+Or
+
+    MariaDB [dlf]> select TIMESTAMPDIFF(MONTH, start, end) as "Elapsed" from temp;
+    +---------+
+    | Elapsed |
+    +---------+
+    |      -5 |
+    +---------+
+    1 row in set (0.000 sec)
+    
+probably because I used DATE objects instead of DATETIME objects. (The lost month arises from conventions of time of day.)
+
+## R
+
+Now that we've seen that the fully-inclusive calculation is rare, I have the sad duty to report that it's a problem in **R** as well.
+
+### Base
+
+I started my search in the {base} package by looking at the documentation for [difftime](https://goo.gl/WyGRh8). The tell was in the function signature
+
+    difftime(time1, time2, tz,
+         units = c("auto", "secs", "mins", "hours",
+                   "days", "weeks"))
+
+(No units for months.)
+
+### lubridate
+
+Next, I tried the *lubridate* package [^1], and it seemed to provide a way forward. From the documentation:
+
+> Adding months frustrates basic arithmetic because consecutive months have different lengths. With other elements, it is helpful for arithmetic to perform automatic roll over. For example, 12:00:00 + 61 seconds becomes 12:01:01. However, people often prefer that this behavior NOT occur with months. For example, we sometimes want January 31 + 1 month = February 28 and not March 3. %m+% performs this type of arithmetic. Date %m+% months(n) always returns a date in the nth month after Date. If the new date would usually spill over into the n + 1th month, %m+% will return the last day of the nth month (rollback()). Date %m-% months(n) always returns a date in the nth month before Date.
+
+However, the arithmetic calculations required datetime objects (dates, plus times of day) required arguments in the %m-% operators to be of different classes. During several hours of tinkering, it seemed close to doing what I was looking for, but perhaps unattainable.
+
+### mondate
+
+Further digging led me to **mondate**[^2] Its [documentation](https://goo.gl/AvmwLa) notes
+
+> A mondate represents a date as a numeric equalling the number of months since the beginning of the current millennium (the "mondate epoch"). Somewhat arbitrarily, and at the risk of reopening a decade-old debate, "the beginning of the current millennium" is defined as the instant between December 31, 1999 and January 1, 2000.
+> The need for a "mondate" class arises in the area of actuarial analysis, and other areas of financial modeling that need to reconcile to a company’s book of accounts. Its motivation is based on the following presumptions:
+> 1. Business accounting-wise, the closing of the books for a month, quarter, and year are the important milestones for measuring time.
+> 2. For accountants – and actuaries – it is usually not important to measure events on an hourly basis.
+> 3. All events that occur during a business day, up to and including the closing of the books for a day, are all "accounted for" as having occurred "at the same time."
+> To appreciate the difficulty in measuring the passage of time in days, note that there are typically three fewer days in the first half of the year (January 1 through June 30) than there are in the second half. Yet accountants will say that on June 30th the year is half over. For another example, note that – with the exception of July/August and December/January – the same days of the month for two consecutive months are not one "month" apart if measured in days because, with those exceptions, consecutive months contain differing numbers of days, so which of the two months do you choose as the yardstick? Since changes in accounts over the course of a month, quarter and year are the amounts by which financial results are measured, it is important to be able to measure the passage of time where a year is comprised of twelve months of equal "accounting weight."
+
+> A mondate is simply a real number whose fractional part represents the fraction of the month as of the end of the day. E.g., the fractional part of January 1st = 1/31; the fractional part of February 1st = 1/28 or 1/29, depending on the year. A mondate which is a whole number (i.e., no fractional part) corresponds to a month that is fully completed, whose subsequent month has not yet begun; i.e., the instant in time between one month and the next.
+
+It took a while to digest that, but it seemed promising. The key difference with other approaches is that **mondate** measures in *months* from the beginning of its epoch, rather than *seconds.* This may be relevant in light of the pending GAAP change in 2019 on revenue recognition.
+
+> **I don't care what *day* you recognized that income in April, I just want to be sure that it was *April* and not *May***
+
+Here's a toy example. One important aspect it ignores is Inf values arising from division by zero that came up in my motivating example. Another thing to note is that the package has *objects* that have to be converted to *numeric objects* and, in some cases, rounded up. Those are relatively minor and easy to implement.
+
+    >     library(mondate)
+    >     library(lubridate)
+    >     start  = "2018-02-01"
+    >     end = "2018-09-01"
+    >     fully_inclusive <- function (start, end) {
+    +         start <- mondate(start)
+    +         end <- mondate(end)
+    +         open_interval = (end - start) + 1
+    +         return(as.numeric(round(open_interval,0)))
+    +     }
+    > fully_inclusive(start,end)
+    [1] 8
+    
+So, now we've looked at something that started on February 1 and finished on September 1 and correctly concluded that eight months were involved.
+
+[^1]: Garrett Grolemund, Hadley Wickham (2011). Dates and Times Made Easy with lubridate. Journal of Statistical Software, 40(3), 1-25. URL http://www.jstatsoft.org/v40/i03/
+
+[^2]: Dan Murphy (2013). mondate: Keep track of dates in terms of months. R package version 0.10.01.02. https://CRAN.R-project.org/package=mondate
+
+
+
+

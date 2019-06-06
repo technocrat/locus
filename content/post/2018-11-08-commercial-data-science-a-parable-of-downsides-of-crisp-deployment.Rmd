@@ -1,0 +1,79 @@
+---
+title: 'Commercial data science: a parable of downsides of crisp deployment'
+author: Richard Careaga
+date: '2018-11-08'
+slug: commercial-data-science-a-parable-of-downsides-of-crisp-deployment
+categories:
+  - Data Science
+tags:
+  - R
+  - python
+  - R&D
+  - Innovation
+---
+*Narcocorridos* are a Mexican musical genre celebrating the drug trafficking culture. As you can read in [wiki](https://goo.gl/Wi1Fjj), it has a surprisingly long history and is popular despite official attempts to suppress it.
+
+Stay with me, there's a parable here about **R**, **Python**, **DevOps**, **Bias Toward Action** and leaving change on the table, in two senses.
+
+A mild English flavor of a *narcocorido* is Townes van Zandt's ballad *Pancho and Lefty,* his best known work in the pre-pop Country genre. It strips the Spanish version to its essentials. It was made popular by Emmy Lou Harris and the duet by Willie Nelson and Merle Haggard. It may not be your cup of tea musically, but the story line provides a hook to my thoughts about what we used to call *R&D*. 
+
+Here are the essential passages:
+
+> Pancho was a bandit boy  
+His horse was fast as polished steel  
+He wore his gun outside his pants  
+For all the honest world to fear  
+Pancho met his match you know  
+On the deserts down in Mexico  
+Nobody heard his dying words  
+But that's the way it goes
+
+> All the Federales say  
+They could've had him any day  
+They only let him slip away  
+Out of kindness I suppose
+
+> Lefty, he can't sing the blues  
+All night long like he used to  
+The dust that Pancho bit down south  
+Ended up in Lefty's mouth  
+The day they laid poor Pancho low  
+Lefty split for Ohio  
+Where he got the bread to go  
+There ain't nobody knows
+
+> The poets tell how Pancho fell  
+And Lefty's living in a cheap hotel  
+The desert's quiet and Cleveland's cold  
+And so the story ends we're told  
+Pancho needs your prayers it's true  
+But save a few for Lefty too  
+He only did what he had to do  
+And now he's growing old
+
+So, here's a reading. Pancho is an outlaw. He has some relation to Lefty. The authorities tolerated him, but finally killed Pancho, presumably on a tip from Lefty, who, it is implied was paid. Pancho achieves a minor version of Homeric immortality and Lefty will be forgotten.
+
+Let's translate this to the contemporary world of applied statistics, which we call *data science.* As we all know, much of it is in the service of large organizations who are anxious to use the methods in pursuit of profits. This is as we have designed the knowledge economy.
+
+Next, picture Pancho and Lefty as stereotypical foot soldiers in the war to deploy this new magic for the benefit of the Federales, who represent that elusive, shifting group *management.*
+
+Lefty is what used to be called a *company man.* Point and shoot. When he finds a solution that conforms to the designated problem, you can count on him to bring it online fast.
+
+Pancho, on the other hand, is a rebel without a cause beyond his own curiosity, oblivious to the social niceties of an organization with any degree of hierarchy, but is wildly creative. He came up with all known conventional solutions, totally novel solutions, solutions to problems no one yet recognized. Lefty picked one of the conventional solutions.
+
+Pancho is the *R* in **R&D** and Lefty is the *D*. One might speculate that Pancho dreams in *R* and Lefty in *Python,* while muttering complaints about how much easier it would be to translate prototypes from an interpreted procedural language than to have to reinvent the translation from a functional language every damned time. Pancho could care less.
+
+Comes a time when management gathers up all of Pancho's reviews, see how smart he is, but he's just not a *team player* or very productive. In fact, he's a distraction with all his crazy irrelevant and impractical ideas. His costs could better be deployed elsewhere.
+
+Pancho doesn't have to be a genius, he just has to produce hidden gems for purposes of my tale. Manufacturing jewelers get free janitorial services from outfits that recover the gold dust.
+
+But no one is looking at Pancho's failures and debris for the germ of innovation. In the completion of Rumsfeld's typology of knowledge, Pancho provides unknown knowns. Knowns because they exist under everyone's nose. Unknowns because no one pauses to identify the scent.
+
+AT&T and IBM in their past incarnations knew how to find, sort and exploit the best of the happy byproducts of R&D, and prospered with innovative technologies.
+
+And Lefty? Why does he end up in the ash heap? He did a very good job at creating a commodity. In the absence of monopoly or oligarchy the marginal values of commodities inevitably approach zero. The only way to recover from becoming a commodity to becoming a resource is the emergence of an innovative technology that transforms the commodity into an entirely new technology.
+
+It's an old canard: Learn from your successes, not your failures because you can always invent new ways of screwing up. And virtually all post-mortem lessons learned are focused on avoiding screwing up in the same way next time or more cheaply replicating the next success.
+
+A few, somewhere, must look at their failures as mine tailings that might contain unpicked gems. They get the germ of innovation that the others miss.
+

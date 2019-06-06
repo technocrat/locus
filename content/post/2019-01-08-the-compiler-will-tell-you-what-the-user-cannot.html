@@ -1,0 +1,354 @@
+---
+title: The compiler will tell you what the user cannot
+author: Richard Careaga
+date: '2019-01-08'
+slug: the-compiler-will-tell-you-what-the-user-cannot
+categories:
+  - Data Science
+  - Programming
+tags:
+  - R
+  - meta
+  - tools
+---
+
+
+
+<p>The compiler will always tell you about source code errors that prevent compiling. It can’t advise you if your code solves the problem that it was supposed to solve, even if you are confident in what that problem is. But have a thought for the user who posed the problem, and keep in mind two famous quotations.</p>
+<blockquote>
+<p>Thus, programs must be executed for humans to read, only incidentially for machines to execute. – Harold Abramson, Gerald Jay Sussman, <em>Structure and Interpretation of Computer Programs</em> - 2nd Edition, The MIT Press, 1966</p>
+</blockquote>
+<blockquote>
+<p>Everyone knows that debugging is twice as hard as writing a program in the first place. So if you’re as clever as you can be when you write it, how will you ever debug it? – Brian Kernighan and P.J. Plauger, <em>The Elements of Programming Style</em> - 2nd Edition, McGraw-Hill, 1978</p>
+</blockquote>
+<p>I’ve been helping a medical researcher who was given the following perfectly syntactical <code>R</code> code:</p>
+<pre>
+<code>
+#1. Read in the necessary data.
+
+setwd("~")
+ReceivedOp <- list()
+
+for (i in 1:14) { ## csv files - T/F for every group - based on whether or not they received an operation
+ReceivedOp[[i]] <- read.csv(paste("./receivedOperationByYear/receivedOperation", (2002:2015)[i], ".csv", sep = ""))
+}
+
+rm(i)
+
+filePathsDCODEs <- paste("./RDS AY ", 2002:2015, "/RDS_DCODE.csv", sep = "") ## The names of each file path
+
+D_CODES <- list()
+
+for (i in 1:14) { ## Diagnostic codes (IP or EP)
+D_CODES[[i]] <- read.csv(filePathsDCODEs[i])
+}
+
+rm(i)
+
+filePathsDEMOs <- paste("./RDS AY ", 2002:2015, "/RDS_DEMO.csv", sep = "") ## The names of each file path
+
+DEMO <- list()
+
+for (i in 1:14) {
+DEMO[[i]] <- read.csv(filePathsDEMOs[i])
+} ## Demographic data (i.e. ages)
+
+rm(i)
+
+DISCHARGE <- list()
+
+for (i in 1:9) { ## Mortality information by INC_KEY
+DISCHARGE[[i]] <- read.csv(paste("./RDS AY ", (2007:2015)[i], "/DISCHARGE", (2007:2015)[i], ".csv", sep = ""))
+}
+
+rm(i)
+
+for (i in 6:14) { ## Change integer division to regular division
+DEMO[[i]]$AGE[DEMO[[i]]$AGEU == "Days"] <- DEMO[[i]]$AGE[DEMO[[i]]$AGEU == "Days"] / 365
+DEMO[[i]]$AGE[DEMO[[i]]$AGEU == "Months"] <- DEMO[[i]]$AGE[DEMO[[i]]$AGEU == "Months"] / 12
+DEMO[[i]]$AGEU[DEMO[[i]]$AGEU == "Days" | DEMO[[i]]$AGEU == "Months"] <- "Years"
+}
+
+# 2. Collect data of interest
+
+RuptureTypeList <- list()
+InteractionTerms <- list()
+DemoList <- list()
+AgexRuptureTypexOperationTypeInteractions <- list()
+AgexOperationTypeInteractions <- list()
+AgexRuptureTypexMortalityInteractions <- list()
+OrganizedDischarge <- list()
+AgexRupturexOpxMort <- list()
+pelvicFractures <- list()
+
+for (i in 1:14) { ## Pre-allocate memory
+RuptureType <- rep(NA, nrow(ReceivedOp[[i]]))
+RuptureTypeList[[i]] <- RuptureType
+InteractionTerms[[i]] <- RuptureType
+DemoList[[i]] <- RuptureType
+AgexRuptureTypexOperationTypeInteractions[[i]] <- RuptureType
+AgexOperationTypeInteractions[[i]] <- RuptureType
+AgexRuptureTypexMortalityInteractions[[i]] <- RuptureType
+OrganizedDischarge[[i]] <- RuptureType
+AgexRupturexOpxMort[[i]] <- RuptureType
+pelvicFractures[[i]] <- matrix(rep(RuptureType, 16), ncol = 16)
+}
+
+rm(RuptureType, i)
+
+for (i in 1:14) { ## The code here is going to determine whether there is an EP or IP rupture, by converting to numeric before checking, difference between 867 and 867.0 is.
+for (j in 1:nrow(ReceivedOp[[i]])) { ## Going through by INC_KEY in the ReceivedOp
+if (867.1 %in% suppressWarnings(as.numeric(as.character(D_CODES[[i]]$DCODE[D_CODES[[i]]$INC_KEY == ReceivedOp[[i]]$INC_KEY[j]])))) {
+RuptureTypeList[[i]][j] <- 867.1
+}
+else if (867 %in% suppressWarnings(as.numeric(as.character(D_CODES[[i]]$DCODE[D_CODES[[i]]$INC_KEY == ReceivedOp[[i]]$INC_KEY[j]])))) {
+RuptureTypeList[[i]][j] <- 867
+}
+}
+}
+
+rm(i, j)
+
+for (i in 1:14) { ## Whether they had a bladder operation and whether their rupture was EP or IP.
+InteractionTerms[[i]] <- interaction(ReceivedOp[[i]]$BLADDEROP, RuptureTypeList[[i]], drop = T) ## The interaction function is very useful.
+}
+
+rm(i)
+
+for (i in 1:14) { ## Transfer each patient's age
+for (j in 1:nrow(ReceivedOp[[i]])) {
+if (!is.na(DEMO[[i]]$AGE[DEMO[[i]]$INC_KEY == ReceivedOp[[i]]$INC_KEY[j]][1] > 0) & DEMO[[i]]$AGE[DEMO[[i]]$INC_KEY == ReceivedOp[[i]]$INC_KEY[j]][1] > (1/12)) {
+## Condition as such after examining the data outside the admissable range and finding all values were either 0 or negative (the latter representing missing data)
+DemoList[[i]][j] <- DEMO[[i]]$AGE[DEMO[[i]]$INC_KEY == ReceivedOp[[i]]$INC_KEY[j]][1]
+}
+}
+}
+
+for (i in 1:14) { ## Convert ages into categories
+DemoList[[i]] <- ifelse(17 >= DemoList[[i]], "Child", "Adult")
+}
+
+for (i in 1:14) { ## Contains information about age, EP vs IP, and whether they received an operation.
+AgexRuptureTypexOperationTypeInteractions[[i]] <- interaction(ReceivedOp[[i]]$BLADDEROP, RuptureTypeList[[i]], DemoList[[i]], drop = T)
+}
+
+for (i in 1:14) { ## Whether they received an operation and their age
+AgexOperationTypeInteractions[[i]] <- interaction(ReceivedOp[[i]]$BLADDEROP, DemoList[[i]], drop = T)
+}
+
+xFromNA <- function(item, x) {
+if (is.na(item)) {
+item <- x
+}
+item
+}
+
+for (i in 1:9) { ## Orders INC_KEYs for those who mortality data according to whether they received an operation or not, the outside loop goes by year.
+for (j in 1:nrow(ReceivedOp[[i]])) { ## The inside loop goes by INC_KEY from the ReceivedOp list
+if (sum(DISCHARGE[[i]]$DECEASED[DISCHARGE[[i]]$INC_KEY == ReceivedOp[[i+5]]$INC_KEY[j]], na.rm = T) > 0) {
+OrganizedDischarge[[i+5]][j] <- TRUE
+}
+else if ((xFromNA(sum(DISCHARGE[[i]]$DECEASED[DISCHARGE[[i]]$INC_KEY == ReceivedOp[[i+5]]$INC_KEY[j]]), -1) == 0)) {
+OrganizedDischarge[[i+5]][j] <- FALSE
+}
+}
+}
+
+for (i in 1:9) { ## What age group, whether they had an EP or IP rupture, and whether they died.
+AgexRuptureTypexMortalityInteractions[[i]] <- interaction(DemoList[[i+5]], RuptureTypeList[[i+5]], OrganizedDischarge[[i+5]])
+}
+
+for (i in 1:9) {
+AgexRupturexOpxMort[[i]] <- interaction(OrganizedDischarge[[i+5]], AgexRuptureTypexOperationTypeInteractions[[i+5]])
+}
+
+pelvicDCODES <- c(808.0, 808.1, 808.2, 808.3, 808.4, 808.41, 808.42, 808.43, 808.49, 808.5, 808.51, 808.52, 808.59, 808.8, 808.9)
+
+for (i in 1:14) { ## Here we are getting whether it is an EP or IP rupture, by converting to numeric before checking, we remove the difference between 867 and 867.0.
+for (j in 1:nrow(ReceivedOp[[i]])) { ## Going through by INC_KEY in the ReceivedOp
+for (k in 1:16) {
+if (pelvicDCODES[k] %in% suppressWarnings(as.numeric(as.character(D_CODES[[i]]$DCODE[D_CODES[[i]]$INC_KEY == ReceivedOp[[i]]$INC_KEY[j]])))) { ## Try to see what happens if you mess around with this condition in a separate file so you understand why it is the way it is.
+pelvicFractures[[i]][j, k] <- TRUE
+}
+else {
+pelvicFractures[[i]][j, k] <- FALSE
+}
+}
+}
+}
+
+pelvisInteractions <- rep(list(rep(list(), 14)), 15)
+
+pelvicDCODES <- as.character(pelvicDCODES)
+
+for (j in 1:14) { ## Pre-allocate memory
+RuptureType <- rep(NA, nrow(ReceivedOp[[j]]))
+for (i in 1:15) {
+pelvisInteractions[[i]][[j]] <- RuptureType
+}
+}
+
+names(pelvisInteractions) <- pelvicDCODES
+
+for (i in 1:15) {
+for (j in 1:9) {
+pelvisInteractions[[i]][[j+5]] <- interaction(AgexRuptureTypexOperationTypeInteractions[[j+5]], as.logical(pelvicFractures[[j+5]][ , i]))
+}
+}
+
+pelvisInteractions <- lapply(pelvisInteractions, function(x) 'names<-'(x, 2002:2015))
+
+pelvisInteractions <- rapply(pelvisInteractions, table, how = "replace")
+
+# 3. Collect counts
+
+EPvIP <- t(data.frame(lapply(RuptureTypeList, table)))[-(1+(1:13)*2), ] ## Calculate frequencies by year, same for all the rest
+colnames(EPvIP) <- EPvIP[1, ]
+EPvIP <- EPvIP[-1, ]
+rownames(EPvIP) <- 2002:2015 ## Put into nice format for writing to file, same for all the rest
+
+ReceivedOperationAndRuptureType <- t(data.frame(lapply(InteractionTerms, table)))[-(1+(1:13)*2), ]
+colnames(ReceivedOperationAndRuptureType) <- ReceivedOperationAndRuptureType[1, ]
+ReceivedOperationAndRuptureType <- ReceivedOperationAndRuptureType[-1, ]
+rownames(ReceivedOperationAndRuptureType) <- 2002:2015
+
+ReceivedOperationAndRuptureTypeAndAge <- t(data.frame(lapply(AgexRuptureTypexOperationTypeInteractions, table)))[-(1+(1:13)*2), ]
+colnames(ReceivedOperationAndRuptureTypeAndAge) <- ReceivedOperationAndRuptureTypeAndAge[1, ]
+ReceivedOperationAndRuptureTypeAndAge <- ReceivedOperationAndRuptureTypeAndAge[-1, ]
+rownames(ReceivedOperationAndRuptureTypeAndAge) <- 2002:2015
+
+ReceivedOperationAndAge <- t(data.frame(lapply(AgexOperationTypeInteractions, table)))[-(1+1:13*2), ]
+colnames(ReceivedOperationAndAge) <- ReceivedOperationAndAge[1, ]
+ReceivedOperationAndAge <- ReceivedOperationAndAge[-1, ]
+rownames(ReceivedOperationAndAge) <- 2002:2015
+
+AgeAndRuptureTypeAndMortality <- t(data.frame(lapply(AgexRuptureTypexMortalityInteractions[1:9], table)))[-(1+1:9*2), ]
+colnames(AgeAndRuptureTypeAndMortality) <- AgeAndRuptureTypeAndMortality[1, ]
+AgeAndRuptureTypeAndMortality <- AgeAndRuptureTypeAndMortality[-1, ]
+rownames(AgeAndRuptureTypeAndMortality) <- 2007:2015
+
+Mortality <- t(data.frame(lapply(OrganizedDischarge[6:14], table)))[-(1+1:9*2), ]
+colnames(Mortality) <- Mortality[1, ]
+Mortality <- Mortality[-1, ]
+rownames(Mortality) <- 2007:2015
+
+ReceivedAgexRupturexOpxMort <- t(data.frame(lapply(AgexRupturexOpxMort[1:9], table)))[-(1+1:9*2), ]
+colnames(ReceivedAgexRupturexOpxMort) <- ReceivedAgexRupturexOpxMort[1, ]
+ReceivedAgexRupturexOpxMort <- ReceivedAgexRupturexOpxMort[-1, ]
+rownames(ReceivedAgexRupturexOpxMort) <- 2007:2015
+
+pelvisInteractions <- lapply(pelvisInteractions, function(x) x[-(1:5)])
+
+for (i in 1:length(pelvisInteractions)) {
+for (j in 1:length(pelvisInteractions[[i]])) {
+pelvisResults <- t(data.frame(pelvisInteractions[[i]]))[-(1+(1:13)*2), ]
+colnames(pelvisResults) <- pelvisResults[1, ]
+pelvisResults <- pelvisResults[-1, ]
+rownames(pelvisResults) <- 2007:2015
+}
+write.csv(pelvisResults, paste0("pelvisdcode", names(pelvisInteractions)[i], "xEverything.csv"))
+}
+
+# 4. Write to files
+
+write.csv(EPvIP, "resultsEPvIP.csv")
+write.csv(ReceivedOperationAndRuptureType, "resultsOperationAndRupture.csv")
+write.csv(ReceivedOperationAndRuptureTypeAndAge, "resultsOperationAndRuptureAndAge.csv")
+write.csv(ReceivedOperationAndAge, "resultsOperationAndAge.csv")
+write.csv(Mortality, "resultsMortality.csv")
+write.csv(AgeAndRuptureTypeAndMortality, "resultsAgeRuptureTypeMortality.csv")
+write.csv(ReceivedAgexRupturexOpxMort, "resultsOperationAndRuptureAndAgeAndMortality.csv")
+</code>
+</pre>
+<p>His request? Help me understand what this code does, because I don’t know how it got from the source data to the output data.</p>
+<p>He had two obstacles to overcome that made mystification inevitable. He had no coding experience in the imperative/procedural style of <code>C, C++, Java, Python</code> and most other languages, and he was new to <code>R</code>. Now, he was reading code in <code>R</code>, a <strong>functional</strong> language, written primarily in an <strong>imperative</strong> style over 233 lines.</p>
+<p>I thought that a more idiomatic version would clarify the data transformation. We talked of which <em>csv</em> files were of interest, what <em>variables</em> were important, what the output should look like and what the plans were for analyzing the data.</p>
+<p>As a first cut, I returned 72 lines of more idiomatic <code>R</code> in the <code>tidyverse</code> style to look at a single year of the data.</p>
+<pre>
+<code>
+
+#import libraries
+
+library(tidyverse)
+setwd("/Users/rc/projects/working directory/RDS AY 2015") 
+
+#set print display options
+
+options(pillar.sigfig = 10) #control display of tibble
+
+#Get patient demographics
+
+patients <- as.tibble(read.csv("RDS_DEMO.csv", stringsAsFactors = FALSE))
+patients <- patients %>% select(INC_KEY, AGE, GENDER)
+patients <- patients %>% select(INC_KEY, AGE, GENDER) %>% mutate(ADULT = ifelse(AGE > 17, "TRUE", "FALSE"))
+ 
+#eliminate duplicates
+patients <- distinct(patients)
+
+#Get discharge status
+
+discharges <- as.tibble(read.csv("RDS_DISCHARGE.csv", stringsAsFactors = FALSE))
+discharges <- discharges %>% select(INC_KEY,HOSPDISP) %>%  filter(HOSPDISP != "Not Applicable BIU 1" & HOSPDISP != "Not Known/Not Recorded BIU 2") %>% mutate(Expired = ifelse(HOSPDISP == "Deceased/Expired", "TRUE", "FALSE")) %>% select(-HOSPDISP)
+
+#Get intervention codes
+
+p_codes <- as.tibble(read.csv("RDS_PCODE.csv", stringsAsFactors = FALSE))
+p_codes <- p_codes %>% select(INC_KEY, PCODE)
+pelvic <- p_codes %>% filter(PCODE >= 57.6 & PCODE <= 57.89 | PCODE == 57.93) %>% mutate(PCODE = as.logical(PCODE))
+colnames(pelvic) <- c("INC_KEY","PELVIC") # 57.93 56.6:57.89 & 57.93
+
+#Diagnostic codes
+
+d_codes <- as.tibble(read.csv("RDS_DCODE.csv", stringsAsFactors = FALSE))
+d_codes <- d_codes %>% select(INC_KEY, DCODE)
+Rupture <- d_codes %>% filter(DCODE > 866.99 & DCODE < 867.2)
+
+#Join patients, discharge, then patients, treatment, then T/F pelvic then DCODES, add year and reorder
+
+patients <- inner_join(patients, discharges, by = "INC_KEY")
+
+#Treatment codes
+
+#ID patients with no pelvic procedure
+
+pelvic_false <- setdiff(patients$INC_KEY, pelvic$INC_KEY)
+
+#Add field for PELVIC t/f
+
+patients <- patients %>% mutate(PELVIC = ifelse(INC_KEY %in% pelvic_false, "FALSE", "TRUE")) %>% mutate(PELVIC = as.logical(PELVIC))
+
+#Add fields for 867 series
+
+patients <- inner_join(patients, Rupture, by = "INC_KEY")
+
+#Add year
+
+patients <- patients %>% mutate(YEAR = 2015)
+
+#Rename columns
+
+colnames(patients) <- c("INC_KEY", "Age", "Sex", "Adult", "Expired", "Intervention", "Rupture", "Year")
+
+#Change Expired to logical
+
+patients <- patients %>% mutate(Expired = as.logical(Expired))
+
+#Censor anomolies
+
+patients <- patients %>% filter(Age >= 0)
+
+#SAVE
+
+write.csv(patients, "../combined/patients_2015.csv")
+</code>
+</pre>
+<p>That was something he was able to understand, and we have been working together to refine, possible because we now share a mutually intelligible language.</p>
+<p>I should emphasize that I have no criticism of the programmer, the style of programming or the process that left the user in the dark. The lesson for everyone in the process of converting facts to data to data sets to programming objects is that mutual intelligibility is key.</p>
+<p>We have run into some challenges that we are working to correct, inconsistent column naming conventions, data coding and similar routine issues. The major problem was the underlying data structure in which the same unit of observation, a patient, had multiple observations in multiple files, classic <code>untidy</code> data. Pulling all of the source data into a single data structure profilerated duplicate patient records that required a method to collapse into a single row.</p>
+<p>That proved challenging for a surprising reason<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>, about which more when the tentative solution has been more thoroughly tested.</p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>The <code>tibble</code>, as opposed to its constituent <code>vector</code> columns is difficult to iterate over as a whole when varying numbers of rows interfere with the expectations of the standard tools to apply functions to vectors.<a href="#fnref1" class="footnote-back">↩</a></p></li>
+</ol>
+</div>

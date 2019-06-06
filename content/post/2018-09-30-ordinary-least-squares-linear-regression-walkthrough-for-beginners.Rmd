@@ -1,0 +1,127 @@
+---
+title: Ordinary Least Squares Linear Regression Walkthrough for Beginners
+author: Richard Careaga
+date: '2018-09-30'
+slug: ordinary-least-squares-linear-regression-walkthrough-for-beginners
+categories:
+  - Data Science
+tags:
+  - statistics
+---
+
+## Ordinary Least Squares Linear Regression
+
+Ordinary linear least squares regression is one of the first statistical methods that anyone learns who is trying to understand how two sets of numbers relate. It has an undeserved reputation of being able to foretell the future, but it is mathematically tractable, simple to apply, and often yields  either directly usable results or signals the need for more sophisticated tools.
+
+The idea is simple enough, find the line that passes through points in Cartesian (*x,y* 2-dimensional space) that minimizes the total distance (another over-simplification) between each point and the line. In slightly informal terms
+
+$$y = mx + b$$
+
+where *y* is the dependent variable, *x* is the independent variable, *m* is the correlation coefficient, or *slope* and *b* is the intercept, the value at which the slope intersects the *y* axis. 
+
+This neglects the term $$\epsilon$$ arising from measurement error, random variation or both.
+I'll set that aside for this discussion.
+
+A regression, such as miles per gallon against horsepower, may give you plot of the paired point values *(x,y)* something like the following, indicating a trend.
+
+```{r, results="asis", echo = FALSE, warning=FALSE}
+library(ggplot2)
+library(ISLR)
+data(Auto)
+#ggplot(data = Auto, aes(x = mpg, y = horsepower)) + geom_point(color='blue') + geom_smooth(method = "lm", se = FALSE)
+``` 
+
+<img src="https://s3-us-west-2.amazonaws.com/tuva/2018-09-30-fig1.png" alt="" style="width:800px;"/>
+ 
+
+```{r, results="asis", echo = FALSE, warning=FALSE}
+fit <- lm(mpg ~ horsepower, data = Auto)
+library(pander)
+pander(summary(fit))
+```
+
+Even better, the model summary indicates a high coefficient of correlation, R^2^, with a p-value (the unfortunately named "significance") that is vanishingly small, and so unlikely due to chance.
+
+In [another post](https://goo.gl/1W11Zu), I've discussed interpreting the model summary, but I haven't mentioned the graphical methods that are a critical part of understanding what the data are telling you.
+
+```{r, results="asis", echo = FALSE, warning=FALSE}
+#par(mfrow=c(2,2))
+#plot(fit)
+``` 
+
+<img src="https://s3-us-west-2.amazonaws.com/tuva/2018-09-29-fig2.png" alt="" style="width:800px;"/>
+
+Ideally, in the two plots on the left hand side, we would like to see points clustered along the centerline. On the upper right, we would like to see most of the points -- the residuals obtained from the distance of a point pair from the dashed line that represents a normal distirubtion -- line up. On the lower right, we don't want to see a curve being "pulled up" by far off outliers.^[The technical explanation of the plots I've save for another post.]
+
+The departures from the ideal are easy enough to spot. What to do about them? Let's look at the initial data again, this time without the trend line.
+
+```{r, results="asis", echo = FALSE, warning=FALSE}
+#ggplot(data = Auto, aes(x = mpg, y = horsepower)) + geom_point(color="blue")
+``` 
+
+<img src="https://s3-us-west-2.amazonaws.com/tuva/2018-09-29-fig3.png" alt="" style="width:800px;"/>
+
+How would you draw a line by hand through the points? Would it be two straight lines? A decay curve?
+
+Sometimes, we can improve fit through transforming the scale of one or both variables. A commonly used transformation is to express one variable as a natural logarithm (which is the default in **R**; other bases are available, such as decimal -- log10()). For this dataset a log-log transformation has a slight advantage.
+
+```{r, results="asis", echo = FALSE, warning=FALSE}
+#ggplot(data = Auto, aes(x = log(mpg), y = log(horsepower))) + geom_point(color="blue") + geom_smooth(method = "lm", se = FALSE)
+``` 
+
+<img src="https://s3-us-west-2.amazonaws.com/tuva/2018-09-29-fig4.png" alt="" style="width:800px;"/>
+
+This results in an improvement of R^2^ and a large decrease in the standard error. The plots show minimal non-linearity, the residuals are now very close to being normally distributed, and outliers show negligible effect.
+
+```{r, results="asis", echo = FALSE, warning=FALSE}
+fit2 <- lm(log(mpg) ~ log(horsepower), data = Auto)
+pander(summary(fit2))
+#par(mfrow=c(2,2))
+#plot(fit2)
+``` 
+
+<img src="https://s3-us-west-2.amazonaws.com/tuva/2018-09-29-fig5.png" alt="" style="width:800px;"/>
+
+## Sometimes it's not even this subtle
+
+Here is the famous, contrived "anscombe" dataset that shows why plotting should be the *first* step in any linear regression. There are four datasets and four models, with practically identical output.
+
+```{r, results="asis", echo = FALSE, warning=FALSE}
+data("anscombe")
+mod1 <- lm(y1 ~ x1, data = anscombe)
+mod2 <- lm(y2 ~ x2, data = anscombe)
+mod3 <- lm(y3 ~ x3, data = anscombe)
+mod4 <- lm(y4 ~ x4, data = anscombe)
+pander(summary(mod1))
+pander(summary(mod2))
+pander(summary(mod3))
+pander(summary(mod4))
+```
+
+Looking before you leap:
+
+```{r, results="asis", echo = FALSE, warning=FALSE}
+#par(mfrow=c(2,2))
+#ggplot(data = anscombe, aes(x = x1, y = y1)) + geom_point(color='red') + geom_smooth(method = "lm", se = FALSE)
+#ggplot(data = anscombe, aes(x = x2, y = y2)) + geom_point(color='red') + geom_smooth(method = "lm", se = FALSE)
+#ggplot(data = anscombe, aes(x = x3, y = y3)) + geom_point(color='red') + geom_smooth(method = "lm", se = FALSE)
+#ggplot(data = anscombe, aes(x = x4, y = y4)) + geom_point(color='red') + geom_smooth(method = "lm", se = FALSE)
+
+``` 
+
+<img src="https://s3-us-west-2.amazonaws.com/tuva/2018-09-29-fig6.png" alt="" style="width:800px;"/>
+<img src="https://s3-us-west-2.amazonaws.com/tuva/2018-09-29-fig7.png" alt="" style="width:800px;"/>
+<img src="https://s3-us-west-2.amazonaws.com/tuva/2018-09-29-fig8.png" alt="" style="width:800px;"/>
+<img src="https://s3-us-west-2.amazonaws.com/tuva/2018-09-29-fig9.png" alt="" style="width:800px;"/>
+
+___
+
+**Credits**
+
+*Software* (R Development Core Team (2008). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. ISBN 3-900051-07-0, URL http://www.R-project.org.)
+
+*data* Auto dataset from Gareth James, Daniela Witten, Trevor Hastie and Rob Tibshirani (2017). ISLR: Data for an Introduction to Statistical Learning with Applications in R. R package version 1.2. https://CRAN.R-project.org/package=ISLR; contrived data from Anscombe, Francis J. (1973). Graphs in statistical analysis. The American Statistician, 27, 17–21. doi: 10.2307/2682899, an included dataset in **R**.
+
+*trendline plot* H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York, 2016.
+
+*formating of linear regression summary* Gergely Daróczi and Roman Tsegelskyi (2018). pander: An R 'Pandoc' Writer. R packageversion 0.6.2. https://CRAN.R-project.org/package=pander

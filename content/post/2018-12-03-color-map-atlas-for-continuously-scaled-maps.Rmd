@@ -1,0 +1,1042 @@
+---
+title: Color Map Atlas for Continuously Scaled Maps
+author: Richard Careaga
+date: '2018-12-03'
+slug: color-map-atlas-for-continuously-scaled-maps
+categories:
+  - Visualization
+tags:
+  - R
+  - geospatial
+  - design
+---
+
+```{r setup, results="asis", echo = FALSE, warning=FALSE}
+```{r setup, results="asis", echo = FALSE, warning=FALSE}
+suppressPackageStartupMessages(library(kableExtra))
+suppressPackageStartupMessages(library(knitr))
+suppressPackageStartupMessages(library(munsell))
+suppressPackageStartupMessages(library(RColorBrewer))
+suppressPackageStartupMessages(library(scales)) # needed for label = comma
+suppressPackageStartupMessages(library(sf))
+suppressPackageStartupMessages(library(tidycensus))
+suppressPackageStartupMessages(library(tidyverse))
+
+
+states_pop <- get_estimates("state", product = "population", geometry = TRUE, shift_geo = TRUE) %>% filter(variable == "POP") %>% filter(GEOID != 11) %>% mutate(geoid = as.integer(GEOID)) %>% select(GEOID, NAME, geoid, value) %>% mutate(POP_TOT = value) %>% select(-value)
+
+# obtain state names, identifier and postal abbreviations
+converter <-  read.csv("https://gist.githubusercontent.com/technocrat/93470bf9abead06ef926/raw/f652f8171374e7808455f42167f5480ea15f7f4e/state_fips_postal.csv", header = FALSE, stringsAsFactors = FALSE)
+converter <-  rename(converter, NAME = V1, geoid = V2, id = V3)
+states_key <- converter %>% filter(id != 'DC') 
+
+plain_theme = theme(axis.text=element_blank()) + 
+    theme(panel.background = element_blank(), 
+        panel.grid = element_blank(), 
+        axis.ticks = element_blank())
+
+no_ylab = ylab("") 
+no_xlab = xlab("")
+
+
+# get locations for state postal code placement
+states_centroid_matrix <- st_coordinates(st_centroid(states_pop$geometry))
+states_centroid <- as_tibble(states_centroid_matrix) %>% transmute(clong = X, clat = Y) 
+# construct a key
+geoid <- as_tibble(states_pop$geoid)
+colnames(geoid) <- "geoid"
+# combine to tibble
+states_centroid <- cbind(geoid, states_centroid)
+# bring into states tibble and create columns for position adjustment
+states <- left_join(states_pop, states_centroid, by = "geoid") %>% mutate(offset_clong = 0, offset_clat = 0)
+# abbreviations
+states <- left_join(states,converter, by = "NAME")
+
+```
+
+```{r adjust-labels, results="asis", echo = FALSE, warning=FALSE}
+# create blank base map with state id codes
+blank_map <- ggplot(states) +
+  geom_sf(color = "gray", size = 0.2, fill = NA) +
+  coord_sf() + 
+  plain_theme +
+  theme(panel.grid.major = element_line(colour = "white"))
+## not run
+##  visually inspect positions that need adjustment
+##blank_map
+# create extract with only those states
+movers <- states %>% filter(id == "MI" | id == "RI" | id == "MD" | id == "FL" | id == "LA")
+#blank_map + geom_text(data = movers, aes(x=clong , clat, label = id), size = 2.5) + no_xlab + no_ylab
+# check remaining
+stayers <- states %>% filter(id != "MI" & id != "RI" & id != "MD" & id != "FL" & id != "LA")
+#blank_map + geom_text(data = stayers, aes(x=clong , clat, label = id), size = 2.5) + no_xlab + no_ylab
+# redefine movers if needed
+# trial and error; units are meters 10000 m is approximately 6 miles
+movers$offset_clong[1] <-  -  30000  #LA
+movers$offset_clong[2] <-  +  80000  #FL
+movers$offset_clat[3] <-   +  10000  #MD
+movers$offset_clong[3] <-  -  20000  #MD
+movers$offset_clat[4] <-   -  70000  #MI
+movers$offset_clong[4] <-  + 100000  #MI
+movers$offset_clat[5] <-   -  75000  #RI
+movers$offset_clong[5] <-  +  25000  #RI
+#check and adjust as required
+#blank_map + geom_text(data = movers, aes(x=clong + offset_clong, clat + offset_clat, label = id), size = 2.5) + no_xlab + no_ylab
+# integrate movers back into states -- indices must be those in states, not movers: use states %>% print(n = Inf) to get complete list; indices are in the first, unlabelled column, on the left
+states$offset_clong[9] <-  - 30000  #LA
+states$offset_clong[24] <- + 80000  #FL
+states$offset_clat[27] <-  + 10000  #MD
+states$offset_clong[27] <- - 20000  #MD
+states$offset_clat[38] <-  - 70000  #MI
+states$offset_clong[38] <- + 100000 #MI
+states$offset_clat[44] <-  - 75000  #RI
+states$offset_clong[44] <- + 25000  #RI
+
+basemap <- blank_map + geom_text(data = states, aes(x=clong + offset_clong, clat + offset_clat, label = id), size = 2.5) + no_xlab + no_ylab
+
+blank_map_90 <- ggplot(states) +
+  geom_sf(color = "white", size = 0.2, fill = "grey") +
+  coord_sf() + 
+  plain_theme +
+  theme(panel.grid.major = element_line(colour = "white"))
+
+basemap_90 <- blank_map_90 + geom_text(data = states, aes(x=clong + offset_clong, clat + offset_clat, label = id), size = 2.5) + no_xlab + no_ylab
+
+q2_2018_gdp <- as_tibble(read.csv("data/Q2_2018_GDP.csv", header = FALSE, stringsAsFactors = FALSE)) %>% rename(NAME = V1, Q22018_GDP = V2)
+econ <- left_join(q2_2018_gdp, states, by = "NAME") %>% mutate(GDP = Q22018_GDP) %>% mutate(capita = GDP/(POP_TOT/1e5)) %>% select(NAME, id, GDP, capita, clong, clat, offset_clong, offset_clat, geometry)
+
+plain_theme = theme(axis.text=element_blank()) + 
+    theme(panel.background = element_blank(), 
+        panel.grid = element_blank(), 
+        axis.ticks = element_blank())
+
+no_ylab = ylab("") 
+no_xlab = xlab("")
+
+pal_lab <- ""
+box_lab <- function(pal) {
+  annotate("label", label = pal, x = 1440000, y = 1440000, size = 6, colour = "Black")
+}
+
+econ_source <- '"Source: Bureau of Economic Analysis, Gross Domestic Product By State, 2nd Quarter 2018 https://goo.gl/Jc6XyK"'
+
+gdp_table <- econ %>% select(NAME,GDP)
+gdp_pop <- left_join(gdp_table, states, by = "NAME") %>% select(NAME, id, GDP, clong, clat, offset_clong, offset_clat, geometry)
+
+pop_map <- ggplot(states) + geom_sf(aes(fill = POP_TOT)) +   
+coord_sf() +
+plain_theme +
+theme(panel.grid.major = element_line(colour = "white")) +
+ggtitle("ASC 2017 Estimate of Population") +
+  guides(fill = guide_legend(title = "Population"))  + geom_text(data = states, aes(x=clong + offset_clong , clat + offset_clat, label = id), size = 2.5) +  geom_text(data = states, aes(x=clong + offset_clong , clat + offset_clat, label = id), size = 2.5) + no_ylab + no_xlab
+
+econ_pop <- ggplot(gdp_pop) + geom_sf(aes(fill = GDP)) +  
+coord_sf() +
+plain_theme +
+theme(panel.grid.major = element_line(colour = "white")) +
+ggtitle("Second Quarter 2018 State GDP") +
+  guides(fill = guide_legend(title = "GDP"))  + geom_text(data = states, aes(x=clong + offset_clong , clat + offset_clat, label = id), size = 2.5) +  geom_text(data = states, aes(x=clong + offset_clong , clat + offset_clat, label = id), size = 2.5) + no_ylab + no_xlab
+
+econ_map <- ggplot(econ) + geom_sf(aes(fill = capita)) +  
+coord_sf() +
+plain_theme +
+theme(panel.grid.major = element_line(colour = "white")) +
+ggtitle("Second Quarter 2018 State GDP per 100,000 Population") +
+  guides(fill = guide_legend(title = "GDP/100,000"))  + geom_text(data = states, aes(x=clong + offset_clong , clat + offset_clat, label = id), size = 2.5) +  geom_text(data = states, aes(x=clong + offset_clong , clat + offset_clat, label = id), size = 2.5) + no_ylab + no_xlab
+``` 
+
+```{r palettes, results="asis", echo = FALSE, warning=FALSE}
+# default with alpha default
+Alpha_default <- scale_alpha_continuous(range = c(0.1, 1))
+Alpha_75      <- scale_alpha_continuous(range = c(0.1, 0.75))
+Alpha_50      <- scale_alpha_continuous(range = c(0.1, 0.50))
+
+magma         <- scale_fill_viridis_c(option="magma")
+inferno       <- scale_fill_viridis_c(option="inferno")
+plasma        <- scale_fill_viridis_c(option="plasma")
+viridis       <- scale_fill_viridis_c(option="viridis")
+cividis       <- scale_fill_viridis_c(option="cividis")
+
+munsell_brown <- scale_fill_gradient(low = "#FBF7F6", high =  "#A97263", space = "Lab", na.value = "grey50", guide = "colourbar", aesthetics = "fill")
+
+# RColorBrewer
+
+BluesNeg1    <- scale_fill_distiller(type = "seq", palette = "Blues", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+BluesPos1    <- scale_fill_distiller(type = "seq", palette = "Blues", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+BuGnNeg1    <- scale_fill_distiller(type = "seq", palette = "BuGn", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+BuGnPos1    <- scale_fill_distiller(type = "seq", palette = "BuGn", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+BuPuNeg1    <- scale_fill_distiller(type = "seq", palette = "BuPu", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+BuPuPos1    <- scale_fill_distiller(type = "seq", palette = "BuPu", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+GnBuNeg1    <- scale_fill_distiller(type = "seq", palette = "GnBu", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+GnBuPos1    <- scale_fill_distiller(type = "seq", palette = "GnBu", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+GreensNeg1    <- scale_fill_distiller(type = "seq", palette = "Greens", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+GreensPos1    <- scale_fill_distiller(type = "seq", palette = "Greens", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+GreysNeg1    <- scale_fill_distiller(type = "seq", palette = "Greys", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+GreysPos1    <- scale_fill_distiller(type = "seq", palette = "Greys", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+OrangesNeg1    <- scale_fill_distiller(type = "seq", palette = "Oranges", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+OrangesPos1    <- scale_fill_distiller(type = "seq", palette = "Oranges", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+OrRdNeg1    <- scale_fill_distiller(type = "seq", palette = "OrRd", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+OrRdPos1    <- scale_fill_distiller(type = "seq", palette = "OrRd", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+PuBuGnNeg1    <- scale_fill_distiller(type = "seq", palette = "PuBuGn", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+PuBuGnPos1    <- scale_fill_distiller(type = "seq", palette = "PuBuGn", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+PuBuNeg1    <- scale_fill_distiller(type = "seq", palette = "PuBu", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+PuBuPos1    <- scale_fill_distiller(type = "seq", palette = "PuBu", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+PuRdNeg1    <- scale_fill_distiller(type = "seq", palette = "PuRd", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+PuRdPos1    <- scale_fill_distiller(type = "seq", palette = "PuRd", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+PurplesNeg1    <- scale_fill_distiller(type = "seq", palette = "Purples", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+PurplesPos1    <- scale_fill_distiller(type = "seq", palette = "Purples", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+RdPuNeg1    <- scale_fill_distiller(type = "seq", palette = "RdPu", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+RdPuPos1    <- scale_fill_distiller(type = "seq", palette = "RdPu", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+RedsNeg1    <- scale_fill_distiller(type = "seq", palette = "Reds", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+RedsPos1    <- scale_fill_distiller(type = "seq", palette = "Reds", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+YlGnBuNeg1    <- scale_fill_distiller(type = "seq", palette = "YlGnBu", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+YlGnBuPos1    <- scale_fill_distiller(type = "seq", palette = "YlGnBu", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+YlGnNeg1    <- scale_fill_distiller(type = "seq", palette = "YlGn", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+YlGnPos1    <- scale_fill_distiller(type = "seq", palette = "YlGn", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+YlOrBrNeg1    <- scale_fill_distiller(type = "seq", palette = "YlOrBr", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+YlOrBrPos1    <- scale_fill_distiller(type = "seq", palette = "YlOrBr", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+YlOrRdNeg1    <- scale_fill_distiller(type = "seq", palette = "YlOrRd", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+YlOrRdPos1    <- scale_fill_distiller(type = "seq", palette = "YlOrRd", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+
+BrBGNeg1    <- scale_fill_distiller(type = "seq", palette = "BrBG", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+BrBGPos1    <- scale_fill_distiller(type = "seq", palette = "BrBG", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+PiYGNeg1    <- scale_fill_distiller(type = "seq", palette = "PiYG", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+PiYGPos1    <- scale_fill_distiller(type = "seq", palette = "PiYG", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+PRGnNeg1    <- scale_fill_distiller(type = "seq", palette = "PRGn", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+PRGnPos1    <- scale_fill_distiller(type = "seq", palette = "PRGn", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+PuOrNeg1    <- scale_fill_distiller(type = "seq", palette = "PuOr", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+PuOrPos1    <- scale_fill_distiller(type = "seq", palette = "PuOr", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+RdBuNeg1    <- scale_fill_distiller(type = "seq", palette = "RdBu", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+RdBuPos1    <- scale_fill_distiller(type = "seq", palette = "RdBu", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+RdGyNeg1    <- scale_fill_distiller(type = "seq", palette = "RdGy", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+RdGyPos1    <- scale_fill_distiller(type = "seq", palette = "RdGy", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+RdYlBuNeg1    <- scale_fill_distiller(type = "seq", palette = "RdYlBu", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+RdYlBuPos1    <- scale_fill_distiller(type = "seq", palette = "RdYlBu", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+RdYlGnNeg1    <- scale_fill_distiller(type = "seq", palette = "RdYlGn", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+RdYlGnPos1    <- scale_fill_distiller(type = "seq", palette = "RdYlGn", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+SpectralNeg1    <- scale_fill_distiller(type = "seq", palette = "Spectral", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+SpectralPos1    <- scale_fill_distiller(type = "seq", palette = "Spectral", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+AccentNeg1    <- scale_fill_distiller(type = "seq", palette = "Accent", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+AccentPos1    <- scale_fill_distiller(type = "seq", palette = "Accent", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+Dark2Neg1    <- scale_fill_distiller(type = "seq", palette = "Dark2", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+Dark2Pos1    <- scale_fill_distiller(type = "seq", palette = "Dark2", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+PairedNeg1    <- scale_fill_distiller(type = "seq", palette = "Paired", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+PairedPos1    <- scale_fill_distiller(type = "seq", palette = "Paired", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+Pastel1Neg1    <- scale_fill_distiller(type = "seq", palette = "Pastel1", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+Pastel1Pos1    <- scale_fill_distiller(type = "seq", palette = "Pastel1", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+Pastel2Neg1    <- scale_fill_distiller(type = "seq", palette = "Pastel2", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+Pastel2Pos1    <- scale_fill_distiller(type = "seq", palette = "Pastel2", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+Set1Neg1    <- scale_fill_distiller(type = "seq", palette = "Set1", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+Set1Pos1    <- scale_fill_distiller(type = "seq", palette = "Set1", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+Set2Neg1    <- scale_fill_distiller(type = "seq", palette = "Set2", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+Set2Pos1    <- scale_fill_distiller(type = "seq", palette = "Set2", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+Set3Neg1    <- scale_fill_distiller(type = "seq", palette = "Set3", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+Set3Pos1    <- scale_fill_distiller(type = "seq", palette = "Set3", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+```
+
+# Color, Design and Communication
+
+[Graphic design standards](https://goo.gl/nKK8uq), especially for color, are an official Good Thing. Branding, visual cueing, consistency. [Map colors are hard](https://goo.gl/wae21u), especially when dealing with continuous data.
+
+# An example of continuous data
+
+The U.S. Bureau of Economic Analysis publishes quarterly statistics on gross domestic product by state.^[`r econ_source`]. For the second quarter 2018, it provided the following.
+
+```{r gdp_table, results="asis", echo = FALSE, warning=FALSE}
+kable(gdp_table, format.args = list(big.mark = ","), caption = "2018 Second Quarter GDP for the 50 States")  %>% kable_styling(bootstrap_options = "striped", full_width = F) 
+``` 
+
+The two obvious things from the chart are that the numbers differ and that in general the larger states in population are also the larger states in GDP. Whenever making maps of continuous data, they will almost always turn out like this, unless there are marked regional differences and you take the default option.
+
+```{r us_pop, results="asis", echo = FALSE, warning=FALSE}
+pop_map
+``` 
+
+Here is the GDP data, also with the default option.
+
+```{r gdp_raw, results="asis", echo = FALSE, warning=FALSE}
+econ_pop
+``` 
+
+# Three Problems: One Major, One Important and One Nuisance
+
+* Major: The GDP map doesn't tell you anything you could not have guessed from the population map
+* You can see subtle differences in shade, but there are too many, and a small portion of the population is blue colorblind.
+* Nuisance: Can't see the state names against the dark background
+
+## The Major Problem: Counts Need Transformation
+
+If we are looking for more interesting differences among states, we should put them on a common footing, so that population size alone doesn't dominate the effects. For disease, as an example, cases per hundred thousand is commonly used. Here's what the GDP data looks like on that basis.
+
+```{r gpdper1e5, results="asis", echo = FALSE, warning=FALSE}
+econ_map
+``` 
+
+## The Important Problem
+
+The default continuous blue scale, even with transformed data, still requires squinting to distinguish different values. 
+
+### Alpha adjustment
+
+We can tinker with that by applying an alpha (density) filter.
+
+```{r alpha, results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Alpha_default"
+econ_map + Alpha_default + box_lab(pal_lab)
+```
+
+The signature for `scale_alpha_continuous` is
+
+<code>
+     scale_alpha_continuous(..., range = c(0.1, 1))
+</code>
+
+The range can be narrowed
+
+```{r alpha_75, results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Alpha_75"
+econ_map + Alpha_75 + box_lab(pal_lab)
+``` 
+
+<code>
+    scale_alpha_continuous(range = c(0.1, 0.75))
+</code>
+
+or even further lightened
+
+<code>
+    scale_alpha_continuous(range = c(0.1, 0.50))
+</code>
+
+```{r Alpha_50, results="asis", echo = FALSE, warning=FALSE}
+pal_lab = "Alpha_50"
+econ_map + Alpha_50 +  box_lab(pal_lab)
+```
+
+### Beyond Blue Palette Solutions
+
+#### Viridis palette
+
+Five bright (some might say garish) scales are available.
+
+```{r magma, results="asis", echo = FALSE, warning=FALSE}
+pal_lab = "magma"
+econ_map + magma +  box_lab(pal_lab)
+```
+
+`scale_fill_viridis_c(option="magma")`
+
+```{r inferno, results="asis", echo = FALSE, warning=FALSE}
+pal_lab = "inferno"
+econ_map + inferno +  box_lab(pal_lab)
+```
+
+`scale_fill_viridis_c(option="inferno")`
+
+```{r plasma, results="asis", echo = FALSE, warning=FALSE}
+pal_lab = "plasma"
+econ_map + plasma +  box_lab(pal_lab)
+```
+
+`scale_fill_viridis_c(option="plasma")`
+
+```{r viridis, results="asis", echo = FALSE, warning=FALSE}
+pal_lab = "viridis"
+econ_map + viridis +  box_lab(pal_lab)
+```
+
+`scale_fill_viridis_c(option="viridis")`
+
+```{r cividis, results="asis", echo = FALSE, warning=FALSE}
+pal_lab = "cividis"
+econ_map + scale_fill_viridis_c(option="cividis") + box_lab(pal_lab)
+```
+
+`scale_fill_viridis_c(option="viridis")`
+
+Fortunately, the palette can be muted with an alpha density filter
+
+```{r cividis50, results="asis", echo = FALSE, warning=FALSE}
+pal_lab = "cividis50"
+econ_map + scale_fill_viridis_c(alpha = 0.50, option="cividis") + box_lab(pal_lab)
+```
+
+`scale_fill_viridis_c(alpha = 0.50, option="cividis")`
+
+#### ggplot's `scale_fill_gradient` can also over-ride default colors
+
+The signature of `scale_fill_gradient` is
+
+`scale_fill_gradient(..., low = "#132B43", high = "#56B1F7", space = "Lab", na.value = "grey50", guide = "colourbar", aesthetics = "fill")`
+
+in the blue range. You can adjust that with the arguments to low and high. The following example uses #FBF7F6 and #A97263.
+
+```{r munsell_map, results="asis", echo = FALSE, warning=FALSE}
+pal_lab = "munsell_brown"
+econ_map + munsell_brown + box_lab(pal_lab)
+``` 
+
+How did I come up with those particular values?
+
+`library(munsell)`
+
+`show_col(seq_gradient_pal("white", mnsl("10R 4/6"))(x))(seq(0, 1, length.out = 25)))`
+    
+```{r munsell_brown, results="asis", echo = FALSE, warning=FALSE}
+show_col(seq_gradient_pal("white", mnsl("10R 4/6"))(seq(0, 1, length.out = 25)))
+``` 
+
+This approach, and other do-it-yourself color palette selection approaches can become a time sink.See [R color cheatsheet ](https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/colorPaletteCheatsheet.pdf) A better approach is to have a selection of pre-made color cards, and try them out until one of them highlights the differences you are trying to show.
+
+#### RColorBrewer
+
+This set of palettes plays well with `ggplot` and should answer most needs.
+
+![RColorBrewer](https://s3-us-west-2.amazonaws.com/tuva/RColorBrewer.png)
+
+The three sections are for sequential (*i.e.,* continuous), divergent (a neutral color in the center progressing toward more intense colors in both direction) or qualitative, for discrete data but coercible into continuous data.
+
+Through `ggplot`'s `scale_colour_distiller` function, any of these can be smoothly interpolated into a six-interval scale.
+
+All of the scales can be flipped, working from left-to-right on the palette or from right-to-left. Direction is indicated by  `direction = -1` or `direction = 1`.
+
+Color abbreviations:
+
+* Yl = Yellow
+* Or = Orange
+* Rd = Red
+* Br = Brown
+* Gn = Green
+* Pu = Purple
+* Bu = Blue
+
+There are also:
+
+* Reds
+* Oranges
+* Greys
+* Greens
+* Blues
+
+```{r YlOrRdNeg1, results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "YlOrRd" 
+econ_map + YlOrRdNeg1 + box_lab(pal_lab)
+``` 
+
+The signature for `scale_colour_distiller` is
+
+<code>
+scale_fill_distiller(type = "seq", palette = "YlOrRd", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+</code>
+
+```{r "BluesNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Blues"
+econ_map + BluesNeg1 + box_lab(pal_lab)
+```
+
+```{r "BluesPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Blues"
+econ_map + BluesPos1 + box_lab(pal_lab)
+```
+
+```{r "BuGnNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "BuGn"
+econ_map + BuGnNeg1 + box_lab(pal_lab)
+```
+
+```{r "BuGnPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "BuGn"
+econ_map + BuGnPos1 + box_lab(pal_lab)
+```
+
+```{r "BuPuNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "BuPu"
+econ_map + BuPuNeg1 + box_lab(pal_lab)
+```
+
+```{r "BuPuPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "BuPu"
+econ_map + BuPuPos1 + box_lab(pal_lab)
+```
+
+```{r "GnBuNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "GnBu"
+econ_map + GnBuNeg1 + box_lab(pal_lab)
+```
+
+```{r "GnBuPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "GnBu"
+econ_map + GnBuPos1 + box_lab(pal_lab)
+```
+
+```{r "GreensNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Greens"
+econ_map + GreensNeg1 + box_lab(pal_lab)
+```
+
+```{r "GreensPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Greens"
+econ_map + GreensPos1 + box_lab(pal_lab)
+```
+
+```{r "GreysNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Greys"
+econ_map + GreysNeg1 + box_lab(pal_lab)
+```
+
+```{r "GreysPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Greys"
+econ_map + GreysPos1 + box_lab(pal_lab)
+```
+
+```{r "OrangesNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Oranges"
+econ_map + OrangesNeg1 + box_lab(pal_lab)
+```
+
+```{r "OrangesPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Oranges"
+econ_map + OrangesPos1 + box_lab(pal_lab)
+```
+
+```{r "OrRdNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "OrRd"
+econ_map + OrRdNeg1 + box_lab(pal_lab)
+```
+
+```{r "OrRdPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "OrRd"
+econ_map + OrRdPos1 + box_lab(pal_lab)
+```
+
+```{r "PuBuNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "PuBu"
+econ_map + PuBuNeg1 + box_lab(pal_lab)
+```
+
+```{r "PuBuPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "PuBu"
+econ_map + PuBuPos1 + box_lab(pal_lab)
+```
+
+```{r "PuBuGnNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "PuBuGn"
+econ_map + PuBuGnNeg1 + box_lab(pal_lab)
+```
+
+```{r "PuBuGnPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "PuBuGn"
+econ_map + PuBuGnPos1 + box_lab(pal_lab)
+```
+
+```{r "PuRdNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "PuRd"
+econ_map + PuRdNeg1 + box_lab(pal_lab)
+```
+
+```{r "PuRdPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "PuRd"
+econ_map + PuRdPos1 + box_lab(pal_lab)
+```
+
+```{r "PurplesNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Purples"
+econ_map + PurplesNeg1 + box_lab(pal_lab)
+```
+
+```{r "PurplesPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Purples"
+econ_map + PurplesPos1 + box_lab(pal_lab)
+```
+
+
+```{r "RdPuNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "RdPu"
+econ_map + RdPuNeg1 + box_lab(pal_lab)
+```
+
+```{r "RdPuPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "RdPu"
+econ_map + RdPuPos1 + box_lab(pal_lab)
+```
+
+```{r "RedsNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Reds"
+econ_map + RedsNeg1 + box_lab(pal_lab)
+```
+
+```{r "RedsPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Reds"
+econ_map + RedsPos1 + box_lab(pal_lab)
+```
+
+```{r "YlGnNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "YlGn"
+econ_map + YlGnNeg1 + box_lab(pal_lab)
+```
+
+```{r "YlGnPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "YlGn"
+econ_map + YlGnPos1 + box_lab(pal_lab)
+```
+
+```{r "YlGnBuNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "YlGnBu"
+econ_map + YlGnBuNeg1 + box_lab(pal_lab)
+```
+
+```{r "YlGnBuPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "YlGnBu"
+econ_map + YlGnBuPos1 + box_lab(pal_lab)
+```
+
+```{r "YlOrBrNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "YlOrBr"
+econ_map + YlOrBrNeg1 + box_lab(pal_lab)
+```
+
+```{r "YlOrBrPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "YlOrBr"
+econ_map + YlOrBrPos1 + box_lab(pal_lab)
+```
+
+```{r "YlOrRdNeg1_", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "YlOrRd"
+econ_map + YlOrRdNeg1 + box_lab(pal_lab)
+```
+
+```{r "YlOrRdPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "YlOrRd"
+econ_map + YlOrRdPos1 + box_lab(pal_lab)
+```
+
+```{r "BrBGNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "BrBG"
+econ_map + BrBGNeg1 + box_lab(pal_lab)
+```
+
+```{r "BrBGPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "BrBG"
+econ_map + BrBGPos1 + box_lab(pal_lab)
+```
+
+
+```{r "PiYGNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "PiYG"
+econ_map + PiYGNeg1 + box_lab(pal_lab)
+```
+
+```{r "PiYGPos1",  results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "PiYG"
+econ_map + PiYGPos1 + box_lab(pal_lab)
+```
+
+```{r "PRGnNeg1",  results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "PRGn"
+econ_map + PRGnNeg1 + box_lab(pal_lab)
+```
+
+```{r "PRGnPos1",  results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "PRGn"
+econ_map + PRGnPos1 + box_lab(pal_lab)
+```
+
+
+```{r "PuOrNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "PuOr"
+econ_map + PuOrNeg1 + box_lab(pal_lab)
+```
+
+```{r "PuOrPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "PuOr"
+econ_map + PuOrPos1 + box_lab(pal_lab)
+```
+
+
+```{r "RdBuNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "RdBu"
+econ_map + RdBuNeg1 + box_lab(pal_lab)
+```
+
+```{r "RdBuPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "RdBu"
+econ_map + RdBuPos1 + box_lab(pal_lab)
+```
+
+
+```{r "RdGyNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "RdGy"
+econ_map + RdGyNeg1 + box_lab(pal_lab)
+```
+
+```{r "RdGyPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "RdGy"
+econ_map + RdGyPos1 + box_lab(pal_lab)
+```
+
+```{r "RdYlBuNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "RdYlBu"
+econ_map + RdYlBuNeg1 + box_lab(pal_lab)
+```
+
+```{r "RdYlBuPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "RdYlBu"
+econ_map + RdYlBuPos1 + box_lab(pal_lab)
+```
+
+```{r "RdYlGnNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "RdYlGn"
+econ_map + RdYlGnNeg1 + box_lab(pal_lab)
+```
+
+```{r "RdYlGnPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "RdYlGn"
+econ_map + RdYlGnPos1 + box_lab(pal_lab)
+```
+
+```{r "SpectralNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Spectral"
+econ_map + SpectralNeg1 + box_lab(pal_lab)
+```
+
+```{r "SpectralPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Spectral"
+econ_map + SpectralPos1 + box_lab(pal_lab)
+```
+
+```{r "AccentNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Accent"
+econ_map + AccentNeg1 + box_lab(pal_lab)
+```
+
+
+```{r "AccentPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Accent"
+econ_map + AccentPos1 + box_lab(pal_lab)
+```
+
+```{r "Dark2Neg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Dark"
+econ_map + Dark2Neg1 + box_lab(pal_lab)
+```
+
+```{r "Dark2Pos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Dark2"
+econ_map + Dark2Neg1 + box_lab(pal_lab)
+```
+
+
+```{r "PairedNeg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Paired"
+econ_map + PairedNeg1 + box_lab(pal_lab)
+```
+
+
+```{r "PairedPos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Paired"
+econ_map + PairedNeg1 + box_lab(pal_lab)
+```
+
+```{r "Pastel1Neg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Pastel1"
+econ_map + Pastel1Neg1 + box_lab(pal_lab)
+```
+
+
+```{r "Pastel1Pos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Pastel1"
+econ_map + Pastel1Pos1 + box_lab(pal_lab)
+```
+
+```{r "Pastel2Neg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Pastel2"
+econ_map + Pastel2Neg1 + box_lab(pal_lab)
+```
+
+```{r "Pastel2Pos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Pastel2"
+econ_map + Pastel2Pos1 + box_lab(pal_lab)
+```
+
+```{r "Set1Neg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Set1"
+econ_map + Set1Neg1 + box_lab(pal_lab)
+```
+
+```{r "Set1Pos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Set1"
+econ_map + Set1Pos1 + box_lab(pal_lab)
+```
+
+```{r "Set2Neg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Set2"
+econ_map + Set2Neg1 + box_lab(pal_lab)
+```
+
+```{r "Set2Pos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Set2"
+econ_map + Set2Pos1 + box_lab(pal_lab)
+```
+
+
+```{r "Set3Neg1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Set3"
+econ_map + Set3Neg1 + box_lab(pal_lab)
+```
+
+```{r "Set3Pos1", , results="asis", echo = FALSE, warning=FALSE}
+pal_lab <- "Set3"
+econ_map + Set3Pos1 + box_lab(pal_lab)
+```
+
+## Palette Snippets
+
+Usage `ggplot_map_object + [name of color scale]`
+
+<pre>
+<code>
+
+    Alpha_default <- scale_alpha_continuous(range = c(0.1, 1))
+  
+    Alpha_75      <- scale_alpha_continuous(range = c(0.1, 0.75))
+  
+    Alpha_50      <- scale_alpha_continuous(range = c(0.1, 0.50))
+
+    magma         <- scale_fill_viridis_c(option="magma")
+  
+    inferno       <- scale_fill_viridis_c(option="inferno")
+  
+    plasma        <- scale_fill_viridis_c(option="plasma")
+  
+    viridis       <- scale_fill_viridis_c(option="viridis")
+  
+    cividis       <- scale_fill_viridis_c(option="cividis")
+
+    munsell_brown <- scale_fill_gradient(low = "#FBF7F6", high =  "#A97263", space = "Lab", na.value = "grey50", guide = "colourbar", aesthetics = "fill")
+
+    # RColorBrewer
+
+    BluesNeg1    <- scale_fill_distiller(type = "seq", palette = "Blues", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    BluesPos1    <- scale_fill_distiller(type = "seq", palette = "Blues", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    BuGnNeg1    <- scale_fill_distiller(type = "seq", palette = "BuGn", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    BuGnPos1    <- scale_fill_distiller(type = "seq", palette = "BuGn", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    BuPuNeg1    <- scale_fill_distiller(type = "seq", palette = "BuPu", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    BuPuPos1    <- scale_fill_distiller(type = "seq", palette = "BuPu", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    GnBuNeg1    <- scale_fill_distiller(type = "seq", palette = "GnBu", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    GnBuPos1    <- scale_fill_distiller(type = "seq", palette = "GnBu", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    GreensNeg1    <- scale_fill_distiller(type = "seq", palette = "Greens", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    GreensPos1    <- scale_fill_distiller(type = "seq", palette = "Greens", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    GreysNeg1    <- scale_fill_distiller(type = "seq", palette = "Greys", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    GreysPos1    <- scale_fill_distiller(type = "seq", palette = "Greys", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    OrangesNeg1    <- scale_fill_distiller(type = "seq", palette = "Oranges", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    OrangesPos1    <- scale_fill_distiller(type = "seq", palette = "Oranges", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    OrRdNeg1    <- scale_fill_distiller(type = "seq", palette = "OrRd", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    OrRdPos1    <- scale_fill_distiller(type = "seq", palette = "OrRd", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    PuBuGnNeg1    <- scale_fill_distiller(type = "seq", palette = "PuBuGn", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    PuBuGnPos1    <- scale_fill_distiller(type = "seq", palette = "PuBuGn", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    PuBuNeg1    <- scale_fill_distiller(type = "seq", palette = "PuBu", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    PuBuPos1    <- scale_fill_distiller(type = "seq", palette = "PuBu", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    PuRdNeg1    <- scale_fill_distiller(type = "seq", palette = "PuRd", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    PuRdPos1    <- scale_fill_distiller(type = "seq", palette = "PuRd", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    PurplesNeg1    <- scale_fill_distiller(type = "seq", palette = "Purples", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    PurplesPos1    <- scale_fill_distiller(type = "seq", palette = "Purples", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    RdPuNeg1    <- scale_fill_distiller(type = "seq", palette = "RdPu", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    RdPuPos1    <- scale_fill_distiller(type = "seq", palette = "RdPu", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    RedsNeg1    <- scale_fill_distiller(type = "seq", palette = "Reds", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    RedsPos1    <- scale_fill_distiller(type = "seq", palette = "Reds", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    YlGnBuNeg1    <- scale_fill_distiller(type = "seq", palette = "YlGnBu", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    YlGnBuPos1    <- scale_fill_distiller(type = "seq", palette = "YlGnBu", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    YlGnNeg1    <- scale_fill_distiller(type = "seq", palette = "YlGn", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    YlGnPos1    <- scale_fill_distiller(type = "seq", palette = "YlGn", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    YlOrBrNeg1    <- scale_fill_distiller(type = "seq", palette = "YlOrBr", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    YlOrBrPos1    <- scale_fill_distiller(type = "seq", palette = "YlOrBr", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    YlOrRdNeg1    <- scale_fill_distiller(type = "seq", palette = "YlOrRd", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    YlOrRdPos1    <- scale_fill_distiller(type = "seq", palette = "YlOrRd", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    BrBGNeg1    <- scale_fill_distiller(type = "seq", palette = "BrBG", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    BrBGPos1    <- scale_fill_distiller(type = "seq", palette = "BrBG", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    PiYGNeg1    <- scale_fill_distiller(type = "seq", palette = "PiYG", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    PiYGPos1    <- scale_fill_distiller(type = "seq", palette = "PiYG", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    PRGnNeg1    <- scale_fill_distiller(type = "seq", palette = "PRGn", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    PRGnPos1    <- scale_fill_distiller(type = "seq", palette = "PRGn", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    PuOrNeg1    <- scale_fill_distiller(type = "seq", palette = "PuOr", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    PuOrPos1    <- scale_fill_distiller(type = "seq", palette = "PuOr", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    RdBuNeg1    <- scale_fill_distiller(type = "seq", palette = "RdBu", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    RdBuPos1    <- scale_fill_distiller(type = "seq", palette = "RdBu", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    RdGyNeg1    <- scale_fill_distiller(type = "seq", palette = "RdGy", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    RdGyPos1    <- scale_fill_distiller(type = "seq", palette = "RdGy", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    RdYlBuNeg1    <- scale_fill_distiller(type = "seq", palette = "RdYlBu", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    RdYlBuPos1    <- scale_fill_distiller(type = "seq", palette = "RdYlBu", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    RdYlGnNeg1    <- scale_fill_distiller(type = "seq", palette = "RdYlGn", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    RdYlGnPos1    <- scale_fill_distiller(type = "seq", palette = "RdYlGn", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    SpectralNeg1    <- scale_fill_distiller(type = "seq", palette = "Spectral", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    SpectralPos1    <- scale_fill_distiller(type = "seq", palette = "Spectral", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    AccentNeg1    <- scale_fill_distiller(type = "seq", palette = "Accent", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    AccentPos1    <- scale_fill_distiller(type = "seq", palette = "Accent", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    Dark2Neg1    <- scale_fill_distiller(type = "seq", palette = "Dark2", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    Dark2Pos1    <- scale_fill_distiller(type = "seq", palette = "Dark2", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    PairedNeg1    <- scale_fill_distiller(type = "seq", palette = "Paired", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    PairedPos1    <- scale_fill_distiller(type = "seq", palette = "Paired", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    Pastel1Neg1    <- scale_fill_distiller(type = "seq", palette = "Pastel1", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    Pastel1Pos1    <- scale_fill_distiller(type = "seq", palette = "Pastel1", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    Pastel2Neg1    <- scale_fill_distiller(type = "seq", palette = "Pastel2", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    Pastel2Pos1    <- scale_fill_distiller(type = "seq", palette = "Pastel2", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    Set1Neg1    <- scale_fill_distiller(type = "seq", palette = "Set1", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    Set1Pos1    <- scale_fill_distiller(type = "seq", palette = "Set1", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    Set2Neg1    <- scale_fill_distiller(type = "seq", palette = "Set2", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    Set2Pos1    <- scale_fill_distiller(type = "seq", palette = "Set2", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    Set3Neg1    <- scale_fill_distiller(type = "seq", palette = "Set3", direction = -1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+    Set3Pos1    <- scale_fill_distiller(type = "seq", palette = "Set3", direction = 1, labels = comma,  guide = "colourbar", aesthetics = "fill")
+
+</code>
+</pre>
+## Credits
+
+1. R Development Core Team (2008). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. ISBN 3-900051-07-0, URL http://www.R-project.org.
+2. Simon Urbanek and Jeffrey Horner (2015). Cairo: R graphics device using cairo graphics library for creating high-quality bitmap (PNG, JPEG, TIFF), vector (PDF, SVG, PostScript) and display (X11 and Win32) output. R package version 1.5-9. https://CRAN.R-project.org/package=Cairo
+3. H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York, 2016
+4. Hao Zhu (2018). kableExtra: Construct Complex Table with 'kable' and Pipe Syntax. R package version 0.9.0. https://CRAN.R-project.org/package=kableExtra
+5. Yihui Xie (2018). knitr: A General-Purpose Package for Dynamic Report Generation in R. R package version 1.20. Yihui Xie (2015) Dynamic Documents with R and knitr. 2nd edition. Chapman and Hall/CRC. ISBN 978-1498716963 Yihui Xie (2014) knitr: A Comprehensive Tool for Reproducible Research in R. In Victoria 6. Stodden, Friedrich Leisch and Roger D. Peng, editors, Implementing Reproducible Computational Research. Chapman and Hall/CRC. ISBN 978-1466561595
+6. Charlotte Wickham (2018). munsell: Utilities for Using Munsell Colours. R package version 0.5.0. https://CRAN.R-project.org/package=munsell
+7. Erich Neuwirth (2014). RColorBrewer: ColorBrewer Palettes. R package version 1.1-2. https://CRAN.R-project.org/package=RColorBrewer
+8. Hadley Wickham (2018). scales: Scale Functions for Visualization. R package version 1.0.0.https://CRAN.R-project.org/package=scales
+9. Pebesma, E., 2018. Simple Features for R: Standardized Support for Spatial Vector Data. The R Journal, https://journal.r-project.org/archive/2018/RJ-2018-009/
+10. Kyle Walker (2018). tidycensus: Load US Census Boundary and Attribute Data as 'tidyverse' and22 'sf'-Ready Data Frames. R package version 0.8.1. https://CRAN.R-project.org/package=tidycensus
+11. Hadley Wickham (2017). tidyverse: Easily Install and Load the 'Tidyverse'. R package version 1.2.1. https://CRAN.R-project.org/package=tidyverse

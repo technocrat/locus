@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.55.5" />
+
+
+<title>Go Not Considered Harmful - Locus: Richard Careaga</title>
+<meta property="og:title" content="Go Not Considered Harmful - Locus: Richard Careaga">
+
+
+  <link href='/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/technocrat">GitHub</a></li>
+    
+    <li><a href="https://linkedin.com/in/richardcareaga">LinkedIn</a></li>
+    
+    <li><a href="https://twitter.com/technocrat">Twitter</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">4 min read</span>
+    
+
+    <h1 class="article-title">Go Not Considered Harmful</h1>
+
+    
+    <span class="article-date">2018-09-02</span>
+    
+
+    <div class="article-content">
+      
+
+
+<p>I had my first exposure to programming in a FORTRAN class with real punchcards, back in the day, before I knew that GOTO was <a href="http://www.cs.utexas.edu/users/EWD/ewd02xx/EWD215.PDF">considered harmful</a>. The exposure was brief and left me wondering whether Russian verbs of motion might not be easier to study, after all.</p>
+<p>In the years to follow, I ran the occasional canned deck with my datacards through overnight batch queues, but did not return to anything that could be called programming until I acquired an HP-25 calculator with a macro language, followed shortly by an HP-97 with little magnetic strips on which to record them. And then along came Jobs (and Steve) with a shiny new toy that was tempting but an impossible burden on the family budget.</p>
+<p>A few years later, our fortunes improved and I was the proud owner of an Osborne 1 and began to look at Beginner’s All-Purpose Symbolic Instruction Code. Since I had missed Professor Dijestra’s admonition, I happily proceeded to produce spaghetti code. A replacement PC gave me the opportunity to try my hand at Pascal, which imposed greater order, but somewhat more than I was really ready to keep.</p>
+<p>Then I heard about Unix by way of a computer show vendor booth of Cromenco, showing their Cromix implementation. I was intrigued, but becoming wary of the future of the much touted S-100 bus of the day. A couple of years later, Digital Equipment Corporation (<strong>DEC</strong>) released a desktop version of the famed PDP-11 and a Unix version 7 derivative was available to replace the native OS.</p>
+<p>After devouring bash and the standard utilities, I took up K&amp;R 1, and began a long-lasting noviate into C. When it came to pointers, though, my cranium began to experience memory leaks. I never did any heavy lifting in C, but it proved a lifetime pass to imperative/procedural programming concepts.</p>
+<p>After a long hiatus, I found <em>perl</em> easy to pick up, and <em>vi</em> never leaves your fingers. After another hiatus, <em>Ruby</em> and <em>Python</em> were equally welcoming. Ancient use of <em>dBase II</em> (the purloined property of Jet Propulsion Laboratory) made <em>MySQL</em> intelligible.</p>
+<p><em>R</em> was something of a challenge because it’s mainly a collection of functions. Thanks to the <em>tidyverse,</em> I am now able to more or less fluently combine them. But the functional orientation of <em>R</em> didn’t really kick in until I looked at <em>Haskell,</em> sentential logic disguised as a programming language. I expect that Vulcan children are taught it from pre-school.</p>
+<p>Over the past 10 years, I’ve worked with enough moderately large (up to 500K records with 50 variables) running interpreted language routines that took over 24 hours to complete on an old 8-core Mac Pro with 12 GB, to know that the day would come when I’d need more than a passing acquaintance with a compiled language.</p>
+<p>Which one?</p>
+<p>My first impulse was to revisit C, “a pleasant, expressive and versatile language for a wide variety of programs … [t]hat wears well as one’s experience with it grows.” (Brian Kernighan and Dennis Ritchie in their intro to K&amp;R I). More of the world runs on C than you could read the source code in <em>n</em> lifetimes. Modern C is a subset of C++, so it’s feasible to write runtime links to the compiled code and fold them into <em>R</em> packages.</p>
+<p>On the other hand, there’s C++, the Calvinist offspring of C. From what I’ve found from many hours of study, its purpose is to keep programmers from making mistakes. That’s a dealbreaker for me. There’s a big difference between writing relatively small programs designed to make your life easier in other work and being a programmer writing operating systems and complex platforms. So, for example, perfectly good code in C++14 won’t compile in C++11, because the <strong>right</strong> way to program has been revealed from on high by a later working group.</p>
+<p>Then I thought, why not <em>Go</em>? Impeccable pedigree. (The guy at Google who said “complexity is multiplicative” was a prime mover in the project.) Less baggage. Looks, in fact, like an updated C.
+<em>Go</em> has not been greeted with universal acclaim. <em>See, e.g.</em>, <em>Why Go’s design is a disservice to intelligent programmers</em> (<a href="http://nomad.uk.net/articles/why-gos-design-is-a-disservice-to-intelligent-programmers.html" class="uri">http://nomad.uk.net/articles/why-gos-design-is-a-disservice-to-intelligent-programmers.html</a>), which, among other sins, finds it too verbose.</p>
+<p>As a not-a-programmer, the harsh assessment doesn’t bother me. So far in my reading of <em>The Go Programming Language</em> by Donovan and Kernighan (yes, <strong>that one</strong>), I’ve found a combination of the familiarity of C, a design principle of radical simplicity, and useful exercises that I actually take the time to complete and debug.</p>
+<p>More of a hope and a prayer than a rational reason to pursue <em>Go</em> as my go-to compiler is <em>TensorFlow</em>, which has a <em>Go</em> API that is said to provide a convenient tool to developing in Python then getting compilation for when you’re read to deploy.</p>
+<p>I suppose that a foolish consistency would cause me to reject this path because <em>TensorFlow,</em> itself, isn’t written in <em>Go.</em> But, in any event, the purpose of all languages is to communicate. We’ll see how well I make myself understood in <em>Go.</em></p>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+    
+
+    
+  </body>
+</html>
+

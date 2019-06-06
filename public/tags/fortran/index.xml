@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>FORTRAN on Locus: Richard Careaga</title>
+    <link>/tags/fortran/</link>
+    <description>Recent content in FORTRAN on Locus: Richard Careaga</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 02 Sep 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/fortran/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Go Not Considered Harmful</title>
+      <link>/2018/09/02/go-not-considered-harmful/</link>
+      <pubDate>Sun, 02 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/09/02/go-not-considered-harmful/</guid>
+      <description>I had my first exposure to programming in a FORTRAN class with real punchcards, back in the day, before I knew that GOTO was considered harmful. The exposure was brief and left me wondering whether Russian verbs of motion might not be easier to study, after all.
+In the years to follow, I ran the occasional canned deck with my datacards through overnight batch queues, but did not return to anything that could be called programming until I acquired an HP-25 calculator with a macro language, followed shortly by an HP-97 with little magnetic strips on which to record them.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,46 @@
+---
+title: Deboning linear regression output in Excel
+author: Richard Careaga
+date: '2018-09-18'
+slug: deboning-linear-regression-in-excel
+categories:
+  - Data Science
+tags:
+  - Excel
+  - statistics
+  - R
+---
+
+
+A while back (https://goo.gl/1W11Zu), I outlined interpretation of the output of a multiple linear regression of data on Seattle area housing prices (https://www.kaggle.com/harlfoxem/housesalesprediction?login=true), which  provides a convenient way to illustrate the usual output of a multiple linear regression model output in **R**. This is a 21K dataset with 19 variables on housing characteristics and sales price. It's a cruddy model, used solely to pick apart the different data presented. Today, it's **Excel's** turn.
+
+Disclosure: I'm not a fan of GUI for most applications. I find it slower and more error prone. Doing this replication elicited the usual grumbles, along with annoyance that multiple independent variables had to be in adjoining columns. Not hard to do, but ... .
+
+For comparison, here is the output from the R example, with the addition of an analysis of variance (ANOVA) table that Excel provides by default, but R doesn't.
+
+```{r mlr-example, echo=TRUE,  output="asis"}
+library(readr)
+library(knitr)
+library(kableExtra)
+print("Data Structure")
+house <- read_csv('/Users/rc/projects/statistics-for-data-scientists/kc_house_data.csv', comment = '')
+spec(house)
+mod <- lm(price ~ bedrooms + bathrooms + sqft_living + sqft_lot + yr_built, data = house)
+summary(mod)
+anova(mod)
+```
+
+Here's the corresponding output from Excel 2016 running under Parallels on an Apple laptop.
+
+![Excel Output](https://s3-us-west-2.amazonaws.com/tuva/ExcelRegressionExample.png)
+
+Let's take the differences line-by-line
+ 
+1. Summary Output: There may be an option tail to add it, but Excel doesn't give you the formula for the model, the dependent and independent variables involved.
+2. Excel analysis of variance (ANOVA), separately available in R is provided.
+3. Regression Statistics: 
+* Excel adds "multiple R," which is the square root of R Squared. It's a measure of the goodness of predicting prices from the model, which can be calculated in R, but is not normally given in the output of the table. I couldn't find any way in Excel of specifying whether to use Kendall's *tau* or Spearman's *rho* statistic.
+* Excel's remaining reports overlap those of R, except for the omission of detail of residuals and the F statistics.
+* Excel adds confidence intervals, which are available in R separately. It's not clear what the difference between the pairs of column represents, and the 95% confidence interval is normally expessed in terms of a value for 92.5% and 97.5%.
+* Most of the results differ from those given my R for the same data. Except in the cases of the 0 valued p-levels for the *t* statistic, these are not large, and it is beyond the scope of my post here to figure out why. But apparently different computations are involved.
+

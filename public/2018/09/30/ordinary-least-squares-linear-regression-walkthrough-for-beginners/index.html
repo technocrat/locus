@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.55.5" />
+
+
+<title>Ordinary Least Squares Linear Regression Walkthrough for Beginners - Locus: Richard Careaga</title>
+<meta property="og:title" content="Ordinary Least Squares Linear Regression Walkthrough for Beginners - Locus: Richard Careaga">
+
+
+  <link href='/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/technocrat">GitHub</a></li>
+    
+    <li><a href="https://linkedin.com/in/richardcareaga">LinkedIn</a></li>
+    
+    <li><a href="https://twitter.com/technocrat">Twitter</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">4 min read</span>
+    
+
+    <h1 class="article-title">Ordinary Least Squares Linear Regression Walkthrough for Beginners</h1>
+
+    
+    <span class="article-date">2018-09-30</span>
+    
+
+    <div class="article-content">
+      
+
+
+<div id="ordinary-least-squares-linear-regression" class="section level2">
+<h2>Ordinary Least Squares Linear Regression</h2>
+<p>Ordinary linear least squares regression is one of the first statistical methods that anyone learns who is trying to understand how two sets of numbers relate. It has an undeserved reputation of being able to foretell the future, but it is mathematically tractable, simple to apply, and often yields either directly usable results or signals the need for more sophisticated tools.</p>
+<p>The idea is simple enough, find the line that passes through points in Cartesian (<em>x,y</em> 2-dimensional space) that minimizes the total distance (another over-simplification) between each point and the line. In slightly informal terms</p>
+<p><span class="math display">\[y = mx + b\]</span></p>
+<p>where <em>y</em> is the dependent variable, <em>x</em> is the independent variable, <em>m</em> is the correlation coefficient, or <em>slope</em> and <em>b</em> is the intercept, the value at which the slope intersects the <em>y</em> axis.</p>
+<p>This neglects the term <span class="math display">\[\epsilon\]</span> arising from measurement error, random variation or both.
+I’ll set that aside for this discussion.</p>
+<p>A regression, such as miles per gallon against horsepower, may give you plot of the paired point values <em>(x,y)</em> something like the following, indicating a trend.</p>
+<pre><code>## Registered S3 methods overwritten by &#39;ggplot2&#39;:
+##   method         from 
+##   [.quosures     rlang
+##   c.quosures     rlang
+##   print.quosures rlang</code></pre>
+<p><img src="https://s3-us-west-2.amazonaws.com/tuva/2018-09-30-fig1.png" alt="" style="width:800px;"/></p>
+<table style="width:89%;">
+<colgroup>
+<col width="25%" />
+<col width="15%" />
+<col width="18%" />
+<col width="13%" />
+<col width="16%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center"> </th>
+<th align="center">Estimate</th>
+<th align="center">Std. Error</th>
+<th align="center">t value</th>
+<th align="center">Pr(&gt;|t|)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center"><strong>(Intercept)</strong></td>
+<td align="center">39.94</td>
+<td align="center">0.7175</td>
+<td align="center">55.66</td>
+<td align="center">1.22e-187</td>
+</tr>
+<tr class="even">
+<td align="center"><strong>horsepower</strong></td>
+<td align="center">-0.1578</td>
+<td align="center">0.006446</td>
+<td align="center">-24.49</td>
+<td align="center">7.032e-81</td>
+</tr>
+</tbody>
+</table>
+<table style="width:88%;">
+<caption>Fitting linear model: mpg ~ horsepower</caption>
+<colgroup>
+<col width="20%" />
+<col width="30%" />
+<col width="12%" />
+<col width="23%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Observations</th>
+<th align="center">Residual Std. Error</th>
+<th align="center"><span class="math inline">\(R^2\)</span></th>
+<th align="center">Adjusted <span class="math inline">\(R^2\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">392</td>
+<td align="center">4.906</td>
+<td align="center">0.6059</td>
+<td align="center">0.6049</td>
+</tr>
+</tbody>
+</table>
+<p>Even better, the model summary indicates a high coefficient of correlation, R<sup>2</sup>, with a p-value (the unfortunately named “significance”) that is vanishingly small, and so unlikely due to chance.</p>
+<p>In <a href="https://goo.gl/1W11Zu">another post</a>, I’ve discussed interpreting the model summary, but I haven’t mentioned the graphical methods that are a critical part of understanding what the data are telling you.</p>
+<p><img src="https://s3-us-west-2.amazonaws.com/tuva/2018-09-29-fig2.png" alt="" style="width:800px;"/></p>
+<p>Ideally, in the two plots on the left hand side, we would like to see points clustered along the centerline. On the upper right, we would like to see most of the points – the residuals obtained from the distance of a point pair from the dashed line that represents a normal distirubtion – line up. On the lower right, we don’t want to see a curve being “pulled up” by far off outliers.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
+<p>The departures from the ideal are easy enough to spot. What to do about them? Let’s look at the initial data again, this time without the trend line.</p>
+<p><img src="https://s3-us-west-2.amazonaws.com/tuva/2018-09-29-fig3.png" alt="" style="width:800px;"/></p>
+<p>How would you draw a line by hand through the points? Would it be two straight lines? A decay curve?</p>
+<p>Sometimes, we can improve fit through transforming the scale of one or both variables. A commonly used transformation is to express one variable as a natural logarithm (which is the default in <strong>R</strong>; other bases are available, such as decimal – log10()). For this dataset a log-log transformation has a slight advantage.</p>
+<p><img src="https://s3-us-west-2.amazonaws.com/tuva/2018-09-29-fig4.png" alt="" style="width:800px;"/></p>
+<p>This results in an improvement of R<sup>2</sup> and a large decrease in the standard error. The plots show minimal non-linearity, the residuals are now very close to being normally distributed, and outliers show negligible effect.</p>
+<table style="width:96%;">
+<colgroup>
+<col width="30%" />
+<col width="15%" />
+<col width="18%" />
+<col width="13%" />
+<col width="18%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center"> </th>
+<th align="center">Estimate</th>
+<th align="center">Std. Error</th>
+<th align="center">t value</th>
+<th align="center">Pr(&gt;|t|)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center"><strong>(Intercept)</strong></td>
+<td align="center">6.961</td>
+<td align="center">0.1215</td>
+<td align="center">57.3</td>
+<td align="center">5.168e-192</td>
+</tr>
+<tr class="even">
+<td align="center"><strong>log(horsepower)</strong></td>
+<td align="center">-0.8418</td>
+<td align="center">0.02641</td>
+<td align="center">-31.88</td>
+<td align="center">1.128e-110</td>
+</tr>
+</tbody>
+</table>
+<table style="width:88%;">
+<caption>Fitting linear model: log(mpg) ~ log(horsepower)</caption>
+<colgroup>
+<col width="20%" />
+<col width="30%" />
+<col width="12%" />
+<col width="23%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Observations</th>
+<th align="center">Residual Std. Error</th>
+<th align="center"><span class="math inline">\(R^2\)</span></th>
+<th align="center">Adjusted <span class="math inline">\(R^2\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">392</td>
+<td align="center">0.1793</td>
+<td align="center">0.7227</td>
+<td align="center">0.722</td>
+</tr>
+</tbody>
+</table>
+<p><img src="https://s3-us-west-2.amazonaws.com/tuva/2018-09-29-fig5.png" alt="" style="width:800px;"/></p>
+</div>
+<div id="sometimes-its-not-even-this-subtle" class="section level2">
+<h2>Sometimes it’s not even this subtle</h2>
+<p>Here is the famous, contrived “anscombe” dataset that shows why plotting should be the <em>first</em> step in any linear regression. There are four datasets and four models, with practically identical output.</p>
+<table style="width:88%;">
+<colgroup>
+<col width="25%" />
+<col width="15%" />
+<col width="18%" />
+<col width="13%" />
+<col width="15%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center"> </th>
+<th align="center">Estimate</th>
+<th align="center">Std. Error</th>
+<th align="center">t value</th>
+<th align="center">Pr(&gt;|t|)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center"><strong>(Intercept)</strong></td>
+<td align="center">3</td>
+<td align="center">1.125</td>
+<td align="center">2.667</td>
+<td align="center">0.02573</td>
+</tr>
+<tr class="even">
+<td align="center"><strong>x1</strong></td>
+<td align="center">0.5001</td>
+<td align="center">0.1179</td>
+<td align="center">4.241</td>
+<td align="center">0.00217</td>
+</tr>
+</tbody>
+</table>
+<table style="width:88%;">
+<caption>Fitting linear model: y1 ~ x1</caption>
+<colgroup>
+<col width="20%" />
+<col width="30%" />
+<col width="12%" />
+<col width="23%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Observations</th>
+<th align="center">Residual Std. Error</th>
+<th align="center"><span class="math inline">\(R^2\)</span></th>
+<th align="center">Adjusted <span class="math inline">\(R^2\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">11</td>
+<td align="center">1.237</td>
+<td align="center">0.6665</td>
+<td align="center">0.6295</td>
+</tr>
+</tbody>
+</table>
+<table style="width:88%;">
+<colgroup>
+<col width="25%" />
+<col width="15%" />
+<col width="18%" />
+<col width="13%" />
+<col width="15%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center"> </th>
+<th align="center">Estimate</th>
+<th align="center">Std. Error</th>
+<th align="center">t value</th>
+<th align="center">Pr(&gt;|t|)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center"><strong>(Intercept)</strong></td>
+<td align="center">3.001</td>
+<td align="center">1.125</td>
+<td align="center">2.667</td>
+<td align="center">0.02576</td>
+</tr>
+<tr class="even">
+<td align="center"><strong>x2</strong></td>
+<td align="center">0.5</td>
+<td align="center">0.118</td>
+<td align="center">4.239</td>
+<td align="center">0.002179</td>
+</tr>
+</tbody>
+</table>
+<table style="width:88%;">
+<caption>Fitting linear model: y2 ~ x2</caption>
+<colgroup>
+<col width="20%" />
+<col width="30%" />
+<col width="12%" />
+<col width="23%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Observations</th>
+<th align="center">Residual Std. Error</th>
+<th align="center"><span class="math inline">\(R^2\)</span></th>
+<th align="center">Adjusted <span class="math inline">\(R^2\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">11</td>
+<td align="center">1.237</td>
+<td align="center">0.6662</td>
+<td align="center">0.6292</td>
+</tr>
+</tbody>
+</table>
+<table style="width:88%;">
+<colgroup>
+<col width="25%" />
+<col width="15%" />
+<col width="18%" />
+<col width="13%" />
+<col width="15%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center"> </th>
+<th align="center">Estimate</th>
+<th align="center">Std. Error</th>
+<th align="center">t value</th>
+<th align="center">Pr(&gt;|t|)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center"><strong>(Intercept)</strong></td>
+<td align="center">3.002</td>
+<td align="center">1.124</td>
+<td align="center">2.67</td>
+<td align="center">0.02562</td>
+</tr>
+<tr class="even">
+<td align="center"><strong>x3</strong></td>
+<td align="center">0.4997</td>
+<td align="center">0.1179</td>
+<td align="center">4.239</td>
+<td align="center">0.002176</td>
+</tr>
+</tbody>
+</table>
+<table style="width:88%;">
+<caption>Fitting linear model: y3 ~ x3</caption>
+<colgroup>
+<col width="20%" />
+<col width="30%" />
+<col width="12%" />
+<col width="23%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Observations</th>
+<th align="center">Residual Std. Error</th>
+<th align="center"><span class="math inline">\(R^2\)</span></th>
+<th align="center">Adjusted <span class="math inline">\(R^2\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">11</td>
+<td align="center">1.236</td>
+<td align="center">0.6663</td>
+<td align="center">0.6292</td>
+</tr>
+</tbody>
+</table>
+<table style="width:88%;">
+<colgroup>
+<col width="25%" />
+<col width="15%" />
+<col width="18%" />
+<col width="13%" />
+<col width="15%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center"> </th>
+<th align="center">Estimate</th>
+<th align="center">Std. Error</th>
+<th align="center">t value</th>
+<th align="center">Pr(&gt;|t|)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center"><strong>(Intercept)</strong></td>
+<td align="center">3.002</td>
+<td align="center">1.124</td>
+<td align="center">2.671</td>
+<td align="center">0.02559</td>
+</tr>
+<tr class="even">
+<td align="center"><strong>x4</strong></td>
+<td align="center">0.4999</td>
+<td align="center">0.1178</td>
+<td align="center">4.243</td>
+<td align="center">0.002165</td>
+</tr>
+</tbody>
+</table>
+<table style="width:88%;">
+<caption>Fitting linear model: y4 ~ x4</caption>
+<colgroup>
+<col width="20%" />
+<col width="30%" />
+<col width="12%" />
+<col width="23%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Observations</th>
+<th align="center">Residual Std. Error</th>
+<th align="center"><span class="math inline">\(R^2\)</span></th>
+<th align="center">Adjusted <span class="math inline">\(R^2\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">11</td>
+<td align="center">1.236</td>
+<td align="center">0.6667</td>
+<td align="center">0.6297</td>
+</tr>
+</tbody>
+</table>
+<p>Looking before you leap:</p>
+<p><img src="https://s3-us-west-2.amazonaws.com/tuva/2018-09-29-fig6.png" alt="" style="width:800px;"/>
+<img src="https://s3-us-west-2.amazonaws.com/tuva/2018-09-29-fig7.png" alt="" style="width:800px;"/>
+<img src="https://s3-us-west-2.amazonaws.com/tuva/2018-09-29-fig8.png" alt="" style="width:800px;"/>
+<img src="https://s3-us-west-2.amazonaws.com/tuva/2018-09-29-fig9.png" alt="" style="width:800px;"/></p>
+<hr />
+<p><strong>Credits</strong></p>
+<p><em>Software</em> (R Development Core Team (2008). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. ISBN 3-900051-07-0, URL <a href="http://www.R-project.org" class="uri">http://www.R-project.org</a>.)</p>
+<p><em>data</em> Auto dataset from Gareth James, Daniela Witten, Trevor Hastie and Rob Tibshirani (2017). ISLR: Data for an Introduction to Statistical Learning with Applications in R. R package version 1.2. <a href="https://CRAN.R-project.org/package=ISLR" class="uri">https://CRAN.R-project.org/package=ISLR</a>; contrived data from Anscombe, Francis J. (1973). Graphs in statistical analysis. The American Statistician, 27, 17–21. doi: 10.2307/2682899, an included dataset in <strong>R</strong>.</p>
+<p><em>trendline plot</em> H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York, 2016.</p>
+<p><em>formating of linear regression summary</em> Gergely Daróczi and Roman Tsegelskyi (2018). pander: An R ‘Pandoc’ Writer. R packageversion 0.6.2. <a href="https://CRAN.R-project.org/package=pander" class="uri">https://CRAN.R-project.org/package=pander</a></p>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>The technical explanation of the plots I’ve save for another post.<a href="#fnref1" class="footnote-back">↩</a></p></li>
+</ol>
+</div>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>debugging on Locus: Richard Careaga</title>
+    <link>/tags/debugging/</link>
+    <description>Recent content in debugging on Locus: Richard Careaga</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 04 Sep 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/debugging/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Deboning simple linear regression output in TensorFlow</title>
+      <link>/2018/09/04/deboning-simple-linear-regression-output-in-tensorflow/</link>
+      <pubDate>Tue, 04 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/09/04/deboning-simple-linear-regression-output-in-tensorflow/</guid>
+      <description>A simple linear regression example in TensorFlow(TM) is given at (https://www.tensorflow.org/tutorials/keras/basic_regression). By default, it produces none of the outputs of linear regression, other than MAE or MSE, on request through a print statement.
+Testing set Mean Abs Error: $2788.86 Time spent searching the documentation turned up no references to “intercept”, “coefficient”, “F-statistic”, “t-value,” or “p-value.”
+I am only beginning to dip my toes into TensorFlow(TM). I suspect that it exists not so much as a suite of modeling tools so much as a platform to express them in n-dimensional space very efficiently.</description>
+    </item>
+    
+    <item>
+      <title>Analytic Data Scientists -- know when to fold &#39;em</title>
+      <link>/2018/08/12/analytic-data-scientists-know-when-to-fold-em/</link>
+      <pubDate>Sun, 12 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/08/12/analytic-data-scientists-know-when-to-fold-em/</guid>
+      <description>In the days of our forebearers, if a tool broke, you were likely to fix it yourself. Long time passing, of course, the shadetree mechanic has been an endangered species. And no one would hire a carpenter who didn’t own his own tools.
+I’ve been one to use my own tools. I have to admit to being, at times, cavalier about corporate policies strictly forbidding the use of employee owned computers, at least in the building.</description>
+    </item>
+    
+    <item>
+      <title>An error message is as much of a question as it is an answer</title>
+      <link>/2018/08/05/an-error-message-is-as-much-of-a-question-as-it-is-an-answer/</link>
+      <pubDate>Sun, 05 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/08/05/an-error-message-is-as-much-of-a-question-as-it-is-an-answer/</guid>
+      <description>A question on datascience.stackexchange asked the reason for a Python syntax error
+SyntaxError: can&amp;#39;t assign to literal Another poster had the correct change to fix the error but the explanation didn’t reflect what the OP needed to understand the problem behind the problem, which was failing to be namespace aware – he was trying to perform an operation on an undefined object.
+When you find the answer to a question you don’t understand, you can expect to see it again.</description>
+    </item>
+    
+  </channel>
+</rss>

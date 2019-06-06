@@ -1,0 +1,42 @@
+---
+title: How to debone the output of a linear regression model
+author: Richard Careaga
+date: '2018-08-27'
+slug: how-to-debone-the-output-of-a-linear-regression-model
+categories:
+  - Data Science
+tags:
+  - statistics
+---
+
+I was recently puzzling over an academic paper in the social sciences with a multiple linear regression model that seemed off. (Communication with the authors educated me on considerations that resolved my concerns.)
+
+During the course of my puzzling, I compared what I was seeing as model output in the paper and what I expected to see based on experience. The embarrassing revelation dawned that I didn't actually *know* what all those components meant.
+
+So, I decided to find out. Data on [Seattle area housing prices](https://www.kaggle.com/harlfoxem/housesalesprediction?login=true) provide a convenient way to illustrate the usual output of a multiple linear regression model output. This is a 21K dataset with 19 variables on housing characteristics and sales price.
+
+```{r mlr-example, echo=FALSE}
+library(readr)
+print("Data Structure")
+house <- read_csv('/Users/rc/projects/statistics-for-data-scientists/kc_house_data.csv', comment = '')
+spec(house)
+summary(lm(price ~ bedrooms + bathrooms + sqft_living + sqft_lot + yr_built, data = house))
+```
+
+Well now! I pick a handful of variables off the top of my head and presto! My model explains over 50% of the variation in price. Am I good or what?
+
+Not really, and I'll explain all the bonehead errors in another post (didn't normalize, didn't split into training and test sets, used variables that are not truly independent, didn't check the distribution of residual errors and a host of other sins). Let's talk about the information you get from a multiple linear regression results table.
+
+1. The Call is an explicit statement of the model.
+2. The Residuals show a summary distribution of the differences between the observations and predictions. In this example half of the residuals are about, low, up to $17,000 and and half are above, including one whopper that's almost $4 million high.
+3. The Coefficients include, in addition to the coefficient and standard error, a t value and the probability that the coefficient is greater that the absolute value of the t value. It is essentially equivalent to the significance level -- the probability, which is extremely low in this example, of the results being due to random effects.
+4. The Signif. codes are for convenient reference to the size of the significance level.
+5. The Residual standard error indicates the average amount that the observed values deviate from the trend line, in this case approximately $246,000.
+6. Multiple R Squared, indicates the proportion of variance explained by the coefficient, holding the other coefficients constant.
+7. Adjusted R Squared, accounts for possible interaction among the other independent variables.
+8. The F-statistic addresses the question of whether there is, in fact, no relation between one or more of the independent variables and the coefficient. An F-statistic that approaches 1 precludes us from rejecting the null hypothesis of no relation and to conclude that there is, in fact, no relationship at all between one or more of the independent variable with the dependent. The degrees of freedom equals the number of data points, minus 1. The p-value, or significance, gives the probability that the F-statistic is merely the result of random chance. The extremely low p-value in this example indicates that the F-statistic is highly unlikely to be a chance artifact.
+
+As I said before, there are defects in my model that render these results garbage, and my table should be accompanied by a discussion that the conditions required to make multiple linear regression are actually unsatisfied. It's solely to illustrate the information provided in the table.
+
+Just goes to show you don't really understand something you haven't tried to explain.
+

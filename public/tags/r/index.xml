@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>R on Locus: Richard Careaga</title>
+    <link>/tags/r/</link>
+    <description>Recent content in R on Locus: Richard Careaga</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 03 May 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/r/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Row collapsing</title>
+      <link>/2019/05/03/duplicate-keys-for-multiple-logical-columns/</link>
+      <pubDate>Fri, 03 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/05/03/duplicate-keys-for-multiple-logical-columns/</guid>
+      <description>Untidy happens It’s not always possible to store everything in a tidy but humongous data store. So, we have things like SQL foreign keys.
+Unfortunately, the database may not have been set up with future tidy in mind. Or, database access is only provided through CSV files.
+Here’s an example of what can happen. We begin with some basic information, as tidy as we could wish with not too much effort.</description>
+    </item>
+    
+    <item>
+      <title>The compiler will tell you what the user cannot</title>
+      <link>/2019/01/08/the-compiler-will-tell-you-what-the-user-cannot/</link>
+      <pubDate>Tue, 08 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/01/08/the-compiler-will-tell-you-what-the-user-cannot/</guid>
+      <description>The compiler will always tell you about source code errors that prevent compiling. It can’t advise you if your code solves the problem that it was supposed to solve, even if you are confident in what that problem is. But have a thought for the user who posed the problem, and keep in mind two famous quotations.
+ Thus, programs must be executed for humans to read, only incidentially for machines to execute.</description>
+    </item>
+    
+    <item>
+      <title>Color Map Atlas for Continuously Scaled Maps</title>
+      <link>/2018/12/03/color-map-atlas-for-continuously-scaled-maps/</link>
+      <pubDate>Mon, 03 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/12/03/color-map-atlas-for-continuously-scaled-maps/</guid>
+      <description>## Please note: Alaska and Hawaii are being shifted and are not to scale. ## Please note: Alaska and Hawaii are being shifted and are not to scale. Color, Design and Communication Graphic design standards, especially for color, are an official Good Thing. Branding, visual cueing, consistency. Map colors are hard, especially when dealing with continuous data.
+ An example of continuous data The U.S. Bureau of Economic Analysis publishes quarterly statistics on gross domestic product by state.</description>
+    </item>
+    
+    <item>
+      <title>Commercial data science: a parable of downsides of crisp deployment</title>
+      <link>/2018/11/08/commercial-data-science-a-parable-of-downsides-of-crisp-deployment/</link>
+      <pubDate>Thu, 08 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/11/08/commercial-data-science-a-parable-of-downsides-of-crisp-deployment/</guid>
+      <description>Narcocorridos are a Mexican musical genre celebrating the drug trafficking culture. As you can read in wiki, it has a surprisingly long history and is popular despite official attempts to suppress it.
+Stay with me, there’s a parable here about R, Python, DevOps, Bias Toward Action and leaving change on the table, in two senses.
+A mild English flavor of a narcocorido is Townes van Zandt’s ballad Pancho and Lefty, his best known work in the pre-pop Country genre.</description>
+    </item>
+    
+    <item>
+      <title>R and Haskell, meant for each other?</title>
+      <link>/2018/11/07/r-and-haskell-meant-for-each-other/</link>
+      <pubDate>Wed, 07 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/11/07/r-and-haskell-meant-for-each-other/</guid>
+      <description>R has a notoriously steep learning curve. I once moaned that help() needed it’s own help(help), which it does, but did nothing to help me understand the paradigm of function signatures. And why were control loops like for so frowned upon. All sorts of great functionality, but how do you, like program it.
+As I progressed in my ability to overcome my underlying lack of grok, I took a dip in Haskell, and discovered the concept of a functional language, essentially everything is \(f(x) = y\) as opposed to an imperative/procedural language – first do this, then do that, then perform some operation on both of them, and then, and then … .</description>
+    </item>
+    
+    <item>
+      <title>Month arithmetic in R, a quick guide</title>
+      <link>/2018/10/20/month-arithmetic-in-r-a-quick-guide/</link>
+      <pubDate>Sat, 20 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/10/20/month-arithmetic-in-r-a-quick-guide/</guid>
+      <description>Here are questions you might want to ask about months: How many more months until September 1? months_to How many more calendar months until September 1? cal_months_to How many months between this month and September 1? months_between How many more calendar months between this month and September 1? cal_months_between In how many calendar months must I wait until September 1? months_inclusive  Assume we are asking the question on February 1 of a non-leap year.</description>
+    </item>
+    
+    <item>
+      <title>Is this the original revised data or the revised revised data</title>
+      <link>/2018/10/18/is-this-the-original-revised-data-or-the-revised-revised-data/</link>
+      <pubDate>Thu, 18 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/10/18/is-this-the-original-revised-data-or-the-revised-revised-data/</guid>
+      <description>Keeping track of the provenance of data can be a challenge, especially when drawing on published sources. Keeping a record of the origin, the date accessed, the transformations applied (e.g., converting from .xls to cvs and converting character strings such as “$1,250,321.21” to floats or date strings to date objects), subsequent changes, who handled the data object and where it can be found in a repository are all things that enhance the analyst’s own ability to reproduce results.</description>
+    </item>
+    
+    <item>
+      <title>Deboning linear regression output in Excel</title>
+      <link>/2018/09/18/deboning-linear-regression-in-excel/</link>
+      <pubDate>Tue, 18 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/09/18/deboning-linear-regression-in-excel/</guid>
+      <description>A while back (https://goo.gl/1W11Zu), I outlined interpretation of the output of a multiple linear regression of data on Seattle area housing prices (https://www.kaggle.com/harlfoxem/housesalesprediction?login=true), which provides a convenient way to illustrate the usual output of a multiple linear regression model output in R. This is a 21K dataset with 19 variables on housing characteristics and sales price. It’s a cruddy model, used solely to pick apart the different data presented. Today, it’s Excel’s turn.</description>
+    </item>
+    
+    <item>
+      <title>Newtonian Data Sciences</title>
+      <link>/2018/08/06/newtonian-data-sciences/</link>
+      <pubDate>Mon, 06 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/08/06/newtonian-data-sciences/</guid>
+      <description>Advanced machine learning and AI strike me as deterministic finite state machines with an error term. Properly tuned, the same input should produce much the same output every time. Like Newtonian physics, they can be complicated, but deconstructible into simple components. Like Newtonian physics, as well, they are highly accurate and reliable within their domain.
+What happens when we start applying the same tools to complex systems? What are the complex systems of importance that refuse to yield identical results with identical inputs?</description>
+    </item>
+    
+  </channel>
+</rss>

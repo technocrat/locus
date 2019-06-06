@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Locus: Richard Careaga</title>
+    <link>/</link>
+    <description>Recent content on Locus: Richard Careaga</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 05 Jun 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Row collapsing</title>
+      <link>/2019/06/05/row-collapsing/</link>
+      <pubDate>Wed, 05 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/06/05/row-collapsing/</guid>
+      <description>Untidy happens It’s not always possible to store everything in a tidy but hugmongous data store. So, we have things like SQL foreign keys.
+Unfortunately, the database may not have been set up with future tidy in mind. Or, database access is only provided through CSV files.
+Here’s an example of what can happen. We begin with some basic information, as tidy as we could wish.
+&amp;gt; patients # A tibble: 3,064 x 6 INC_KEY AGE GENDER MALE FEMALE ADULT &amp;lt;int&amp;gt; &amp;lt;int&amp;gt; &amp;lt;chr&amp;gt; &amp;lt;lgl&amp;gt; &amp;lt;lgl&amp;gt; &amp;lt;lgl&amp;gt; 1 150238916 59 Male TRUE FALSE TRUE 2 150193078 37 Male TRUE FALSE TRUE 3 150580164 29 Female FALSE TRUE TRUE 4 150917895 82 Female FALSE TRUE TRUE 5 150376887 58 Female FALSE TRUE TRUE 6 150508153 35 Male TRUE FALSE TRUE 7 150415059 21 Male TRUE FALSE TRUE 8 150184182 24 Female FALSE TRUE TRUE 9 150318438 20 Male TRUE FALSE TRUE 10 150508148 64 Male TRUE FALSE TRUE # … with 3,054 more rows A separate file contains variables of interest</description>
+    </item>
+    
+    <item>
+      <title>eDiscovery is pattern recognition and eyeballs are expensive</title>
+      <link>/2019/06/03/ediscovery-is-pattern-recognition-and-eyeballs-are-expensive/</link>
+      <pubDate>Mon, 03 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/06/03/ediscovery-is-pattern-recognition-and-eyeballs-are-expensive/</guid>
+      <description>Clients are transforming their businesses with the tools of data science. How long do you suppose they will pay $50/hour for humans to read tons of ediscovery?
+The legal profession owes a great debt to the 19th century mathemetician Georg Boole whose work became the genesis of the boolean algebra that every lawyer is familiar through the use of keyword searches. For decades, it has helped us wade through more than we could read.</description>
+    </item>
+    
+    <item>
+      <title>Row collapsing</title>
+      <link>/2019/05/03/duplicate-keys-for-multiple-logical-columns/</link>
+      <pubDate>Fri, 03 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/05/03/duplicate-keys-for-multiple-logical-columns/</guid>
+      <description>Untidy happens It’s not always possible to store everything in a tidy but humongous data store. So, we have things like SQL foreign keys.
+Unfortunately, the database may not have been set up with future tidy in mind. Or, database access is only provided through CSV files.
+Here’s an example of what can happen. We begin with some basic information, as tidy as we could wish with not too much effort.</description>
+    </item>
+    
+    <item>
+      <title>The compiler will tell you what the user cannot</title>
+      <link>/2019/01/08/the-compiler-will-tell-you-what-the-user-cannot/</link>
+      <pubDate>Tue, 08 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/01/08/the-compiler-will-tell-you-what-the-user-cannot/</guid>
+      <description>The compiler will always tell you about source code errors that prevent compiling. It can’t advise you if your code solves the problem that it was supposed to solve, even if you are confident in what that problem is. But have a thought for the user who posed the problem, and keep in mind two famous quotations.
+ Thus, programs must be executed for humans to read, only incidentially for machines to execute.</description>
+    </item>
+    
+    <item>
+      <title>Less coding and more analysis</title>
+      <link>/2018/12/09/less-coding-and-more-analysis/</link>
+      <pubDate>Sun, 09 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/12/09/less-coding-and-more-analysis/</guid>
+      <description>I urge you to install.packages(&#34;ExPanDaR&#34;) and then try the following:
+  library(ExPanDaR) wb  from Interactive panel EDA with 3 lines of code, which doesn’t show the output to its best advantage, for which see online demo</description>
+    </item>
+    
+    <item>
+      <title>Color Map Atlas for Continuously Scaled Maps</title>
+      <link>/2018/12/03/color-map-atlas-for-continuously-scaled-maps/</link>
+      <pubDate>Mon, 03 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/12/03/color-map-atlas-for-continuously-scaled-maps/</guid>
+      <description>## Please note: Alaska and Hawaii are being shifted and are not to scale. ## Please note: Alaska and Hawaii are being shifted and are not to scale. Color, Design and Communication Graphic design standards, especially for color, are an official Good Thing. Branding, visual cueing, consistency. Map colors are hard, especially when dealing with continuous data.
+ An example of continuous data The U.S. Bureau of Economic Analysis publishes quarterly statistics on gross domestic product by state.</description>
+    </item>
+    
+    <item>
+      <title>Commercial data science: a parable of downsides of crisp deployment</title>
+      <link>/2018/11/08/commercial-data-science-a-parable-of-downsides-of-crisp-deployment/</link>
+      <pubDate>Thu, 08 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/11/08/commercial-data-science-a-parable-of-downsides-of-crisp-deployment/</guid>
+      <description>Narcocorridos are a Mexican musical genre celebrating the drug trafficking culture. As you can read in wiki, it has a surprisingly long history and is popular despite official attempts to suppress it.
+Stay with me, there’s a parable here about R, Python, DevOps, Bias Toward Action and leaving change on the table, in two senses.
+A mild English flavor of a narcocorido is Townes van Zandt’s ballad Pancho and Lefty, his best known work in the pre-pop Country genre.</description>
+    </item>
+    
+    <item>
+      <title>R and Haskell, meant for each other?</title>
+      <link>/2018/11/07/r-and-haskell-meant-for-each-other/</link>
+      <pubDate>Wed, 07 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/11/07/r-and-haskell-meant-for-each-other/</guid>
+      <description>R has a notoriously steep learning curve. I once moaned that help() needed it’s own help(help), which it does, but did nothing to help me understand the paradigm of function signatures. And why were control loops like for so frowned upon. All sorts of great functionality, but how do you, like program it.
+As I progressed in my ability to overcome my underlying lack of grok, I took a dip in Haskell, and discovered the concept of a functional language, essentially everything is \(f(x) = y\) as opposed to an imperative/procedural language – first do this, then do that, then perform some operation on both of them, and then, and then … .</description>
+    </item>
+    
+    <item>
+      <title>n?</title>
+      <link>/2018/10/27/n/</link>
+      <pubDate>Sat, 27 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/10/27/n/</guid>
+      <description>Got n?
+There was a 100% increase in 1-hour parking meter costs this year!
+(Imagined conversation in a small town.)
+It appears to be hardwired into our wetware to forget to look for the underlying integers. You might ask, for example from what to what? and learn that it went up from a nickle to a dime.
+This is a manifestation what Daniel Kahneman, author of Thinking Fast, and Slow (2011, Ferrar, Straus and Giroux, New York) calls The Law of Small Numbers.</description>
+    </item>
+    
+    <item>
+      <title>Month arithmetic in R, a quick guide</title>
+      <link>/2018/10/20/month-arithmetic-in-r-a-quick-guide/</link>
+      <pubDate>Sat, 20 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/10/20/month-arithmetic-in-r-a-quick-guide/</guid>
+      <description>Here are questions you might want to ask about months: How many more months until September 1? months_to How many more calendar months until September 1? cal_months_to How many months between this month and September 1? months_between How many more calendar months between this month and September 1? cal_months_between In how many calendar months must I wait until September 1? months_inclusive  Assume we are asking the question on February 1 of a non-leap year.</description>
+    </item>
+    
+    <item>
+      <title>Is this the original revised data or the revised revised data</title>
+      <link>/2018/10/18/is-this-the-original-revised-data-or-the-revised-revised-data/</link>
+      <pubDate>Thu, 18 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/10/18/is-this-the-original-revised-data-or-the-revised-revised-data/</guid>
+      <description>Keeping track of the provenance of data can be a challenge, especially when drawing on published sources. Keeping a record of the origin, the date accessed, the transformations applied (e.g., converting from .xls to cvs and converting character strings such as “$1,250,321.21” to floats or date strings to date objects), subsequent changes, who handled the data object and where it can be found in a repository are all things that enhance the analyst’s own ability to reproduce results.</description>
+    </item>
+    
+    <item>
+      <title>Data Science in the Board Room and C Suite</title>
+      <link>/2018/10/17/data-science-in-the-board-room-and-c-suite/</link>
+      <pubDate>Wed, 17 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/10/17/data-science-in-the-board-room-and-c-suite/</guid>
+      <description>Arthur C. Clarke, best remembered for his screenwriting role in 2001: A Space Odyssey is also the source of a famous quotation
+ Any sufficiently advanced technology is indistinguishable from magic.
+ We can think of data science as an advanced technology that draws heavily on statistics that have developed in the past decade to exploit the huge gains in power and reduction in cost of computing. Like any rapidly developing technology, approaches, methods, results and usefulness are all over the map.</description>
+    </item>
+    
+    <item>
+      <title>Cognitive Bias and the Data Scientist</title>
+      <link>/2018/10/11/cognitive-bias-and-the-data-scientist/</link>
+      <pubDate>Thu, 11 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/10/11/cognitive-bias-and-the-data-scientist/</guid>
+      <description>As data scientists, we are not immune from cognitive bias. We do a lot to minimize it, we may even try to quantify it. But it is a part of our protoplasm and, especially, the protoplasm of our untrained clients.
+A good place to start is the Monty Hall Problem. The pre-historic Let’s Make a Deal game show on broadcast television featured a host, Monty Hall, and contestants who were offered the chance to win fabulous prizes if they picked the right curtain, 1, 2, or 3.</description>
+    </item>
+    
+    <item>
+      <title>Ordinary Least Squares Linear Regression Walkthrough for Beginners</title>
+      <link>/2018/09/30/ordinary-least-squares-linear-regression-walkthrough-for-beginners/</link>
+      <pubDate>Sun, 30 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/09/30/ordinary-least-squares-linear-regression-walkthrough-for-beginners/</guid>
+      <description>Ordinary Least Squares Linear Regression Ordinary linear least squares regression is one of the first statistical methods that anyone learns who is trying to understand how two sets of numbers relate. It has an undeserved reputation of being able to foretell the future, but it is mathematically tractable, simple to apply, and often yields either directly usable results or signals the need for more sophisticated tools.
+The idea is simple enough, find the line that passes through points in Cartesian (x,y 2-dimensional space) that minimizes the total distance (another over-simplification) between each point and the line.</description>
+    </item>
+    
+    <item>
+      <title>Deboning linear regression output in Excel</title>
+      <link>/2018/09/18/deboning-linear-regression-in-excel/</link>
+      <pubDate>Tue, 18 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/09/18/deboning-linear-regression-in-excel/</guid>
+      <description>A while back (https://goo.gl/1W11Zu), I outlined interpretation of the output of a multiple linear regression of data on Seattle area housing prices (https://www.kaggle.com/harlfoxem/housesalesprediction?login=true), which provides a convenient way to illustrate the usual output of a multiple linear regression model output in R. This is a 21K dataset with 19 variables on housing characteristics and sales price. It’s a cruddy model, used solely to pick apart the different data presented. Today, it’s Excel’s turn.</description>
+    </item>
+    
+    <item>
+      <title>Cognitive styles of data science</title>
+      <link>/2018/09/10/cognitive-styles-of-data-science/</link>
+      <pubDate>Mon, 10 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/09/10/cognitive-styles-of-data-science/</guid>
+      <description>Yihui Xie of RMarkdown fame has a long, thoughtful post (https://goo.gl/WjA7t8) on a debate for and against working in various types of interactive notebooks, such as Juypter for the Python platform, IDEs like RStudio in its so-called “notebook mode” and the old school heavy code commenting, among other approaches. Although that’s the primary subject, he weaves in some astute observations of the differences among “data scientists” based on whether their perspective grows from data origins or is aimed at ultimately producing software.</description>
+    </item>
+    
+    <item>
+      <title>WaPo has some effective visualizations</title>
+      <link>/2018/09/09/wapo-has-some-effective-visualizations/</link>
+      <pubDate>Sun, 09 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/09/09/wapo-has-some-effective-visualizations/</guid>
+      <description>One of the annoyances of online newspapers such as the NYT and WaPo is that they recycle content, usually off-the-news-cycle. But this sometimes gets offset by finding something you missed the first time.
+In a recent article on six common occcupations that have changed from above-average to below average pay, the 2018-09-04 article by Andrew Van Dam and Heather Long is illustrated by some effective techniques.
+One technique is using the colors in the caption to serve as a legend to color coding in the graphic.</description>
+    </item>
+    
+    <item>
+      <title>Deboning simple linear regression output in TensorFlow</title>
+      <link>/2018/09/04/deboning-simple-linear-regression-output-in-tensorflow/</link>
+      <pubDate>Tue, 04 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/09/04/deboning-simple-linear-regression-output-in-tensorflow/</guid>
+      <description>A simple linear regression example in TensorFlow(TM) is given at (https://www.tensorflow.org/tutorials/keras/basic_regression). By default, it produces none of the outputs of linear regression, other than MAE or MSE, on request through a print statement.
+Testing set Mean Abs Error: $2788.86 Time spent searching the documentation turned up no references to “intercept”, “coefficient”, “F-statistic”, “t-value,” or “p-value.”
+I am only beginning to dip my toes into TensorFlow(TM). I suspect that it exists not so much as a suite of modeling tools so much as a platform to express them in n-dimensional space very efficiently.</description>
+    </item>
+    
+    <item>
+      <title>Go Not Considered Harmful</title>
+      <link>/2018/09/02/go-not-considered-harmful/</link>
+      <pubDate>Sun, 02 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/09/02/go-not-considered-harmful/</guid>
+      <description>I had my first exposure to programming in a FORTRAN class with real punchcards, back in the day, before I knew that GOTO was considered harmful. The exposure was brief and left me wondering whether Russian verbs of motion might not be easier to study, after all.
+In the years to follow, I ran the occasional canned deck with my datacards through overnight batch queues, but did not return to anything that could be called programming until I acquired an HP-25 calculator with a macro language, followed shortly by an HP-97 with little magnetic strips on which to record them.</description>
+    </item>
+    
+    <item>
+      <title>The Unbearable Lightness of Coloring Maps</title>
+      <link>/2018/08/31/the-unbearable-lightness-of-coloring-maps/</link>
+      <pubDate>Fri, 31 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/08/31/the-unbearable-lightness-of-coloring-maps/</guid>
+      <description>The Federal Bureau of Investigation (FBI) has lead responsibilities for protecting the United States against domestic crimes initiated abroad. These responsibilities include protection against “covert actions by foreign governments to influence U.S. political sentiment or public discourse” (https://www.fbi.gov/investigate/counterintelligence/foreign-influence). It has illustrated its mission description with a world map that appears to classify nations by the threats they pose.
+The map has no description or legend, but uses several shades of blue to distinguish among countries.</description>
+    </item>
+    
+    <item>
+      <title>AI and the Oracle at Delphi</title>
+      <link>/2018/08/30/ai-and-the-oracle-at-delphi/</link>
+      <pubDate>Thu, 30 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/08/30/ai-and-the-oracle-at-delphi/</guid>
+      <description>I attended a nice Meetup last night, and one of the speakers quoted Turing’s description of a program able to modify its own instructions as a good description of artificial intelligence (AI) and another had a nifty typology relating all the standard tools in data science to their role in AI. This set me to thinking about the standards to which AI should be held.
+I began a thought experiment:</description>
+    </item>
+    
+    <item>
+      <title>How to debone linear regression output in Python</title>
+      <link>/2018/08/29/how-to-debone-linear-regression-output-in-python/</link>
+      <pubDate>Wed, 29 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/08/29/how-to-debone-linear-regression-output-in-python/</guid>
+      <description>This post makes a trio with two most recent blogs on the same subject for R and Excel, this time in Python usking the sklearn package.
+The example given in the official documentation (https://goo.gl/GGmUKK) is somewhat sketchy and uses a different dataset than the previous two examples. Although the example dataset is different, my main purpose is to illustrate the default output.
+ OLS Regression Results ============================================================================== Dep. Variable: y R-squared: 0.</description>
+    </item>
+    
+    <item>
+      <title>How to debone the output of a linear regression model</title>
+      <link>/2018/08/27/how-to-debone-the-output-of-a-linear-regression-model/</link>
+      <pubDate>Mon, 27 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/08/27/how-to-debone-the-output-of-a-linear-regression-model/</guid>
+      <description>I was recently puzzling over an academic paper in the social sciences with a multiple linear regression model that seemed off. (Communication with the authors educated me on considerations that resolved my concerns.)
+During the course of my puzzling, I compared what I was seeing as model output in the paper and what I expected to see based on experience. The embarrassing revelation dawned that I didn’t actually know what all those components meant.</description>
+    </item>
+    
+    <item>
+      <title>The plural of data science is not formulae</title>
+      <link>/2018/08/14/the-plural-of-data-science-is-not-formulae/</link>
+      <pubDate>Tue, 14 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/08/14/the-plural-of-data-science-is-not-formulae/</guid>
+      <description>The WSJ report of academic research on career hot streaks has snagged a lot of LinkedIn eyeballs today (Career ‘hot steaks’ are real 1h ago • 3,526 readers).
+Reading the paper (https://goo.gl/2Mwqjn), you can see that it is an observational study of a convenience sample (these were the people about whom data were available, in the thousands or tens of thousands, an impressive collection).
+Two mysteries: Why were the data not stratified into a training set and a test set?</description>
+    </item>
+    
+    <item>
+      <title>Analytic Data Scientists -- know when to fold &#39;em</title>
+      <link>/2018/08/12/analytic-data-scientists-know-when-to-fold-em/</link>
+      <pubDate>Sun, 12 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/08/12/analytic-data-scientists-know-when-to-fold-em/</guid>
+      <description>In the days of our forebearers, if a tool broke, you were likely to fix it yourself. Long time passing, of course, the shadetree mechanic has been an endangered species. And no one would hire a carpenter who didn’t own his own tools.
+I’ve been one to use my own tools. I have to admit to being, at times, cavalier about corporate policies strictly forbidding the use of employee owned computers, at least in the building.</description>
+    </item>
+    
+    <item>
+      <title>Nathan Yau on the challenges of thematic maps</title>
+      <link>/2018/08/09/nathan-yau-on-the-challenges-of-thematic-maps/</link>
+      <pubDate>Thu, 09 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/08/09/nathan-yau-on-the-challenges-of-thematic-maps/</guid>
+      <description>If you are a paying member of Flowing Data (well worth the modest subscription), you will have received his email, reproduced at a paywalled portion of the site.
+He gives a detailed critique of a precinct-by-precinct map of the 2016 presidential election, nationwide, showing the number of votes for Trump and Clinton and the nearest precinct in which the opposing candidate was in the majority.
+He compares what the map purports to show with what it actually does show, which is the raw total of votes (ho-hum, we’ve known that for a long time) and the percentages.</description>
+    </item>
+    
+    <item>
+      <title>Newtonian Data Sciences</title>
+      <link>/2018/08/06/newtonian-data-sciences/</link>
+      <pubDate>Mon, 06 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/08/06/newtonian-data-sciences/</guid>
+      <description>Advanced machine learning and AI strike me as deterministic finite state machines with an error term. Properly tuned, the same input should produce much the same output every time. Like Newtonian physics, they can be complicated, but deconstructible into simple components. Like Newtonian physics, as well, they are highly accurate and reliable within their domain.
+What happens when we start applying the same tools to complex systems? What are the complex systems of importance that refuse to yield identical results with identical inputs?</description>
+    </item>
+    
+    <item>
+      <title>An error message is as much of a question as it is an answer</title>
+      <link>/2018/08/05/an-error-message-is-as-much-of-a-question-as-it-is-an-answer/</link>
+      <pubDate>Sun, 05 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/08/05/an-error-message-is-as-much-of-a-question-as-it-is-an-answer/</guid>
+      <description>A question on datascience.stackexchange asked the reason for a Python syntax error
+SyntaxError: can&amp;#39;t assign to literal Another poster had the correct change to fix the error but the explanation didn’t reflect what the OP needed to understand the problem behind the problem, which was failing to be namespace aware – he was trying to perform an operation on an undefined object.
+When you find the answer to a question you don’t understand, you can expect to see it again.</description>
+    </item>
+    
+    <item>
+      <title>About</title>
+      <link>/about/</link>
+      <pubDate>Thu, 05 May 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/about/</guid>
+      <description>Analytic data science with an emphasis on R. I am available for pro bono work to non-profit organizations. However, I am unable to incur travel expense outside of King County, Washington.∑</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/about/</guid>
+      <description>About /*! jQuery v1.11.3 | (c) 2005, 2015 jQuery Foundation, Inc. | jquery.org/license */ !function(a,b){&#34;object&#34;==typeof module&amp;&amp;&#34;object&#34;==typeof module.exports?module.exports=a.document?b(a,!0):function(a){if(!a.document)throw new Error(&#34;jQuery requires a window with a document&#34;);return b(a)}:b(a)}(&#34;undefined&#34;!=typeof window?window:this,function(a,b){var c=[],d=c.slice,e=c.concat,f=c.push,g=c.indexOf,h={},i=h.toString,j=h.hasOwnProperty,k={},l=&#34;1.11.3&#34;,m=function(a,b){return new m.fn.init(a,b)},n=/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,o=/^-ms-/,p=/-([\da-z])/gi,q=function(a,b){return b.toUpperCase()};m.fn=m.prototype={jquery:l,constructor:m,selector:&#34;&#34;,length:0,toArray:function(){return d.call(this)},get:function(a){return null!=a?0a?this[a+this.length]:this[a]:d.call(this)},pushStack:function(a){var b=m.merge(this.constructor(),a);return b.prevObject=this,b.context=this.context,b},each:function(a,b){return m.each(this,a,b)},map:function(a){return this.pushStack(m.map(this,function(b,c){return a.call(b,c,b)}))},slice:function(){return this.pushStack(d.apply(this,arguments))},first:function(){return this.eq(0)},last:function(){return this.eq(-1)},eq:function(a){var b=this.length,c=+a+(0a?b:0);return this.pushStack(c=0&amp;&amp;bc?[this[c]]:[])},end:function(){return this.prevObject||this.constructor(null)},push:f,sort:c.sort,splice:c.splice},m.extend=m.fn.extend=function(){var a,b,c,d,e,f,g=arguments[0]||{},h=1,i=arguments.length,j=!1;for(&#34;boolean&#34;==typeof g&amp;&amp;(j=g,g=arguments[h]||{},h++),&#34;object&#34;==typeof g||m.isFunction(g)||(g={}),h===i&amp;&amp;(g=this,h--);ih;h++)if(null!=(e=arguments[h]))for(d in e)a=g[d],c=e[d],g!==c&amp;&amp;(j&amp;&amp;c&amp;&amp;(m.isPlainObject(c)||(b=m.isArray(c)))?(b?(b=!1,f=a&amp;&amp;m.isArray(a)?a:[]):f=a&amp;&amp;m.isPlainObject(a)?a:{},g[d]=m.extend(j,f,c)):void 0!==c&amp;&amp;(g[d]=c));return g},m.extend({expando:&#34;jQuery&#34;+(l+Math.random()).replace(/\D/g,&#34;&#34;),isReady:!0,error:function(a){throw new Error(a)},noop:function(){},isFunction:function(a){return&#34;function&#34;===m.type(a)},isArray:Array.isArray||function(a){return&#34;array&#34;===m.type(a)},isWindow:function(a){return null!=a&amp;&amp;a==a.window},isNumeric:function(a){return!m.isArray(a)&amp;&amp;a-parseFloat(a)+1=0},isEmptyObject:function(a){var b;for(b in a)return!1;return!0},isPlainObject:function(a){var b;if(!a||&#34;object&#34;!==m.type(a)||a.nodeType||m.isWindow(a))return!1;try{if(a.constructor&amp;&amp;!j.call(a,&#34;constructor&#34;)&amp;&amp;!j.call(a.constructor.prototype,&#34;isPrototypeOf&#34;))return!1}catch(c){return!1}if(k.ownLast)for(b in a)return j.call(a,b);for(b in a);return void 0===b||j.call(a,b)},type:function(a){return null==a?a+&#34;&#34;:&#34;object&#34;==typeof a||&#34;function&#34;==typeof a?h[i.call(a)]||&#34;object&#34;:typeof a},globalEval:function(b){b&amp;&amp;m.trim(b)&amp;&amp;(a.execScript||function(b){a.eval.call(a,b)})(b)},camelCase:function(a){return a.</description>
+    </item>
+    
+  </channel>
+</rss>

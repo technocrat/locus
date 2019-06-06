@@ -1,0 +1,101 @@
+---
+title: "Row collapsing"
+description: |
+  Duplicate keys for multiple logical columns
+author:
+  - name: Richard Careaga
+    url: https://technocrat.rbind.io
+ 
+date: "`r Sys.Date()`"
+output: distill::distill_article
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Untidy happens
+
+It's not always possible to store *everything* in a `tidy` but hugmongous data store. So, we have things like SQL foreign keys. 
+
+Unfortunately, the database may not have been set up with future `tidy` in mind. Or, database access is only provided through CSV files.
+
+Here's an example of what can happen. We begin with some basic information, as `tidy` as we could wish.
+
+    > patients
+    # A tibble: 3,064 x 6
+         INC_KEY   AGE GENDER MALE  FEMALE ADULT
+           <int> <int> <chr>  <lgl> <lgl>  <lgl>
+     1 150238916    59 Male   TRUE  FALSE  TRUE 
+     2 150193078    37 Male   TRUE  FALSE  TRUE 
+     3 150580164    29 Female FALSE TRUE   TRUE 
+     4 150917895    82 Female FALSE TRUE   TRUE 
+     5 150376887    58 Female FALSE TRUE   TRUE 
+     6 150508153    35 Male   TRUE  FALSE  TRUE 
+     7 150415059    21 Male   TRUE  FALSE  TRUE 
+     8 150184182    24 Female FALSE TRUE   TRUE 
+     9 150318438    20 Male   TRUE  FALSE  TRUE 
+    10 150508148    64 Male   TRUE  FALSE  TRUE 
+    # … with 3,054 more rows
+    
+A separate file contains variables of interest
+
+    > d_codes
+    # A tibble: 25,643 x 2
+         INC_KEY DCODE 
+           <int> <chr> 
+     1 150284827 922.2 
+     2 150284827 867.0 
+     3 150284827 835.00
+     4 150284827 808.51
+     5 150284827 808.43
+     6 150284827 808.2 
+     7 150284827 805.6 
+     8 150004383 924.8 
+     9 150004383 919.0 
+    10 150004383 901.0 
+    # … with 25,633 more rows
+    
+Now, of course we can `left_join` the two, but, of course, we get
+
+      str(patients)
+      Classes ‘tbl_df’, ‘tbl’ and 'data.frame':   28042 obs. of  23 variables:
+       $ INC_KEY     : int  150580164 150580164 150580164 150580164 150580164 150580164 150580164 150580164 150580164 150580164 ...
+       $ YEAR        : num  2015 2015 2015 2015 2015 ...
+       $ AGE         : int  29 29 29 29 29 29 29 29 29 29 ...
+       $ ADULT       : logi  TRUE TRUE TRUE TRUE TRUE TRUE ...
+       $ INTERVENTION: logi  FALSE FALSE TRUE FALSE FALSE FALSE ...
+       $ SURGERY     : logi  TRUE TRUE TRUE TRUE TRUE TRUE ...
+       $ EXPIRED     : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+       $ 808.0       : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+       $ 808.1       : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+       $ 808.2       : logi  TRUE TRUE TRUE TRUE TRUE TRUE ...
+       $ 808.3       : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+       $ 808.4       : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+       $ 808.41      : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+       $ 808.42      : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+       $ 808.43      : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+       $ 808.49      : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+       $ 808.5       : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+       $ 808.51      : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+       $ 808.52      : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+       $ 808.53      : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+       $ 808.59      : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+       $ 808.8       : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+       $ 808.9       : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+ 
+Notice the duplicated INC_KEY field in the first line of `str()`
+ 
+This is the dreaded *duplicate row* problem.
+ 
+Many approaches (nested tibbles, for example), failed either through limitations or my own misunderstanding on how they work. I did, however,find a solution based on the the fortunate fact that the variables to be combined were all logical.
+
+The 800 series in the table above represent types of pelvic fractures. Because the source data records for each INC_KEY, or patient identification, for these and other diagnostic codes, there are many more rows of data than there are patients. After a simple extraction of the 800 codes, the de-duplication proved surprisingly simple.
+
+    # deduplicate
+    dedup_fractures <- fractures %>% group_by(INC_KEY) %>% summarize_all(mean)
+    fractures <- dedup_fractures %>% group_by(INC_KEY) %>% mutate_if(is.double, as.logical)
+
+For a TRUE entry, the mean will be 1; a FALSE entry will be 0. The second line simply converts these results back to logical type.
+
+This approach is not strictly limited to logical vectors. For example, you have have a second table with numeric values, such as age, that do not vary. The mean of age 29 is 29 whether you have one or a hundred rows.
