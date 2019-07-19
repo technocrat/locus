@@ -6,17 +6,17 @@
     <description>Recent content in Posts on Locus: Richard Careaga</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 05 Jun 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 18 Jul 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Row collapsing</title>
-      <link>/2019/06/05/row-collapsing/</link>
-      <pubDate>Wed, 05 Jun 2019 00:00:00 +0000</pubDate>
+      <link>/2019/07/18/row-collapsing/</link>
+      <pubDate>Thu, 18 Jul 2019 00:00:00 +0000</pubDate>
       
-      <guid>/2019/06/05/row-collapsing/</guid>
+      <guid>/2019/07/18/row-collapsing/</guid>
       <description>Untidy happens It’s not always possible to store everything in a tidy but hugmongous data store. So, we have things like SQL foreign keys.
 Unfortunately, the database may not have been set up with future tidy in mind. Or, database access is only provided through CSV files.
 Here’s an example of what can happen. We begin with some basic information, as tidy as we could wish.
@@ -31,17 +31,6 @@ Here’s an example of what can happen. We begin with some basic information, as
       <guid>/2019/06/03/ediscovery-is-pattern-recognition-and-eyeballs-are-expensive/</guid>
       <description>Clients are transforming their businesses with the tools of data science. How long do you suppose they will pay $50/hour for humans to read tons of ediscovery?
 The legal profession owes a great debt to the 19th century mathemetician Georg Boole whose work became the genesis of the boolean algebra that every lawyer is familiar through the use of keyword searches. For decades, it has helped us wade through more than we could read.</description>
-    </item>
-    
-    <item>
-      <title>Row collapsing</title>
-      <link>/2019/05/03/duplicate-keys-for-multiple-logical-columns/</link>
-      <pubDate>Fri, 03 May 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/2019/05/03/duplicate-keys-for-multiple-logical-columns/</guid>
-      <description>Untidy happens It’s not always possible to store everything in a tidy but humongous data store. So, we have things like SQL foreign keys.
-Unfortunately, the database may not have been set up with future tidy in mind. Or, database access is only provided through CSV files.
-Here’s an example of what can happen. We begin with some basic information, as tidy as we could wish with not too much effort.</description>
     </item>
     
     <item>
@@ -299,6 +288,16 @@ What happens when we start applying the same tools to complex systems? What are 
       <description>A question on datascience.stackexchange asked the reason for a Python syntax error
 SyntaxError: can&amp;#39;t assign to literal Another poster had the correct change to fix the error but the explanation didn’t reflect what the OP needed to understand the problem behind the problem, which was failing to be namespace aware – he was trying to perform an operation on an undefined object.
 When you find the answer to a question you don’t understand, you can expect to see it again.</description>
+    </item>
+    
+    <item>
+      <title>2019-07-18-r-cookbook-review</title>
+      <link>/1/01/01/2019-07-18-r-cookbook-review/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/1/01/01/2019-07-18-r-cookbook-review/</guid>
+      <description>There is a whole sub-culture of food porn, the lavish coffee table books that set out to educate you to an entire culture through its food. I once saw a library of several hundred.
+These are page flippers – doesn’t that look marvelous, we’ll have to try it next time we find halibut cheeks. The sad fact, though, is that any of these books are lucky if the owner actually uses one or two of its recipes and exalted if a recipe becomes a dinner party staple.</description>
     </item>
     
   </channel>

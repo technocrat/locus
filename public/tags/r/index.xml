@@ -6,21 +6,10 @@
     <description>Recent content in R on Locus: Richard Careaga</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 03 May 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 08 Jan 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/r/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>Row collapsing</title>
-      <link>/2019/05/03/duplicate-keys-for-multiple-logical-columns/</link>
-      <pubDate>Fri, 03 May 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/2019/05/03/duplicate-keys-for-multiple-logical-columns/</guid>
-      <description>Untidy happens It’s not always possible to store everything in a tidy but humongous data store. So, we have things like SQL foreign keys.
-Unfortunately, the database may not have been set up with future tidy in mind. Or, database access is only provided through CSV files.
-Here’s an example of what can happen. We begin with some basic information, as tidy as we could wish with not too much effort.</description>
-    </item>
     
     <item>
       <title>The compiler will tell you what the user cannot</title>
