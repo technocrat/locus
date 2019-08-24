@@ -1,10 +1,13 @@
 ---
 title: "2019-07-18-r-cookbook-review"
 author: "Richard Careaga"
-date: "7/18/2019"
-output: html_document
+date: '2019-08-24'
+slug: Review of R Data Cookbook, 2nd Ed
+tags:
+- Tutorial
+- Innovation
+categories: R
 ---
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
@@ -21,11 +24,11 @@ It took me two days to read the 554 pages. I had the help of several airplane ho
 
 In my childhood, Donald Duck had three nephews, Huey, Dewey and Louie who got their uncle out of more than one jam by consulting *The Junior Woodchuck Manual*, which somehow contained the answer to any question that could possibly arise. The *R Cookbook, 2ND Ed.* comes close to that standard for the beginner to intermediate user who is completely innocent, on the one hand, or who has been covertly using functions without a well-founded understanding of their requirements and limitations. 
 
-It would be an unconventional choice, perhaps, but this is the book that I would choose for the text if I were teaching a course in introductory **R**. Why? Because this book tells you what **R** does, not what it *is*. Any student coming to it with even an imprecise notion of *f(x) = y* is going to be able to follow along to the point, perhaps, of wanting to write her own package. The text doesn't cover this, but points you in the right direction, and suggests *source("good_stuff.R") as an interim step. 
+It would be an unconventional choice, perhaps, but this is the book that I would choose for the text if I were teaching a course in introductory **R**. Why? Because this book tells you what **R** does, not what it *is*. Any student coming to it with even an imprecise notion of \$f(x) = y\$ is going to be able to follow along to the point, perhaps, of wanting to write her own package. The text doesn't cover this, but points you in the right direction, and suggests *source("good_stuff.R")* as an interim step. 
 
 In other words, its approach is like **R**'s, functional, not imperative, definitional not procedural. In my view, the implications in the **R** vs. **Python** wars are obvious. In one model, Professor Higgens tells Eliza *bring me my slippers.* In the other, he first has to declare a subject (the slippers), a possessive (my slippers), object (grammatical, me) and then, with the verb, provide detailed instructions on where they are to be found, how brought into possession and the means by which they are to be transported to their destination.
 
-Someone once said something to the effect that assembly language uses humans as  processors. I'm afraid that is true of many of its do-this, then do-that  descendants.
+Someone once said something to the effect that assembly language uses humans as pre-processors. I'm afraid that is true of many of its do-this, then do-that descendants.
 
 For now, their defense is the superiority of compiled programs in speed on the metal and the much more expensive wetware. And they are right for the one-off case. But as cases proliferate or become abstracted, wetware costs go up faster than throughput advantages.
 
