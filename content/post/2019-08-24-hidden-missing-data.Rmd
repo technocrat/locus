@@ -2,7 +2,7 @@
 title: "Hidden missing data"
 author: "Richard Careaga"
 date: "2019-08-24"
-slug: Review of R Data Cookbook, 2nd Ed
+slug: Hidden missing data
 tags:
 - data cleaning
 - linear algebra
