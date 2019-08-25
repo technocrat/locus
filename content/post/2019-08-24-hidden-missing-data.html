@@ -45,7 +45,7 @@ You get what you need
 <p><em>Neo to the rescue.</em> There a <code>R</code> objects, like <code>vectors</code>, that you can apply a function to each element</p>
 <pre><code>some_function(vector)</code></pre>
 <p>and get back a vector where every number has been squared, incremented by 2 or whatever operation the function performs.</p>
-<p>Another one of those objects is a <code>matrix</code>. A matrix has one or more rows and one or more column in its simple two dimension cawse, all of the same class (no mixing numbers and characters). For our purposes, it’s basically a spreadsheet.</p>
+<p>Another one of those objects is a <code>matrix</code>. A matrix has one or more rows and one or more column in its simple two dimension case, all of the same class (no mixing numbers and characters). For our purposes, it’s basically a spreadsheet.</p>
 <p><strong>How does this help?</strong> We can convert our <code>tibble</code> with the rows containing different numbers of variable observations to a matrix, very simply</p>
 <pre><code>m &lt;- as.matrix(hidden)
 head(m)
@@ -125,6 +125,6 @@ singlets
  9     0     0     1     0     0     0     0     0     0     0     0     0     0     0     0     0         1
 10     0     0     1     0     0     0     0     0     0     0     0     0     0     0     0     0         1
 # … with 9,339 more rows</code></pre>
-<p>I should point out a couple of things. The last tibble above is not the complete data set I am working on. Other variables, particularly the response variable are intentionally omitted. I also could have accomplished the same end more economically by piping operations to avoid intermediate object completion. I thought, in this case, it would be easier to follow with the intermedites.</p>
+<p>I should point out a couple of things. The last tibble above is not the complete data set I am working on. Other variables, particularly the response variable are intentionally omitted. I also could have accomplished the same end more economically by piping operations to avoid intermediate object completion. I thought, in this case, it would be easier to follow with the intermediates.</p>
 <p>Next time, I’ll describe the logistic model and the different results obtained by applying it to the entire data set, the empty data set, the multiple data set and the single-variable per observation data set.</p>
 <p>Oh, some readers who made it this far are yawning – <em>Nothing but basic linear algebra.</em> The readers who have heard of linear algebra and might have been intimidated will see, I hope, that parts of it are easy to grasp, easy to apply, and useful.</p>

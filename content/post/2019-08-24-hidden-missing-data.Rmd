@@ -57,7 +57,7 @@ The net result is we have some observations with two few and some with two many 
 
 and get back a vector where every number has been squared, incremented by 2 or whatever operation the function performs.
 
-Another one of those objects is a `matrix`. A matrix has one or more rows and one or more column in its simple two dimension cawse, all of the same class (no mixing numbers and characters). For our purposes, it's basically a spreadsheet.
+Another one of those objects is a `matrix`. A matrix has one or more rows and one or more column in its simple two dimension case, all of the same class (no mixing numbers and characters). For our purposes, it's basically a spreadsheet.
 
 **How does this help?** We can convert our `tibble` with the rows containing different numbers of variable observations to a matrix, very simply
 
@@ -151,7 +151,7 @@ Now that we know where we stand, we can `filter` to get the 9K rows with a singl
     10     0     0     1     0     0     0     0     0     0     0     0     0     0     0     0     0         1
     # … with 9,339 more rows
 
-I should point out a couple of things. The last tibble above is not the complete data set I am working on. Other variables, particularly the response variable are intentionally omitted. I also could have accomplished the same end more economically by piping operations to avoid intermediate object completion. I thought, in this case, it would be easier to follow with the intermedites.
+I should point out a couple of things. The last tibble above is not the complete data set I am working on. Other variables, particularly the response variable are intentionally omitted. I also could have accomplished the same end more economically by piping operations to avoid intermediate object completion. I thought, in this case, it would be easier to follow with the intermediates.
 
 Next time, I'll describe the logistic model and the different results obtained by applying it to the entire data set, the empty data set, the multiple data set and the single-variable per observation data set.
 
