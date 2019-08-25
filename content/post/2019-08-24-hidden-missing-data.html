@@ -41,7 +41,7 @@ You get what you need
 # … with 22,461 more rows</code></pre>
 <p>First problem: The purpose of the logistic regression analysis was to see which of the sixteen variables were associated with the response variable. The first four observations (rows), at least, had all zeros. It is not until the fifth row when we hit a positive observation, in <span class="math inline">\(VAR8\)</span>.</p>
 <p><em>But cockroaches are not hermits.</em> In row 10, there are observations for <span class="math inline">\(VAR3\)</span> and <span class="math inline">\(VAR7\)</span>. The interactions between two or more variables is an interesting problem, but it was out-of-scope for this stage of analysis if for no other reason than it was not clear whether they might be mutually exclusive.</p>
-<p>The net result is we have some observations with two few and some with two many variables.</p>
+<p>The net result is we have some observations with t00 few and some with too many variables.</p>
 <p><em>Neo to the rescue.</em> There a <code>R</code> objects, like <code>vectors</code>, that you can apply a function to each element</p>
 <pre><code>some_function(vector)</code></pre>
 <p>and get back a vector where every number has been squared, incremented by 2 or whatever operation the function performs.</p>

@@ -49,7 +49,7 @@ First problem: The purpose of the logistic regression analysis was to see which 
 
 *But cockroaches are not hermits.* In row 10, there are observations for $VAR3$ and $VAR7$. The interactions between two or more variables is an interesting problem, but it was out-of-scope for this stage of analysis if for no other reason than it was not clear whether they might be mutually exclusive.
 
-The net result is we have some observations with two few and some with two many variables.
+The net result is we have some observations with t00 few and some with too many variables.
 
 *Neo to the rescue.* There a `R` objects, like `vectors`, that you can apply a function to each element
 
