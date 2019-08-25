@@ -12,7 +12,22 @@
     
     
     <item>
-      <title>2019-07-18-r-cookbook-review</title>
+      <title>Hidden missing data</title>
+      <link>/2019/08/24/review-of-r-data-cookbook-2nd-ed/</link>
+      <pubDate>Sat, 24 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/08/24/review-of-r-data-cookbook-2nd-ed/</guid>
+      <description>No, you can’t always get what you want
+You can’t always get what you want
+You can’t always get what you want
+But if you try sometime
+You’ll find
+You get what you need – Mick Jagger and Keith Richards
+ There’s nothing like missing values to mess up a model. But you have to work with what you get. The data set is not often coded with NAs where data would be for an observation of a variable, sometimes it is blank.</description>
+    </item>
+    
+    <item>
+      <title>Review of R Cookbook, 2nd Ed.</title>
       <link>/2019/08/24/review-of-r-data-cookbook-2nd-ed/</link>
       <pubDate>Sat, 24 Aug 2019 00:00:00 +0000</pubDate>
       

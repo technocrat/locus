@@ -1,0 +1,158 @@
+---
+title: "Hidden missing data"
+author: "Richard Careaga"
+date: "2019-08-24"
+slug: Review of R Data Cookbook, 2nd Ed
+tags:
+- data cleaning
+- linear algebra
+categories: R
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+> No, you can't always get what you want  
+You can't always get what you want  
+You can't always get what you want  
+But if you try sometime  
+You'll find  
+You get what you need
+-- *Mick Jagger and Keith Richards*
+
+**There's nothing like missing values to mess up a model.** But you have to work with what you get. The data set is not often coded with NAs where data would be for an observation of a variable, sometimes it is blank.
+
+For that, we have `complete.cases(){stats}` which will subset the data to include only which rows have *no* missing data.
+
+More insidious is the case where observations for a dichotomous variable, that can take on only one of two possible values. These may be coded as TRUE/FALSE or 1/0. And, of course, if the coding is complete, there are no *missing* values. That doesn't mean that you have what you need.
+
+Recently, I worked on a largish data set that ended up as approximately 22K records with 38 variables. The problem arose in a set of 16 independent dichotomous variables -- call them $Var1 ... Var16$ -- being used to model a binary response variable. This part of the data looks like
+
+    hidden
+    # A tibble: 22,471 x 16
+        VAR1  VAR2  VAR3  VAR4  VAR5  VAR6  VAR7  VAR8  VAR9 VAR10 VAR11 VAR12 VAR13 VAR14 VAR15 VAR16
+       <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+     1     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0
+     2     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0
+     3     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0
+     4     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0
+     5     0     0     0     0     0     0     0     1     0     0     0     0     0     0     0     0
+     6     0     0     0     0     0     0     0     1     0     0     0     0     0     0     0     0
+     7     0     0     1     0     0     1     0     0     0     0     0     0     0     0     0     0
+     8     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0
+     9     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0
+    10     0     0     1     0     0     0     1     0     0     0     0     0     0     0     0     0
+    # … with 22,461 more rows
+    
+First problem: The purpose of the logistic regression analysis was to see which of the sixteen variables were associated with the response variable. The first four observations (rows), at least, had all zeros. It is not until the fifth row when we hit a positive observation, in $VAR8$.
+
+*But cockroaches are not hermits.* In row 10, there are observations for $VAR3$ and $VAR7$. The interactions between two or more variables is an interesting problem, but it was out-of-scope for this stage of analysis if for no other reason than it was not clear whether they might be mutually exclusive.
+
+The net result is we have some observations with two few and some with two many variables.
+
+*Neo to the rescue.* There a `R` objects, like `vectors`, that you can apply a function to each element
+
+    some_function(vector)
+
+and get back a vector where every number has been squared, incremented by 2 or whatever operation the function performs.
+
+Another one of those objects is a `matrix`. A matrix has one or more rows and one or more column in its simple two dimension cawse, all of the same class (no mixing numbers and characters). For our purposes, it's basically a spreadsheet.
+
+**How does this help?** We can convert our `tibble` with the rows containing different numbers of variable observations to a matrix, very simply
+
+    m <- as.matrix(hidden)
+    head(m)
+          VAR1 VAR2 VAR3 VAR4 VAR5 VAR6 VAR7 VAR8 VAR9 VAR10 VAR11 VAR12 VAR13 VAR14 VAR15 VAR16
+    [1,]    0    0    0    0    0    0    0    0    0     0     0     0     0     0     0     0
+    [2,]    0    0    0    0    0    0    0    0    0     0     0     0     0     0     0     0
+    [3,]    0    0    0    0    0    0    0    0    0     0     0     0     0     0     0     0
+    [4,]    0    0    0    0    0    0    0    0    0     0     0     0     0     0     0     0
+    [5,]    0    0    0    0    0    0    0    1    0     0     0     0     0     0     0     0
+    [6,]    0    0    0    0    0    0    0    1    0     0     0     0     0     0     0     0
+
+Next, we apply the `sumCols()` function to add up the entries for the rows and assign it.
+
+    row_count <- rowSums(m)
+    head(row_count)
+    [1] 0 0 0 0 1 1
+    length(row_count)
+    [1] 22471
+    
+
+the result is a numeric vector, conveniently of the same length as the number of rows in the tibble, and in the same order.
+
+    summed_up <- as_tibble(cbind(hidden, row_count))
+    summed_up
+    # A tibble: 22,471 x 17
+        VAR1  VAR2  VAR3  VAR4  VAR5  VAR6  VAR7  VAR8  VAR9 VAR10 VAR11 VAR12 VAR13 VAR14 VAR15 VAR16 row_count
+       <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>     <dbl>
+     1     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0         0
+     2     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0         0
+     3     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0         0
+     4     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0         0
+     5     0     0     0     0     0     0     0     1     0     0     0     0     0     0     0     0         1
+     6     0     0     0     0     0     0     0     1     0     0     0     0     0     0     0     0         1
+     7     0     0     1     0     0     1     0     0     0     0     0     0     0     0     0     0         2
+     8     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0         0
+     9     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0         0
+    10     0     0     1     0     0     0     1     0     0     0     0     0     0     0     0     0         2
+    # … with 22,461 more row
+
+Now, with a bit of `tidy`ness, we can set a count, using the `dplyr` package of the rows with varying numbers of entries..
+
+    summed_up %>% group_by(row_count) %>% count()
+    # A tibble: 6 x 2
+    # Groups:   row_count [6]
+      row_count     n
+          <dbl> <int>
+    1         0 10083
+    2         1  9349
+    3         2  2509
+    4         3   461
+    5         4    63
+    6         5     6
+    
+The bad news is that nearly half of the data are of no help, the 10K rows with none of the sixteen variables having a positive value. The sad news is the 3K rows with multiple variables that we're not ready to tackle yet.
+
+    summed_up %>% filter(row_count > 1)
+    # A tibble: 3,039 x 17
+        VAR1  VAR2  VAR3  VAR4  VAR5  VAR6  VAR7  VAR8  VAR9 VAR10 VAR11 VAR12 VAR13 VAR14 VAR15 VAR16 row_count
+       <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>     <dbl>
+     1     0     0     1     0     0     1     0     0     0     0     0     0     0     0     0     0         2
+     2     0     0     1     0     0     0     1     0     0     0     0     0     0     0     0     0         2
+     3     0     0     1     0     0     1     0     0     0     0     0     0     0     0     0     0         2
+     4     0     0     0     0     0     1     0     0     1     0     0     0     0     0     0     0         2
+     5     0     0     1     0     0     1     0     0     0     0     0     0     0     0     0     0         2
+     6     0     0     1     0     0     0     0     0     0     0     0     0     0     0     1     0         2
+     7     0     1     0     0     0     0     0     0     0     0     1     0     0     0     0     0         2
+     8     0     0     1     0     0     1     0     0     0     0     0     0     0     0     0     0         2
+     9     0     0     1     0     0     1     0     0     0     0     0     0     0     0     0     0         2
+    10     0     0     1     0     0     0     0     1     0     0     0     0     0     0     0     0         2
+    # … with 3,029 more rows
+    
+Now that we know where we stand, we can `filter` to get the 9K rows with a single variable only. We bind the `row_count` variable to the original tibble.
+
+    row_totals <- summed_up %>% select(row_count)
+    singlets <- bind_cols(hidden, row_totals) %>% filter(row_count == 1)
+    singlets
+    # A tibble: 9,349 x 17
+        VAR1  VAR2  VAR3  VAR4  VAR5  VAR6  VAR7  VAR8  VAR9 VAR10 VAR11 VAR12 VAR13 VAR14 VAR15 VAR16 row_count
+       <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>     <dbl>
+     1     0     0     0     0     0     0     0     1     0     0     0     0     0     0     0     0         1
+     2     0     0     0     0     0     0     0     1     0     0     0     0     0     0     0     0         1
+     3     0     0     0     0     0     0     0     0     0     0     0     0     0     0     1     0         1
+     4     0     0     0     0     0     0     0     0     0     0     0     0     1     0     0     0         1
+     5     0     0     0     0     0     1     0     0     0     0     0     0     0     0     0     0         1
+     6     0     0     1     0     0     0     0     0     0     0     0     0     0     0     0     0         1
+     7     0     0     1     0     0     0     0     0     0     0     0     0     0     0     0     0         1
+     8     0     0     1     0     0     0     0     0     0     0     0     0     0     0     0     0         1
+     9     0     0     1     0     0     0     0     0     0     0     0     0     0     0     0     0         1
+    10     0     0     1     0     0     0     0     0     0     0     0     0     0     0     0     0         1
+    # … with 9,339 more rows
+
+I should point out a couple of things. The last tibble above is not the complete data set I am working on. Other variables, particularly the response variable are intentionally omitted. I also could have accomplished the same end more economically by piping operations to avoid intermediate object completion. I thought, in this case, it would be easier to follow with the intermedites.
+
+Next time, I'll describe the logistic model and the different results obtained by applying it to the entire data set, the empty data set, the multiple data set and the single-variable per observation data set.
+
+Oh, some readers who made it this far are yawning -- *Nothing but basic linear algebra.* The readers who have heard of linear algebra and might have been intimidated will see, I hope, that parts of it are easy to grasp, easy to apply, and useful.
