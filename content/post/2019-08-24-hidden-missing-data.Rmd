@@ -155,4 +155,4 @@ I should point out a couple of things. The last tibble above is not the complete
 
 Next time, I'll describe the logistic model and the different results obtained by applying it to the entire data set, the empty data set, the multiple data set and the single-variable per observation data set.
 
-Oh, some readers who made it this far are yawning -- *Nothing but basic linear algebra.* The readers who have heard of linear algebra and might have been intimidated will see, I hope, that parts of it are easy to grasp, easy to apply, and useful.
+Oh, some readers who made it this far are yawning -- *Nothing but basic linear algebra.* The readers who have heard of linear algebra and might have been intimidated will see, I hope, that parts of it are easy to grasp, easy to apply, and useful. 
