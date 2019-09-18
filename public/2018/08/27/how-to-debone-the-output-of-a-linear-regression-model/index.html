@@ -124,19 +124,19 @@
 ## -1013022  -123183   -11192   101635  3057245 
 ## 
 ## Coefficients:
-##               Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)  6.496e+06  3.554e+05  18.279  &lt; 2e-16 ***
-## bedrooms    -7.749e+04  6.221e+03 -12.458  &lt; 2e-16 ***
-## bathrooms    7.439e+04  9.963e+03   7.466 1.06e-13 ***
-## sqft_living  3.189e+02  7.963e+00  40.051  &lt; 2e-16 ***
-## sqft_lot    -8.857e-02  1.068e-01  -0.829    0.407    
-## yr_built    -3.310e+03  1.830e+02 -18.086  &lt; 2e-16 ***
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  6.50e+06   3.55e+05   18.28  &lt; 2e-16 ***
+## bedrooms    -7.75e+04   6.22e+03  -12.46  &lt; 2e-16 ***
+## bathrooms    7.44e+04   9.96e+03    7.47  1.1e-13 ***
+## sqft_living  3.19e+02   7.96e+00   40.05  &lt; 2e-16 ***
+## sqft_lot    -8.86e-02   1.07e-01   -0.83     0.41    
+## yr_built    -3.31e+03   1.83e+02  -18.09  &lt; 2e-16 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-## Residual standard error: 253100 on 3159 degrees of freedom
-## Multiple R-squared:  0.559,  Adjusted R-squared:  0.5583 
-## F-statistic: 800.9 on 5 and 3159 DF,  p-value: &lt; 2.2e-16</code></pre>
+## Residual standard error: 253000 on 3159 degrees of freedom
+## Multiple R-squared:  0.559,  Adjusted R-squared:  0.558 
+## F-statistic:  801 on 5 and 3159 DF,  p-value: &lt;2e-16</code></pre>
 <p>Well now! I pick a handful of variables off the top of my head and presto! My model explains over 50% of the variation in price. Am I good or what?</p>
 <p>Not really, and I’ll explain all the bonehead errors in another post (didn’t normalize, didn’t split into training and test sets, used variables that are not truly independent, didn’t check the distribution of residual errors and a host of other sins). Let’s talk about the information you get from a multiple linear regression results table.</p>
 <ol style="list-style-type: decimal">

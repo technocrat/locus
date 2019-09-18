@@ -1,13 +1,13 @@
 ---
 title: "Row collapsing"
-description: |
-  Duplicate keys for multiple logical columns
-author:
-  - name: Richard Careaga
-    url: https://technocrat.rbind.io
- 
-date: "`r Sys.Date()`"
-output: distill::distill_article
+author: Richard Careaga
+date: "2018-05-20"
+slug:  Duplicate keys for multiple logical columns
+categories:
+  - Data Science
+tags:
+  - R
+  - wrangling
 ---
 
 ```{r setup, include=FALSE}

@@ -2,7 +2,13 @@
 title: "Missing Inaction--locating data holes"
 author: "Richard Careaga"
 date: "2019-09-18"
-output: html_document
+slug: data-holes
+categories:
+  - Data Science
+tags: 
+  - R
+  - wrangling
+  - matrix
 ---
 
 ```{r setup, include=FALSE}
