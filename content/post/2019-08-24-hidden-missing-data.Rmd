@@ -2,7 +2,7 @@
 title: "Hidden missing data"
 author: "Richard Careaga"
 date: "2019-08-24"
-slug: Hidden missing data
+slug: hidden-missing-data
 tags:
 - data cleaning
 - linear algebra
