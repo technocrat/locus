@@ -1,0 +1,148 @@
+---
+title: "Missing Inaction--locating data holes"
+author: "Richard Careaga"
+date: "2019-09-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=FALSE}
+library(DescTools)
+suppressPackageStartupMessages(library(dplyr))
+library(pander)
+suppressPackageStartupMessages(library(tibble))
+
+load("data/missing_raw_data.Rds")
+mydata <- as_tibble(raw_data)
+mydata_no_na <- mydata %>% filter(!is.na(VAR32))
+interest_vars <- c("VAR14", "VAR15", "VAR16", "VAR17", "VAR18", "VAR19", "VAR20", "VAR21", "VAR22", "VAR23", "VAR24", "VAR25", "VAR26", "VAR27", "VAR28", "VAR29")
+mydata_vars <- mydata_no_na %>% dplyr::select(interest_vars)
+m <- as.matrix(mydata_vars)
+rowtots <- rowSums(m)
+vcode_count <- enframe(rowtots) %>% dplyr::select(value) %>% dplyr::rename(V_COUNT = value)
+mydata_with_row_count <- as_tibble(cbind(mydata_no_na, vcode_count))
+mydata_singlets <- mydata_with_row_count %>% filter(V_COUNT == 1)
+mydata_multi <- mydata_with_row_count %>% filter(V_COUNT > 1)
+cells <- prettyNum((nrow(raw_data)*length(raw_data)), big.mark = ",")
+rows <- prettyNum(nrow(raw_data), big.mark = ",")
+cols <- prettyNum(length(raw_data), big.mark = ",")
+```
+
+> Your hands can't hit what your eyes can't see.  *Muhammad Ali*
+
+In real-world data, there is often so much to be re-arranged, re-formatted and supplemented that it's easy to overlook what *isn't* there. [I wrote about this](https://technocrat.rbind.io/2019/08/24/hidden-missing-data/) recently, but decided it could be improved.
+
+## Some real world data, masked and anonymous
+
+To illustrate some of the ways that a dataset can snooker you, I'll be using a tibble with `r rows` rows and `r cols` columns. That's `r cells` slots for values, far beyond eyeballing's reach. 
+
+This observational data is to be used for a logistic model of VAR30 and VAR31 as the alternative dependent variables. The continuous variables are VAR1 (simply a record id), VAR2 and VAR7. All others are dichotomous, coded `1` for present and `0` for absent. VAR14-VAR29 are the principal independent variables of interest.
+
+Here is the data layout.
+
+```{r, echo=FALSE}
+str(raw_data)
+```
+
+# What's missing?
+
+## The not applicables
+
+To see if a data frame or tibble contains *any* missing values, the handy function is `anyNA()`. For our data, the result is `r anyNA(raw_data)`.
+
+A quick way to identify *how many* missing values there are is `CountCompCases{DescTools}.` (There is also `complete.cases{base}`, but it returns a logical list, rather than a summary.)
+
+```{r, echo=FALSE}
+cases <- CountCompCases(raw_data)
+na_count <- cases$n - cases$cc 
+na_count_pct <- round(na_count/cases$n*100,1)
+cases
+```
+
+We see that `r prettyNum(na_count, big.mark = ",")` have `NA` values, about `r prettyNum(na_count_pct, big.mark = ",")`% of all observations.
+
+### Why do we care?
+
+NAs are squirrely when it comes to computation.^["Numerical computations using NA will normally result in NA: a possible exception is where NaN is also involved, in which case either might result (which may depend on the R platform). Logical computations treat NA as a missing TRUE/FALSE value, and so may return TRUE or FALSE if the expression does not depend on the NA operand." [[NA]{base}](https://stat.ethz.ch/R-manual/R-devel/library/base/html/NA.html)]
+
+* NA+1 = `r NA+1`
+* NA-1 = `r NA-1`
+* NA\*1 = `r NA*1`
+* NA/1 = `r NA/1`
+* NA^1 = `r NA^1`
+* NA^0 = `r NA^0`
+* NA**2 = `r NA**2`
+
+More likely than not, leaving them will throw errors.
+
+### What can we do?
+
+We have two alternatives: remove the rows with NAs or impute values. Because the NAs are only `r prettyNum(na_count_pct, big.mark = ",")`% of the data, I'm going to avoid all the skull sweat needed for good imputation (substituting some summary statistic for the NA). An additional consideration is that the variables with the NA are a bit dodgy to begin with for reasons not germane to the subject. They also turned out not to contribute to the modeling.
+
+### How do we remove the NAs?
+
+The `dplyr` *filter* function takes a logical argument and !isNA() provides one.
+
+    mydata_no_na <- mydata %>% filter(!is.na(VAR32))
+
+A little sleight of hand was involved. I guessed that all of the variables with NA would be missing in each observation, so that by filtering on one, I'd hit them all. Sure enough, `anyNA()` confirmed my guess. If it hadn't, of course, I would have needed to either run multiple filters or expand to 
+
+    mydata_no_na <- mydata %>% filter(!is.na(VAR32) | !is.na(VAR33) ...)
+
+## But wait!
+
+### Dependent variables of interest are all zero valued for some observations
+
+These data were assembled for a purpose -- to determine the influence of a group of `r length(interest_vars)` variables (different types of medical trauma) on 2 variables considered separately (different types of internal injuries to the same organ). Observations in which none of the `r length(interest_vars)` variables were coded as present (1) shed no light on the problem.
+
+### How do we identify them?
+
+Recall that each of the `r length(interest_vars)` variables is either valued as 1 or 0. If the sum of the variables for an observation is zero, we don't need the observation for the main purposes of the model project. There are several possible ways to sum variables rowwise. I chose a little linear algebra jujitsu.
+
+***Linear algebra!!!*** Relax, I don't know much about this subject either. But I know a piece that's simple and well suited to this problem.
+
+Starting with `mydata_no_na`, the first step is to create an object for the `r length(interest_vars)` variables
+
+        interest_vars <- c("VAR14", "VAR15", "VAR16", "VAR17", "VAR18", "VAR19", "VAR20", "VAR21", "VAR22", "VAR23", "VAR24", "VAR25", "VAR26", "VAR27", "VAR28", "VAR29")
+
+and to use it to subset the NAs removed data
+
+        mydata_vars <- mydata_no_na %>% dplyr::select(interest_vars)
+
+Here comes the trick: It's easy to convert a tibble into a matrix.
+
+        m <- as.matrix(mydata_vars)
+
+Why do we want a matrix? A matrix is an object that you can perform row  operations on easily.
+
+        rowtots <- rowSums(m)
+
+We now have the sum of the `r length(interest_vars)` variables for each observation.
+
+The return trip is equally easy.
+
+        vcode_count <- enframe(rowtots) %>% dplyr::select(value) %>% dplyr::rename(V_COUNT = value)
+        mydata_w_row_count <- as_tibble(cbind(mydata_no_na, vcode_count))
+        mydata_singlets <- mydata_with_row_count %>% filter(V_COUNT == 1)
+
+In short, we've added a row total field, `V_COUNT` and filtered for sums of 1.
+
+The results are dramatic. We started with `r rows` observations, subtracted `r na_count` NA, and then isolated the observations with one (only one) of the 20 variables and ended up with `r prettyNum(nrow(mydata_singlets), big.mark = ",")` observations.
+
+## Even more
+
+We've dealt with NA, eliminated observations with 0 or more than 1 occurrences. There is another possibility, observations with more than one variable of interest. These are easy to identify
+
+            mydata_multi <- mydata_with_row_count %>% filter(V_COUNT > 1)
+
+and there are `r prettyNum(nrow(mydata_multi), big.mark=",")` observations. These are candidates for a separate model because there are potentially multiple interacting independent variables that influence the dependent variables. (Or they could represent inconsistencies in data collection.)
+
+# Flash cards
+
+* Don't eyeball
+* Use anyNA()
+* Check for "useless" observations
+* Check for observations needing different treatment
