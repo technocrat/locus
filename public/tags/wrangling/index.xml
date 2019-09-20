@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>wrangling on Locus: Richard Careaga</title>
+    <link>/tags/wrangling/</link>
+    <description>Recent content in wrangling on Locus: Richard Careaga</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 18 Sep 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/wrangling/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Missing Inaction--locating data holes</title>
+      <link>/2019/09/18/data-holes/</link>
+      <pubDate>Wed, 18 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/09/18/data-holes/</guid>
+      <description>Your hands can’t hit what your eyes can’t see. Muhammad Ali
+ In real-world data, there is often so much to be re-arranged, re-formatted and supplemented that it’s easy to overlook what isn’t there. I wrote about this recently, but decided it could be improved.
+Some real world data, masked and anonymous To illustrate some of the ways that a dataset can snooker you, I’ll be using a tibble with 22,471 rows and 38 columns.</description>
+    </item>
+    
+    <item>
+      <title>Row collapsing</title>
+      <link>/2018/05/20/duplicate-keys-for-multiple-logical-columns/</link>
+      <pubDate>Sun, 20 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/05/20/duplicate-keys-for-multiple-logical-columns/</guid>
+      <description>Untidy happens It’s not always possible to store everything in a tidy but hugmongous data store. So, we have things like SQL foreign keys.
+Unfortunately, the database may not have been set up with future tidy in mind. Or, database access is only provided through CSV files.
+Here’s an example of what can happen. We begin with some basic information, as tidy as we could wish.
+&amp;gt; patients # A tibble: 3,064 x 6 INC_KEY AGE GENDER MALE FEMALE ADULT &amp;lt;int&amp;gt; &amp;lt;int&amp;gt; &amp;lt;chr&amp;gt; &amp;lt;lgl&amp;gt; &amp;lt;lgl&amp;gt; &amp;lt;lgl&amp;gt; 1 150238916 59 Male TRUE FALSE TRUE 2 150193078 37 Male TRUE FALSE TRUE 3 150580164 29 Female FALSE TRUE TRUE 4 150917895 82 Female FALSE TRUE TRUE 5 150376887 58 Female FALSE TRUE TRUE 6 150508153 35 Male TRUE FALSE TRUE 7 150415059 21 Male TRUE FALSE TRUE 8 150184182 24 Female FALSE TRUE TRUE 9 150318438 20 Male TRUE FALSE TRUE 10 150508148 64 Male TRUE FALSE TRUE # … with 3,054 more rows A separate file contains variables of interest</description>
+    </item>
+    
+  </channel>
+</rss>

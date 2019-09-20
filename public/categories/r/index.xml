@@ -6,10 +6,25 @@
     <description>Recent content in R on Locus: Richard Careaga</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 18 Jul 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 24 Aug 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/categories/r/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Hidden missing data</title>
+      <link>/2019/08/24/hidden-missing-data/</link>
+      <pubDate>Sat, 24 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/08/24/hidden-missing-data/</guid>
+      <description>No, you can’t always get what you want
+You can’t always get what you want
+You can’t always get what you want
+But if you try sometime
+You’ll find
+You get what you need – Mick Jagger and Keith Richards
+ There’s nothing like missing values to mess up a model. But you have to work with what you get. The data set is not often coded with NAs where data would be for an observation of a variable, sometimes it is blank.</description>
+    </item>
     
     <item>
       <title>Review of R Cookbook, 2nd Ed.</title>

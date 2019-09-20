@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>matrix on Locus: Richard Careaga</title>
+    <link>/tags/matrix/</link>
+    <description>Recent content in matrix on Locus: Richard Careaga</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 18 Sep 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/matrix/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Missing Inaction--locating data holes</title>
+      <link>/2019/09/18/data-holes/</link>
+      <pubDate>Wed, 18 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/09/18/data-holes/</guid>
+      <description>Your hands can’t hit what your eyes can’t see. Muhammad Ali
+ In real-world data, there is often so much to be re-arranged, re-formatted and supplemented that it’s easy to overlook what isn’t there. I wrote about this recently, but decided it could be improved.
+Some real world data, masked and anonymous To illustrate some of the ways that a dataset can snooker you, I’ll be using a tibble with 22,471 rows and 38 columns.</description>
+    </item>
+    
+  </channel>
+</rss>
