@@ -162,7 +162,7 @@ tags:
     mydata_w_row_count &lt;- as_tibble(cbind(mydata_no_na, vcode_count))
     mydata_singlets &lt;- mydata_with_row_count %&gt;% filter(V_COUNT == 1)</code></pre>
 <p>In short, we’ve added a row total field, <code>V_COUNT</code> and filtered for sums of 1.</p>
-<p>The results are dramatic. We started with 22,471 observations, subtracted 419 NA, and then isolated the observations with one (only one) of the 20 variables and ended up with 9,114 observations.</p>
+<p>The results are dramatic. We started with 22,471 observations, subtracted 419 NA, and then isolated the observations with one (only one) of the 16 variables and ended up with 9,114 observations.</p>
 </div>
 </div>
 <div id="even-more" class="section level2">

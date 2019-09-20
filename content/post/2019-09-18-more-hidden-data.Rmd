@@ -136,7 +136,7 @@ The return trip is equally easy.
 
 In short, we've added a row total field, `V_COUNT` and filtered for sums of 1.
 
-The results are dramatic. We started with `r rows` observations, subtracted `r na_count` NA, and then isolated the observations with one (only one) of the 20 variables and ended up with `r prettyNum(nrow(mydata_singlets), big.mark = ",")` observations.
+The results are dramatic. We started with `r rows` observations, subtracted `r na_count` NA, and then isolated the observations with one (only one) of the `r length(interest_vars)` variables and ended up with `r prettyNum(nrow(mydata_singlets), big.mark = ",")` observations.
 
 ## Even more
 
