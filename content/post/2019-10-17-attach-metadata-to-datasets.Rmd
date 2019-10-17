@@ -1,7 +1,7 @@
 ---
 title: "Metadata for datasets"
 author: Richard Careaga
-date: "2018-05-20"
+date: "2019-10-18"
 slug:  Metadata for datasets
 categories:
   - Data Science
