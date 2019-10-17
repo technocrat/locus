@@ -22,6 +22,26 @@
     </item>
     
     <item>
+      <title>Metadata for datasets</title>
+      <link>/2019/10/18/metadata-for-datasets/</link>
+      <pubDate>Fri, 18 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/10/18/metadata-for-datasets/</guid>
+      <description>Where does this dataset come from?  Is this the original revised data or the revised revised data?
+ Keeping track of the provenance of data can be a challenge, especially when drawing on published sources. Keeping a record of the origin, the date accessed, the transformations applied (e.g., converting from .xls to cvs and converting character strings such as “$1,250,321.21” to floats or date strings to date objects), subsequent changes, who handled the data object and where it can be found in a repository are all things that enhance the analyst’s own ability to reproduce results.</description>
+    </item>
+    
+    <item>
+      <title>Metadata for datasets</title>
+      <link>/2019/10/18/metadata-for-datasets/</link>
+      <pubDate>Fri, 18 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/10/18/metadata-for-datasets/</guid>
+      <description>Where does this dataset come from?  Is this the original revised data or the revised revised data?
+ Keeping track of the provenance of data can be a challenge, especially when drawing on published sources. Keeping a record of the origin, the date accessed, the transformations applied (e.g., converting from .xls to cvs and converting character strings such as “$1,250,321.21” to floats or date strings to date objects), subsequent changes, who handled the data object and where it can be found in a repository are all things that enhance the analyst’s own ability to reproduce results.</description>
+    </item>
+    
+    <item>
       <title>Missing Inaction--locating data holes</title>
       <link>/2019/09/18/data-holes/</link>
       <pubDate>Wed, 18 Sep 2019 00:00:00 +0000</pubDate>
