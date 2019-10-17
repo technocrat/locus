@@ -1,0 +1,86 @@
+---
+title: "Metadata for datasets"
+author: Richard Careaga
+date: "2018-05-20"
+slug:  Metadata for datasets
+categories:
+  - Data Science
+tags:
+  - R
+  - documentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(pander)
+```
+
+# Where does this dataset come from?
+
+> Is this the original revised data or the revised revised data?
+
+Keeping track of the provenance of data can be a challenge, especially when drawing on published sources. Keeping a record of the origin, the date accessed, the transformations applied (e.g., converting from .xls to cvs and converting character strings such as “$1,250,321.21” to floats or date strings to date objects), subsequent changes, who handled the data object and where it can be found in a repository are all things that enhance the analyst’s own ability to reproduce results.
+
+Unfortunately, notes go missing, files get mis-filed and all the other hazards that can befall research can happen. Often, one wishes for R objects with built-in metadata for that purpose.
+
+# Using mostattributes() to do attach metadata
+
+Scott Chamerlain at ropensci.org brought **attr* to my attention, which is the built-in way I was looking for originally. He also pointed me to EML, a much more elaborate approach suited for publication projects.
+
+## A minimal example
+
+### Create data frame and a separate metadata list
+
+```{r, results="asis", echo = FALSE, warning=FALSE}
+fips <- read.csv("https://tuva.s3-us-west-2.amazonaws.com/state_fips_postal.csv", header = FALSE)
+    colnames(fips) = c("state", "fip", 'id')
+    require(jsonlite) # easier to use JSON to write metadata
+    meta <- fromJSON("https://tuva.s3-us-west-2.amazonaws.com/2015-07-31-meta.json")
+```
+
+    fips <- read.csv("https://tuva.s3-us-west-2.amazonaws.com/state_fips_postal.csv", header = FALSE)
+    colnames(fips) = c("state", "fip", 'id')
+    r
+    require(jsonlite) # easier to use JSON to write metadata
+    meta <- fromJSON("https://tuva.s3-us-west-2.amazonaws.com/2015-07-31-meta.json")
+
+`r pander(meta)`
+
+### Associate the metadata with the data frame using attr
+
+    # invisibly with attr
+    x <- fips
+    attr(x, "meta") <- meta
+
+```{r, results="asis", echo = FALSE, warning=FALSE}
+    x <- fips
+    attr(x, "meta") <- meta
+``` 
+
+### By default, metadata is not displayed
+
+`r pander(x)`
+
+### Metadata has to be invoked by name
+
+    attr(x, "meta")
+
+`r pander(attr(x, "meta"))`
+
+### Associate the metadata with the data frame using mostattributes
+
+```{r, results="asis", echo = FALSE, warning=FALSE}
+x <- fips
+mostattributes(x) <- list(meta = meta)
+```
+
+    x <- fips
+    mostattributes(x) <- list(meta = meta)
+
+### The metadata now displays with the data frame
+
+    str(x)
+
+`r pander(str(x))`
+
+
