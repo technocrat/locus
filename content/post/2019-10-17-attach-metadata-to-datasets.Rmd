@@ -25,7 +25,7 @@ Unfortunately, notes go missing, files get mis-filed and all the other hazards t
 
 # Using mostattributes() to do attach metadata
 
-Scott Chamerlain at ropensci.org brought **attr* to my attention, which is the built-in way I was looking for originally. He also pointed me to EML, a much more elaborate approach suited for publication projects.
+Scott Chamerlain at ropensci.org brought **attr** to my attention, which is the built-in way I was looking for originally. He also pointed me to EML, a much more elaborate approach suited for publication projects.
 
 ## A minimal example
 
