@@ -388,7 +388,6 @@ summary {
 <pre><code>## Loading required package: jsonlite</code></pre>
 <pre><code>fips &lt;- read.csv(&quot;https://tuva.s3-us-west-2.amazonaws.com/state_fips_postal.csv&quot;, header = FALSE)
 colnames(fips) = c(&quot;state&quot;, &quot;fip&quot;, &#39;id&#39;)
-r
 require(jsonlite) # easier to use JSON to write metadata
 meta &lt;- fromJSON(&quot;https://tuva.s3-us-west-2.amazonaws.com/2015-07-31-meta.json&quot;)</code></pre>
 <table style="width:72%;">

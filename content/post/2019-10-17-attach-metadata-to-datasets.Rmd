@@ -40,7 +40,6 @@ fips <- read.csv("https://tuva.s3-us-west-2.amazonaws.com/state_fips_postal.csv"
 
     fips <- read.csv("https://tuva.s3-us-west-2.amazonaws.com/state_fips_postal.csv", header = FALSE)
     colnames(fips) = c("state", "fip", 'id')
-    r
     require(jsonlite) # easier to use JSON to write metadata
     meta <- fromJSON("https://tuva.s3-us-west-2.amazonaws.com/2015-07-31-meta.json")
 
