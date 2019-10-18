@@ -43,43 +43,34 @@ fips <- read.csv("https://tuva.s3-us-west-2.amazonaws.com/state_fips_postal.csv"
     require(jsonlite) # easier to use JSON to write metadata
     meta <- fromJSON("https://tuva.s3-us-west-2.amazonaws.com/2015-07-31-meta.json")
 
-`r pander(meta)`
+The json source file looks like this
 
-### Associate the metadata with the data frame using attr
-
-    # invisibly with attr
-    x <- fips
-    attr(x, "meta") <- meta
-
-```{r, results="asis", echo = FALSE, warning=FALSE}
-    x <- fips
-    attr(x, "meta") <- meta
-``` 
-
-### By default, metadata is not displayed
-
-`r pander(x)`
-
-### Metadata has to be invoked by name
-
-    attr(x, "meta")
-
-`r pander(attr(x, "meta"))`
+    [
+        {
+        "Accessed": "2015-07-31",
+        "GitBlame": "Richard Careaga",
+        "Contact": "technocrat@twitter",
+        "Preprocessing": "FIPS Codes for the States and District of Columbia table captured manually and converted to cvs file",
+        "Source": "https://www.census.gov/geo/reference/ansi_statetables.html",
+        "Repository": "unassigned",
+        "Version": "1.0"
+        }
+    ]
 
 ### Associate the metadata with the data frame using mostattributes
-
-```{r, results="asis", echo = FALSE, warning=FALSE}
-x <- fips
-mostattributes(x) <- list(meta = meta)
-```
 
     x <- fips
     mostattributes(x) <- list(meta = meta)
 
-### The metadata now displays with the data frame
+```{r, results="asis", echo = FALSE, warning=FALSE}
+    x <- fips
+    mostattributes(x) <- list(meta = meta)
+``` 
 
-    str(x)
+### Now metadata is displayed by default
 
-`r pander(str(x))`
+```{r}
+x
+```
 
 
