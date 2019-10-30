@@ -1,0 +1,32 @@
+---
+title: Logistic regression
+author: Richard Careaga
+date: '2019-10-30'
+slug: logistic-regression
+tags:
+- R
+- logistic regression
+categories: Data Science
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+options(blogdown.allow_knit = TRUE)
+```
+
+
+# Why learn about logistic regression?
+
+> Because the outcome, $Y$, is binary, rather than continous, we choose logistic regression, rather than linear regression.
+
+Hosmer, David W., Stanley Lemeshow, and Rodney X. Sturdivant. *Applied logistic regression*. Hoboken, New Jersey: Wiley, 2013, the standard text (**HLS**). 
+
+![HSL](https://images-na.ssl-images-amazon.com/images/I/41qT9mkbB0L._SX313_BO1,204,203,200_.jpg)
+ 
+# HSL doesn't have code examples, but it does have exercises
+
+My plan is to work the exercises in `R` and to post the results here, with the scripts available on `git.`
+
+# Also in preparation
+
+Along side those planned posts is a mini-primer to walk through a real-world dataset.
