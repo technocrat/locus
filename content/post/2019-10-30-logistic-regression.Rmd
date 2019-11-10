@@ -23,8 +23,9 @@ Hosmer, David W., Stanley Lemeshow, and Rodney X. Sturdivant. *Applied logistic 
 
 ![HSL](https://images-na.ssl-images-amazon.com/images/I/41qT9mkbB0L._SX313_BO1,204,203,200_.jpg)
  
-# HSL doesn't have code examples, but it does have figures and exercises
-My plan is to worl those in `R` and to post the resu1ts here, with the scripts available on `github.`
+# HSL doesn't have code examples, but it does have tables, figures and exercises
+
+My plan is to work those in `R` and to post the resu1ts here, with the scripts available on `github.`
 
 # Also in preparation
 
