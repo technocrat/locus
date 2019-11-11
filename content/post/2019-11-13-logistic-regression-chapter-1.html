@@ -1,0 +1,60 @@
+
+
+
+<p>title: “HSL in R, Chapter 1”
+author: “Richard Careaga”
+date: “2019-11-13”
+slug: logistic regression chapter 1
+output: html_document
+categories:
+- Data Science
+tags:
+- R
+- logistic regression
+- HSL
+—</p>
+<div id="chapter-1-of-hsl" class="section level1">
+<h1>Chapter 1 of HSL</h1>
+<p>The first chapter of HSL[^Hosmer, David W., Stanley Lemeshow, and Rodney X. Sturdivant. <em>Applied logistic regression</em>. Hoboken, New Jersey: Wiley, 2013, the standard text (<strong>HLS</strong>). This post closely follows chapter 1 of HLS, which provides no code, by providing illustrations in <code>R</code>.] introduces the logistic regression model, how to fit one, test the significance of its coefficients and calculate its confidence intervals. It also discusses other estimation methods, introduces the datasets used in the book’s examples and exercises. There are three exercises. The chapter is 33 pages long.</p>
+</div>
+<div id="figures-code" class="section level1">
+<h1>Figures code</h1>
+<div id="figure-1.1" class="section level2">
+<h2>Figure 1.1</h2>
+<p>This figure is a scatterplot of coronary heart disease against age in the CHDAGE dataset.</p>
+<pre><code>df &lt;- readr::read_tsv(&quot;CHDAGE.txt&quot;)^[Assumes that CHDAGE.txt is in your working directory.]</code></pre>
+<pre class="r"><code>p1.2</code></pre>
+<p><img src="/post/2019-11-13-logistic-regression-chapter-1_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>produced with</p>
+<pre><code>p1.2 &lt;- ggplot(data = df, aes(x = AGE, y = CHD)) + geom_point() + theme_tufte()</code></pre>
+<p>It’s also instructive to look at the results of</p>
+<pre><code>fit1.2 &lt;- lm(CHD ~ AGE, data = df)</code></pre>
+<p>in a plot produced with</p>
+<pre><code>par(mfrow=c(2,2))
+plot(fit1.2)</code></pre>
+<pre class="r"><code>#par(mfrow=c(2,2))
+#plot(fit1.2)</code></pre>
+</div>
+</div>
+<div id="exercises" class="section level1">
+<h1>Exercises</h1>
+<p>The <code>R</code> code uses the following libraries: dplyr, ggplot2, ggthemes and readr. The datasets are available as zip files at the publisher’s <a href="https://wiley.mpstechnologies.com/wiley/BOBContent/searchLPBobContent.do">data website</a> with 9780470582473 as the search term. The unzipped <code>.txt</code> files are tab delimited. It is assumed that readers are familiar with importing such datasets into <code>R</code> workspaces. Note that it will be convenient to bulk download and unzip the files into subdirectories of your workspace, due to the organization of the <a href="https://wiley.mpstechnologies.com/wiley/BOBContent/searchLPBobContent.do">data website</a>.</p>
+<div id="exercise-1" class="section level2">
+<h2>Exercise 1</h2>
+<p>Exercise 1 uses the ICU dataset described in Section 1.6.</p>
+</div>
+<div id="a" class="section level2">
+<h2>1(a)</h2>
+<div id="formula" class="section level3">
+<h3>Formula</h3>
+<pre><code>fit &lt;- glm(STA ~ AGE, data = ICU, family = binomial)</code></pre>
+<p>which can be retrieved from the <code>fit</code> object with</p>
+<pre><code>fit$call</code></pre>
+<p>Also, review Section 1.2</p>
+</div>
+<div id="why-logistic" class="section level3">
+<h3>Why logistic?</h3>
+<pre><code>See code sheet, Table 1.2</code></pre>
+</div>
+</div>
+</div>

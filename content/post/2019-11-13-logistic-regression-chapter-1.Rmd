@@ -1,6 +1,6 @@
 title: "HSL in R, Chapter 1"
 author: "Richard Careaga"
-date: "2019-10-31"
+date: "2019-11-13"
 slug: logistic regression chapter 1
 output: html_document
 categories:
@@ -87,6 +87,9 @@ means_tab <- df %>% group_by(AgeGroup) %>%  summarize(n = n(), Absent = sum(abse
 # # 
 p <- ggplot(data = means_tab, aes(x = plotpoint, y = Mean)) + xlab("Age (years)") + ylab("Coronary Heart Disease (mean)")
 
+# Exercise 1
+ICU <- readr::read_tsv("data/ICU/ICU.txt")
+
 ```
 
 # Chapter 1 of HSL
@@ -99,7 +102,7 @@ The first chapter of HSL[^Hosmer, David W., Stanley Lemeshow, and Rodney X. Stur
 
 This figure is a scatterplot of coronary heart disease against age in the CHDAGE dataset.
 
-    df <- readr::read_tsv("CHDAGE.txt")^[Assumes that CHDAGE is in your working directory.]
+    df <- readr::read_tsv("CHDAGE.txt")^[Assumes that CHDAGE.txt is in your working directory.]
 
 ```{r}
 p1.2
@@ -130,11 +133,7 @@ The `R` code uses the following libraries: dplyr, ggplot2, ggthemes and   readr.
 
 ## Exercise 1
 
-Exercise 1 uses the ICU dataset described in Section 1.6.1.
-
-```{r, results="asis", echo = FALSE, warning=FALSE}
-ICU <- readr::read_tsv("content/post/data/ICU/icu.txt")
-```
+Exercise 1 uses the ICU dataset described in Section 1.6.
 
 ## 1(a)
 
