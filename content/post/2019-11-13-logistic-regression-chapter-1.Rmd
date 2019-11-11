@@ -1,0 +1,156 @@
+title: "HSL in R, Chapter 1"
+author: "Richard Careaga"
+date: "2019-10-31"
+slug: logistic regression chapter 1
+output: html_document
+categories:
+  - Data Science
+tags:
+  - R
+  - logistic regression
+  - HSL
+---
+
+```{r setup, echo=FALSE, results='asis',warning=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(ggthemes))
+suppressPackageStartupMessages(library(kableExtra))
+suppressPackageStartupMessages(library(pander))
+suppressPackageStartupMessages(library(readr))
+suppressPackageStartupMessages(library(tidyverse))
+
+panderOptions("table.style", "rmarkdown")
+```
+
+```{r, echo=FALSE, message=FALSE}
+
+# Hosner Table 1.2 and Figure 1.2 logistic equivalent
+# of scatterplot
+
+# find the median of two ages
+
+md <- function(x,y) {median(c(x,y))}
+
+df <- readr::read_tsv("data/CHDAGE/CHDAGE.txt")
+p1.2 <- ggplot(data = df, aes(x = AGE, y = CHD)) + geom_point() + theme_tufte()
+fit1.2 <- lm(CHD ~ AGE, data = df)
+#par(mfrow=c(2,2))
+#plot(fit1.2)
+
+#p1.2
+# Classify ages into 5 or 10 year cohorts
+
+df <- df %>% mutate(cohort = ifelse(AGE < 30,1, 0))
+df <- df %>% mutate(cohort = ifelse(AGE >= 30 & AGE <= 34,2, cohort))
+df <- df %>% mutate(cohort = ifelse(AGE >= 30 & AGE <= 34,2, cohort))
+df <- df %>% mutate(cohort = ifelse(AGE >= 35 & AGE <= 39,3, cohort))
+df <- df %>% mutate(cohort = ifelse(AGE >= 40 & AGE <= 44,4, cohort))
+df <- df %>% mutate(cohort = ifelse(AGE >= 45 & AGE <= 49,5, cohort))
+df <- df %>% mutate(cohort = ifelse(AGE >= 50 & AGE <= 54,6, cohort))
+df <- df %>% mutate(cohort = ifelse(AGE >= 55 & AGE <= 59,7, cohort))
+df <- df %>% mutate(cohort = ifelse(AGE >= 60 & AGE <= 90,8, cohort))
+
+# use medians of cohort endpoints for plotting
+# medians obtained by hand using md function
+# 
+df <- df %>% mutate(plotpoint = ifelse(cohort == 1,24.5, 0))
+df <- df %>% mutate(plotpoint = ifelse(cohort == 2,32, plotpoint))
+df <- df %>% mutate(plotpoint = ifelse(cohort == 3,37, plotpoint))
+df <- df %>% mutate(plotpoint = ifelse(cohort == 4,42, plotpoint))
+df <- df %>% mutate(plotpoint = ifelse(cohort == 5,47, plotpoint))
+df <- df %>% mutate(plotpoint = ifelse(cohort == 6,52, plotpoint))
+df <- df %>% mutate(plotpoint = ifelse(cohort == 7,57, plotpoint))
+df <- df %>% mutate(plotpoint = ifelse(cohort == 8,65, plotpoint))
+
+# Create a text column for cohort lables
+
+df <- df %>% mutate(AgeGroup = ifelse(cohort == 1,"20-29", 0))
+df <- df %>% mutate(AgeGroup = ifelse(cohort == 2,"30-34", AgeGroup))
+df <- df %>% mutate(AgeGroup = ifelse(cohort == 3,"35-39", AgeGroup))
+df <- df %>% mutate(AgeGroup = ifelse(cohort == 4,"40-44", AgeGroup))
+df <- df %>% mutate(AgeGroup = ifelse(cohort == 5,"45-49", AgeGroup))
+df <- df %>% mutate(AgeGroup = ifelse(cohort == 6,"50-54", AgeGroup))
+df <- df %>% mutate(AgeGroup = ifelse(cohort == 7,"55-59", AgeGroup))
+df <- df %>% mutate(AgeGroup = ifelse(cohort == 8,"60-70", AgeGroup))
+
+# split CHD column
+
+df <- df %>% mutate(absent  = ifelse(CHD == 0,1,0))
+df <- df %>% mutate(present = ifelse(CHD == 1,1,0))
+
+# Create table with plotting information
+# 
+means_tab <- df %>% group_by(AgeGroup) %>%  summarize(n = n(), Absent = sum(absent), Present = sum(present), Mean = mean(CHD), plotpoint = mean(plotpoint)) %>% ungroup()
+# Create plot
+# # 
+p <- ggplot(data = means_tab, aes(x = plotpoint, y = Mean)) + xlab("Age (years)") + ylab("Coronary Heart Disease (mean)")
+
+```
+
+# Chapter 1 of HSL
+
+The first chapter of HSL[^Hosmer, David W., Stanley Lemeshow, and Rodney X. Sturdivant. *Applied logistic regression*. Hoboken, New Jersey: Wiley, 2013, the standard text (**HLS**). This post closely follows chapter 1 of HLS, which provides no code, by providing illustrations in `R`.] introduces the logistic regression model, how to fit one, test the significance of its coefficients and calculate its confidence intervals. It also discusses other estimation methods, introduces the datasets used in the book's examples and exercises. There are three exercises. The chapter is 33 pages long.
+
+# Figures code
+
+## Figure 1.1
+
+This figure is a scatterplot of coronary heart disease against age in the CHDAGE dataset.
+
+    df <- readr::read_tsv("CHDAGE.txt")^[Assumes that CHDAGE is in your working directory.]
+
+```{r}
+p1.2
+```
+
+produced with
+
+    p1.2 <- ggplot(data = df, aes(x = AGE, y = CHD)) + geom_point() + theme_tufte()
+    
+It's also instructive to look at the results of
+
+    fit1.2 <- lm(CHD ~ AGE, data = df)
+
+in a plot produced with
+
+    par(mfrow=c(2,2))
+    plot(fit1.2)
+
+```{r}
+#par(mfrow=c(2,2))
+#plot(fit1.2)
+```
+
+
+# Exercises
+
+The `R` code uses the following libraries: dplyr, ggplot2, ggthemes and   readr. The datasets are available as zip files at the publisher's [data website] with 9780470582473 as the search term. The unzipped `.txt` files are tab delimited. It is assumed that readers are familiar with importing such datasets into `R` workspaces. Note that it will be convenient to bulk download and unzip the files into subdirectories of your workspace, due to the organization of the [data website].
+
+## Exercise 1
+
+Exercise 1 uses the ICU dataset described in Section 1.6.1.
+
+```{r, results="asis", echo = FALSE, warning=FALSE}
+ICU <- readr::read_tsv("content/post/data/ICU/icu.txt")
+```
+
+## 1(a)
+
+### Formula
+
+    fit <- glm(STA ~ AGE, data = ICU, family = binomial)
+
+which can be retrieved from the `fit` object with
+
+    fit$call
+    
+Also, review Section 1.2
+    
+### Why logistic?
+
+    See code sheet, Table 1.2
+
+[data website]: https://wiley.mpstechnologies.com/wiley/BOBContent/searchLPBobContent.do
+
