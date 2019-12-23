@@ -95,7 +95,7 @@ ICU <- readr::read_tsv("data/ICU/ICU.txt")
 
 ```
 
-# An R Companion to Chapter 1 of Homer, Lemeshow and Sturdivant's *Applied Linear Regression*
+# An R Companion to Chapter 1 of Hosmer, Lemeshow and Sturdivant's *Applied Linear Regression*
 
 This post is an `R` illustration of the first chapter of Hosmer, David W., Stanley Lemeshow, and Rodney X. Sturdivant. *Applied logistic regression*. Hoboken, New Jersey: Wiley, 2013, the standard text (**HLS**). Chapter 1 introduces the logistic regression model, how to fit one, test the significance of its coefficients and calculate its confidence intervals. It also discusses other estimation methods, and introduces the datasets used in the book's examples and exercises. There are three exercises. The chapter is 33 pages long.
 
