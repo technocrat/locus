@@ -1,0 +1,919 @@
+---
+title: "HSL in R, Chapter 1"
+author: "Richard Careaga"
+date: "2019-12-21"
+slug: logistic regression chapter 1
+output: html_document
+categories:
+  - Data Science
+tags:
+  - R
+  - logistic regression
+  - HSL
+---
+
+<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
+<script src="/rmarkdown-libs/elevate-section-attrs/elevate-section-attrs.js"></script>
+
+
+<div id="an-r-companion-to-chapter-1-of-homer-lemeshow-and-sturdivants-applied-linear-regression" class="section level1">
+<h1>An R Companion to Chapter 1 of Homer, Lemeshow and Sturdivant’s <em>Applied Linear Regression</em></h1>
+<p>This post is an <code>R</code> illustration of the first chapter of Hosmer, David W., Stanley Lemeshow, and Rodney X. Sturdivant. <em>Applied logistic regression</em>. Hoboken, New Jersey: Wiley, 2013, the standard text (<strong>HLS</strong>). Chapter 1 introduces the logistic regression model, how to fit one, test the significance of its coefficients and calculate its confidence intervals. It also discusses other estimation methods, and introduces the datasets used in the book’s examples and exercises. There are three exercises. The chapter is 33 pages long.</p>
+</div>
+<div id="source-data" class="section level1">
+<h1>Source data</h1>
+<p>The datasets are available as zip files at the publisher’s <a href="https://wiley.mpstechnologies.com/wiley/BOBContent/searchLPBobContent.do">data website</a> with 9780470582473 as the search term. The unzipped <code>.txt</code> files are tab delimited. It is assumed that readers are familiar with importing such datasets into <code>R</code> workspaces using tools such as <code>readr::read_tsv()</code>. Note that it will be convenient to bulk download and unzip the files into subdirectories of your workspace, due to the organization of the <a href="https://wiley.mpstechnologies.com/wiley/BOBContent/searchLPBobContent.do">data website</a>.</p>
+<p>The example code assumes that a directory named <code>data</code> is a direct subdirectory of your working directory and that each dataset is in a sudirectory of <code>data</code>, as follows:</p>
+<pre>
+data
+├── APS
+    │   ├── APS_Code_Sheet.pdf
+    │   └── APS.txt
+    ├── BURN
+    │   ├── BURN1000.txt
+    │   ├── BURN13M.txt
+    │   ├── BURN_Code_Sheet.pdf
+    │   ├── BURN_EVAL_1.txt
+    │   └── BURN_EVAL_2.txt
+    ├── CHDAGE
+    │   ├── CHDAGE_Code_Sheet.pdf
+    │   └── CHDAGE.txt
+    ├── GLOW
+    │   ├── GLOW11M.txt
+    │   ├── GLOW500.txt
+    │   ├── GLOW_BONEMED.txt
+    │   ├── GLOW_Code_Sheet.pdf
+    │   ├── GLOW_MIS_Comp_Data.txt
+    │   ├── GLOW_MIS_WMissing_Data.txt
+    │   └── GLOW_RAND.txt
+    ├── ICU
+    │   ├── ICU_Data_Code_Sheet.pdf
+    │   └── ICU.txt
+    ├── LOWBWT
+    │   ├── LOWBWT_Code_Sheet.pdf
+    │   └── LOWBWT.txt
+    ├── MYOPIA
+    │   ├── MYOPIA_Code_Sheet.pdf
+    │   └── MYOPIA.txt
+    ├── NHANES
+    │   ├── NHANES_Code_Sheet.pdf
+    │   └── NHANES.txt
+    ├── POLYPHARM
+    │   ├── POLYPHARM_Code_Sheet.pdf
+    │   └── POLYPHARM.txt
+    ├── Scale Example
+    │   ├── Scale.Example.code.sheet.docx
+    │   ├── Scale.Example.code.sheet.pdf
+    │   ├── Scale_Example.out
+    │   ├── Scale_Example.tab.txt
+    │   ├── Scale_Example.txt
+    │   └── Scale_Example.xlsx
+</pre>
+</div>
+<div id="code-for-text-tables-and-figures" class="section level1">
+<h1>Code for text tables and figures</h1>
+<div id="section-1.1" class="section level2">
+<h2>Section 1.1</h2>
+<div id="table-1.1" class="section level3">
+<h3>Table 1.1</h3>
+<p>Table 1.1 displays the 100 records of the CHDAGE dataset with a constructed age group column, <code>AGEGRP</code>.</p>
+<pre><code>chdage &lt;- readr::read_tsv(&quot;data/CHDAGE/CHDAGE.txt&quot;)
+
+# Classify ages into 5- or 10-year cohorts
+
+df1.1 &lt;-  chdage %&gt;% mutate(cohort = ifelse(AGE &lt; 30,1, 0))
+df1.1 &lt;- df1.1 %&gt;% mutate(cohort = ifelse(AGE &gt;= 30 &amp; AGE &lt;= 34,2, cohort))
+df1.1 &lt;- df1.1 %&gt;% mutate(cohort = ifelse(AGE &gt;= 30 &amp; AGE &lt;= 34,2, cohort))
+df1.1 &lt;- df1.1 %&gt;% mutate(cohort = ifelse(AGE &gt;= 35 &amp; AGE &lt;= 39,3, cohort))
+df1.1 &lt;- df1.1 %&gt;% mutate(cohort = ifelse(AGE &gt;= 40 &amp; AGE &lt;= 44,4, cohort))
+df1.1 &lt;- df1.1 %&gt;% mutate(cohort = ifelse(AGE &gt;= 45 &amp; AGE &lt;= 49,5, cohort))
+df1.1 &lt;- df1.1 %&gt;% mutate(cohort = ifelse(AGE &gt;= 50 &amp; AGE &lt;= 54,6, cohort))
+df1.1 &lt;- df1.1 %&gt;% mutate(cohort = ifelse(AGE &gt;= 55 &amp; AGE &lt;= 59,7, cohort))
+df1.1 &lt;- df1.1 %&gt;% mutate(cohort = ifelse(AGE &gt;= 60 &amp; AGE &lt;= 90,8, cohort)) 
+
+# use medians of cohort endpoints for plotting
+    # medians obtained by hand using md function
+    # 
+    df1.2 &lt;- df1.1 %&gt;% mutate(plotpoint = ifelse(cohort == 1,24.5, 0))
+    df1.2 &lt;- df1.2 %&gt;% mutate(plotpoint = ifelse(cohort == 2,32, plotpoint))
+    df1.2 &lt;- df1.2 %&gt;% mutate(plotpoint = ifelse(cohort == 3,37, plotpoint))
+    df1.2 &lt;- df1.2 %&gt;% mutate(plotpoint = ifelse(cohort == 4,42, plotpoint))
+    df1.2 &lt;- df1.2 %&gt;% mutate(plotpoint = ifelse(cohort == 5,47, plotpoint))
+    df1.2 &lt;- df1.2 %&gt;% mutate(plotpoint = ifelse(cohort == 6,52, plotpoint))
+    df1.2 &lt;- df1.2 %&gt;% mutate(plotpoint = ifelse(cohort == 7,57, plotpoint))
+    df1.2 &lt;- df1.2 %&gt;% mutate(plotpoint = ifelse(cohort == 8,65, plotpoint))
+
+    # Create a text column for cohort lables
+
+    df1.2 &lt;- df1.2 %&gt;% mutate(AGEGRP = ifelse(cohort == 1,&quot;20-29&quot;, 0))
+    df1.2 &lt;- df1.2 %&gt;% mutate(AGEGRP = ifelse(cohort == 2,&quot;30-34&quot;, AGEGRP))
+    df1.2 &lt;- df1.2 %&gt;% mutate(AGEGRP = ifelse(cohort == 3,&quot;35-39&quot;, AGEGRP))
+    df1.2 &lt;- df1.2 %&gt;% mutate(AGEGRP = ifelse(cohort == 4,&quot;40-44&quot;, AGEGRP))
+    df1.2 &lt;- df1.2 %&gt;% mutate(AGEGRP = ifelse(cohort == 5,&quot;45-49&quot;, AGEGRP))
+    df1.2 &lt;- df1.2 %&gt;% mutate(AGEGRP = ifelse(cohort == 6,&quot;50-54&quot;, AGEGRP))
+    df1.2 &lt;- df1.2 %&gt;% mutate(AGEGRP = ifelse(cohort == 7,&quot;55-59&quot;, AGEGRP))
+    df1.2 &lt;- df1.2 %&gt;% mutate(AGEGRP = ifelse(cohort == 8,&quot;60-70&quot;, AGEGRP))
+
+    # split CHD column
+
+    df1.2 &lt;- df1.2 %&gt;% mutate(absent  = ifelse(CHD == 0,1,0))
+    df1.2 &lt;- df1.2 %&gt;% mutate(present = ifelse(CHD == 1,1,0))</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="center">ID</th>
+<th align="center">AGE</th>
+<th align="center">AGEGRP</th>
+<th align="center">CHD</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">1</td>
+<td align="center">20</td>
+<td align="center">20-29</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">2</td>
+<td align="center">23</td>
+<td align="center">20-29</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">3</td>
+<td align="center">24</td>
+<td align="center">20-29</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">5</td>
+<td align="center">25</td>
+<td align="center">20-29</td>
+<td align="center">1</td>
+</tr>
+<tr class="odd">
+<td align="center">4</td>
+<td align="center">25</td>
+<td align="center">20-29</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">7</td>
+<td align="center">26</td>
+<td align="center">20-29</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">6</td>
+<td align="center">26</td>
+<td align="center">20-29</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">9</td>
+<td align="center">28</td>
+<td align="center">20-29</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">8</td>
+<td align="center">28</td>
+<td align="center">20-29</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">10</td>
+<td align="center">29</td>
+<td align="center">20-29</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">11</td>
+<td align="center">30</td>
+<td align="center">30-34</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">13</td>
+<td align="center">30</td>
+<td align="center">30-34</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">16</td>
+<td align="center">30</td>
+<td align="center">30-34</td>
+<td align="center">1</td>
+</tr>
+<tr class="even">
+<td align="center">14</td>
+<td align="center">30</td>
+<td align="center">30-34</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">15</td>
+<td align="center">30</td>
+<td align="center">30-34</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">12</td>
+<td align="center">30</td>
+<td align="center">30-34</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">18</td>
+<td align="center">32</td>
+<td align="center">30-34</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">17</td>
+<td align="center">32</td>
+<td align="center">30-34</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">19</td>
+<td align="center">33</td>
+<td align="center">30-34</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">20</td>
+<td align="center">33</td>
+<td align="center">30-34</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">24</td>
+<td align="center">34</td>
+<td align="center">30-34</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">22</td>
+<td align="center">34</td>
+<td align="center">30-34</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">23</td>
+<td align="center">34</td>
+<td align="center">30-34</td>
+<td align="center">1</td>
+</tr>
+<tr class="even">
+<td align="center">21</td>
+<td align="center">34</td>
+<td align="center">30-34</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">25</td>
+<td align="center">34</td>
+<td align="center">30-34</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">27</td>
+<td align="center">35</td>
+<td align="center">35-39</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">26</td>
+<td align="center">35</td>
+<td align="center">35-39</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">29</td>
+<td align="center">36</td>
+<td align="center">35-39</td>
+<td align="center">1</td>
+</tr>
+<tr class="odd">
+<td align="center">28</td>
+<td align="center">36</td>
+<td align="center">35-39</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">30</td>
+<td align="center">36</td>
+<td align="center">35-39</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">32</td>
+<td align="center">37</td>
+<td align="center">35-39</td>
+<td align="center">1</td>
+</tr>
+<tr class="even">
+<td align="center">33</td>
+<td align="center">37</td>
+<td align="center">35-39</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">31</td>
+<td align="center">37</td>
+<td align="center">35-39</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">35</td>
+<td align="center">38</td>
+<td align="center">35-39</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">34</td>
+<td align="center">38</td>
+<td align="center">35-39</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">37</td>
+<td align="center">39</td>
+<td align="center">35-39</td>
+<td align="center">1</td>
+</tr>
+<tr class="odd">
+<td align="center">36</td>
+<td align="center">39</td>
+<td align="center">35-39</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">39</td>
+<td align="center">40</td>
+<td align="center">40-44</td>
+<td align="center">1</td>
+</tr>
+<tr class="odd">
+<td align="center">38</td>
+<td align="center">40</td>
+<td align="center">40-44</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">41</td>
+<td align="center">41</td>
+<td align="center">40-44</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">40</td>
+<td align="center">41</td>
+<td align="center">40-44</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">43</td>
+<td align="center">42</td>
+<td align="center">40-44</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">44</td>
+<td align="center">42</td>
+<td align="center">40-44</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">45</td>
+<td align="center">42</td>
+<td align="center">40-44</td>
+<td align="center">1</td>
+</tr>
+<tr class="odd">
+<td align="center">42</td>
+<td align="center">42</td>
+<td align="center">40-44</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">46</td>
+<td align="center">43</td>
+<td align="center">40-44</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">47</td>
+<td align="center">43</td>
+<td align="center">40-44</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">48</td>
+<td align="center">43</td>
+<td align="center">40-44</td>
+<td align="center">1</td>
+</tr>
+<tr class="odd">
+<td align="center">50</td>
+<td align="center">44</td>
+<td align="center">40-44</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">51</td>
+<td align="center">44</td>
+<td align="center">40-44</td>
+<td align="center">1</td>
+</tr>
+<tr class="odd">
+<td align="center">52</td>
+<td align="center">44</td>
+<td align="center">40-44</td>
+<td align="center">1</td>
+</tr>
+<tr class="even">
+<td align="center">49</td>
+<td align="center">44</td>
+<td align="center">40-44</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">53</td>
+<td align="center">45</td>
+<td align="center">45-49</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">54</td>
+<td align="center">45</td>
+<td align="center">45-49</td>
+<td align="center">1</td>
+</tr>
+<tr class="odd">
+<td align="center">55</td>
+<td align="center">46</td>
+<td align="center">45-49</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">56</td>
+<td align="center">46</td>
+<td align="center">45-49</td>
+<td align="center">1</td>
+</tr>
+<tr class="odd">
+<td align="center">59</td>
+<td align="center">47</td>
+<td align="center">45-49</td>
+<td align="center">1</td>
+</tr>
+<tr class="even">
+<td align="center">58</td>
+<td align="center">47</td>
+<td align="center">45-49</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">57</td>
+<td align="center">47</td>
+<td align="center">45-49</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">60</td>
+<td align="center">48</td>
+<td align="center">45-49</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">62</td>
+<td align="center">48</td>
+<td align="center">45-49</td>
+<td align="center">1</td>
+</tr>
+<tr class="even">
+<td align="center">61</td>
+<td align="center">48</td>
+<td align="center">45-49</td>
+<td align="center">1</td>
+</tr>
+<tr class="odd">
+<td align="center">65</td>
+<td align="center">49</td>
+<td align="center">45-49</td>
+<td align="center">1</td>
+</tr>
+<tr class="even">
+<td align="center">63</td>
+<td align="center">49</td>
+<td align="center">45-49</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">64</td>
+<td align="center">49</td>
+<td align="center">45-49</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">67</td>
+<td align="center">50</td>
+<td align="center">50-54</td>
+<td align="center">1</td>
+</tr>
+<tr class="odd">
+<td align="center">66</td>
+<td align="center">50</td>
+<td align="center">50-54</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">68</td>
+<td align="center">51</td>
+<td align="center">50-54</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">70</td>
+<td align="center">52</td>
+<td align="center">50-54</td>
+<td align="center">1</td>
+</tr>
+<tr class="even">
+<td align="center">69</td>
+<td align="center">52</td>
+<td align="center">50-54</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">71</td>
+<td align="center">53</td>
+<td align="center">50-54</td>
+<td align="center">1</td>
+</tr>
+<tr class="even">
+<td align="center">72</td>
+<td align="center">53</td>
+<td align="center">50-54</td>
+<td align="center">1</td>
+</tr>
+<tr class="odd">
+<td align="center">73</td>
+<td align="center">54</td>
+<td align="center">50-54</td>
+<td align="center">1</td>
+</tr>
+<tr class="even">
+<td align="center">75</td>
+<td align="center">55</td>
+<td align="center">55-59</td>
+<td align="center">1</td>
+</tr>
+<tr class="odd">
+<td align="center">76</td>
+<td align="center">55</td>
+<td align="center">55-59</td>
+<td align="center">1</td>
+</tr>
+<tr class="even">
+<td align="center">74</td>
+<td align="center">55</td>
+<td align="center">55-59</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">78</td>
+<td align="center">56</td>
+<td align="center">55-59</td>
+<td align="center">1</td>
+</tr>
+<tr class="even">
+<td align="center">77</td>
+<td align="center">56</td>
+<td align="center">55-59</td>
+<td align="center">1</td>
+</tr>
+<tr class="odd">
+<td align="center">79</td>
+<td align="center">56</td>
+<td align="center">55-59</td>
+<td align="center">1</td>
+</tr>
+<tr class="even">
+<td align="center">82</td>
+<td align="center">57</td>
+<td align="center">55-59</td>
+<td align="center">1</td>
+</tr>
+<tr class="odd">
+<td align="center">84</td>
+<td align="center">57</td>
+<td align="center">55-59</td>
+<td align="center">1</td>
+</tr>
+<tr class="even">
+<td align="center">80</td>
+<td align="center">57</td>
+<td align="center">55-59</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">85</td>
+<td align="center">57</td>
+<td align="center">55-59</td>
+<td align="center">1</td>
+</tr>
+<tr class="even">
+<td align="center">81</td>
+<td align="center">57</td>
+<td align="center">55-59</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">83</td>
+<td align="center">57</td>
+<td align="center">55-59</td>
+<td align="center">1</td>
+</tr>
+<tr class="even">
+<td align="center">86</td>
+<td align="center">58</td>
+<td align="center">55-59</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">87</td>
+<td align="center">58</td>
+<td align="center">55-59</td>
+<td align="center">1</td>
+</tr>
+<tr class="even">
+<td align="center">88</td>
+<td align="center">58</td>
+<td align="center">55-59</td>
+<td align="center">1</td>
+</tr>
+<tr class="odd">
+<td align="center">90</td>
+<td align="center">59</td>
+<td align="center">55-59</td>
+<td align="center">1</td>
+</tr>
+<tr class="even">
+<td align="center">89</td>
+<td align="center">59</td>
+<td align="center">55-59</td>
+<td align="center">1</td>
+</tr>
+<tr class="odd">
+<td align="center">91</td>
+<td align="center">60</td>
+<td align="center">60-70</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">92</td>
+<td align="center">60</td>
+<td align="center">60-70</td>
+<td align="center">1</td>
+</tr>
+<tr class="odd">
+<td align="center">93</td>
+<td align="center">61</td>
+<td align="center">60-70</td>
+<td align="center">1</td>
+</tr>
+<tr class="even">
+<td align="center">94</td>
+<td align="center">62</td>
+<td align="center">60-70</td>
+<td align="center">1</td>
+</tr>
+<tr class="odd">
+<td align="center">95</td>
+<td align="center">62</td>
+<td align="center">60-70</td>
+<td align="center">1</td>
+</tr>
+<tr class="even">
+<td align="center">96</td>
+<td align="center">63</td>
+<td align="center">60-70</td>
+<td align="center">1</td>
+</tr>
+<tr class="odd">
+<td align="center">98</td>
+<td align="center">64</td>
+<td align="center">60-70</td>
+<td align="center">1</td>
+</tr>
+<tr class="even">
+<td align="center">97</td>
+<td align="center">64</td>
+<td align="center">60-70</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">99</td>
+<td align="center">65</td>
+<td align="center">60-70</td>
+<td align="center">1</td>
+</tr>
+<tr class="even">
+<td align="center">100</td>
+<td align="center">69</td>
+<td align="center">60-70</td>
+<td align="center">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="figure-1.1" class="section level3">
+<h3>Figure 1.1</h3>
+<p>Figure 1.1 is a scatterplot of coronary heart disease against age in the CHDAGE dataset.</p>
+<p><img src="/post/2019-12-21-logistic-regression-chapter-1_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>produced with</p>
+<pre><code>p1.1 &lt;- ggplot(data = chdage, aes(x = AGE, y = CHD)) + geom_point() + theme_tufte()</code></pre>
+<p><em>Commentary:</em> It’s also instructive to look at the results of</p>
+<pre><code>fit1.1 &lt;- lm(CHD ~ AGE, data = chdage)</code></pre>
+<p>in a plot produced with</p>
+<pre><code>par(mfrow=c(2,2))
+plot(fit1.1)</code></pre>
+<p><img src="/post/2019-12-21-logistic-regression-chapter-1_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>compared to a plot from the <code>mtcars</code> dataset of <code>mpg ~ hp</code></p>
+<p><img src="/post/2019-12-21-logistic-regression-chapter-1_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="table-1.2" class="section level3">
+<h3>Table 1.2</h3>
+<p>Table 1.2 shows the frequency and means of CHD (coronary heart disease)in the CHDAGE dataset by age cohort, produced as follows:</p>
+<pre><code>    # Create table with plotting information
+    # 
+    means_tab &lt;- df1.2 %&gt;% group_by(AGEGRP) %&gt;%  
+      summarize(n = n(), Absent = sum(absent),
+      Present = sum(present), Mean = mean(CHD),
+      plotpoint = mean(plotpoint)) %&gt;% ungroup()
+    </code></pre>
+<p><img src="/post/2019-12-21-logistic-regression-chapter-1_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+<div id="table-1.3" class="section level3">
+<h3>Table 1.3</h3>
+<p>Table 1.3 presents the result of a logistic model of the CHD against age in the CHDAGE dataset. The equivalent is produced in <code>R</code> by the <code>glm</code> function in <code>{stats}</code> as follows:</p>
+<pre class="r"><code>chdfit &lt;- glm(CHD ~ AGE, data = chdage, family = binomial(link =
+&quot;logit&quot;))
+summary(chdfit)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = CHD ~ AGE, family = binomial(link = &quot;logit&quot;), data = chdage)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.9718  -0.8456  -0.4576   0.8253   2.2859  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept) -5.30945    1.13365  -4.683 2.82e-06 ***
+## AGE          0.11092    0.02406   4.610 4.02e-06 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 136.66  on 99  degrees of freedom
+## Residual deviance: 107.35  on 98  degrees of freedom
+## AIC: 111.35
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<p>Note that the standard <code>summary</code> for <code>glm</code> does not produce log likelihood, and it is necessary to call <code>logLik</code> separately.</p>
+<pre class="r"><code>logLik(chdfit)</code></pre>
+<pre><code>## &#39;log Lik.&#39; -53.67655 (df=2)</code></pre>
+<p>The text identifies three methods of calculating confidence intervals for the model fit of the coefficients: the Wald-based confidence interval estimator and the likelihood ratio test on pages 18-19, and the “Score test” on page 14.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> I refer to these as <code>waldscore</code>, <code>vmscore</code><a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> and <code>raoscore</code>.</p>
+<p>Given a fitted model, two are easy to calculate:</p>
+<pre class="r"><code>library(MASS)
+waldscore &lt;- confint.default(chdfit)
+waldscore</code></pre>
+<pre><code>##                   2.5 %     97.5 %
+## (Intercept) -7.53137370 -3.0875331
+## AGE          0.06376477  0.1580775</code></pre>
+<pre class="r"><code>vmscore &lt;- confint(chdfit)</code></pre>
+<pre><code>## Waiting for profiling to be done...</code></pre>
+<pre class="r"><code>vmscore</code></pre>
+<pre><code>##                   2.5 %     97.5 %
+## (Intercept) -7.72587162 -3.2461547
+## AGE          0.06693158  0.1620067</code></pre>
+<p>The third depends on the <code>profileModel</code> package</p>
+<pre class="r"><code>library(profileModel)
+raoscore &lt;- profConfint(profileModel(chdfit, quantile=qchisq(0.95, 1), objective = &quot;RaoScoreStatistic&quot;, X = model.matrix(chdfit)))</code></pre>
+<pre><code>## Preliminary iteration .. Done
+## 
+## Profiling for parameter (Intercept) ... Done
+## Profiling for parameter AGE ... Done</code></pre>
+<pre class="r"><code>attr(raoscore, &quot;dimnames&quot;)[2][[1]] &lt;- c(&quot;2.5 %&quot;,&quot;97.5 %&quot;)
+raoscore &lt;- raoscore[,1:2]
+raoscore</code></pre>
+<pre><code>##                   2.5 %     97.5 %
+## (Intercept) -7.50801115 -3.1218722
+## AGE          0.06448682  0.1575531</code></pre>
+</div>
+<div id="table-1.4" class="section level3">
+<h3>Table 1.4</h3>
+<p>Table 1.4., the covariance matrix of the estimated coefficients in Table 1.3, is produced by in equivalent form by</p>
+<pre class="r"><code>vcov(chdfit)</code></pre>
+<pre><code>##             (Intercept)           AGE
+## (Intercept)  1.28517059 -0.0266769747
+## AGE         -0.02667697  0.0005788748</code></pre>
+</div>
+<div id="figure-1.3" class="section level3">
+<h3>Figure 1.3</h3>
+<p>Figure 1.3 plots the profile log likelihood for the AGE variable in the CDHAGE dataset. <em>See</em> the discussion on page 19 of HLS. It can be produced with the following code</p>
+<pre class="r"><code>library(dplyr)
+library(purrr)
+library(ggplot2)
+
+
+get_profile_glm &lt;- function(aglm){
+  prof &lt;- MASS:::profile.glm(aglm, del = .05, maxsteps = 52)
+  disp &lt;- attr(prof,&quot;summary&quot;)$dispersion
+  purrr::imap_dfr(prof, .f = ~data.frame(par = .y,
+                  deviance=.x$z^2*disp+aglm$deviance, 
+                  values = as.data.frame(.x$par.vals)[[.y]], stringsAsFactors = FALSE))
+}
+
+chdage &lt;- readr::read_tsv(&quot;data/CHDAGE/CHDAGE.txt&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   ID = col_double(),
+##   AGE = col_double(),
+##   CHD = col_double()
+## )</code></pre>
+<pre class="r"><code>chdfit &lt;- glm(CHD ~ AGE, data = chdage, family = binomial(link = &quot;logit&quot;))
+
+
+pll &lt;- get_profile_glm(chdfit) %&gt;% filter(par == &quot;AGE&quot;) %&gt;% mutate(beta = values) %&gt;% mutate(pll = deviance * -0.5) %&gt;% dplyr::select(-c(par,values, deviance))
+
+asymmetry &lt;- function(x) {
+  ci &lt;- confint(x, level = 0.95)
+  ci_lower &lt;- ci[2,1]
+  ci_upper &lt;- ci[2,2]
+  coeff &lt;- x$coefficients[2]
+  round(100 * ((ci_upper - coeff) - (coeff - ci_lower))/(ci_upper - ci_lower), 2)
+}
+
+asym &lt;- asymmetry(chdfit)</code></pre>
+<pre><code>## Waiting for profiling to be done...</code></pre>
+<pre class="r"><code>ggplot(data = pll, aes(x = beta, y = pll)) + 
+  geom_line() + 
+  scale_x_continuous(breaks = c(0.06, 0.08, 0.10, 0.12, 0.14, 0.16)) + 
+  scale_y_continuous(breaks = c(-57, -56, -55, -54)) + 
+  xlab(&quot;Coefficient for age&quot;) + 
+  ylab(&quot;Profile log-likelihood function&quot;) + 
+  geom_vline(xintercept = confint(chdfit)[2,1]) + 
+  geom_vline(xintercept = confint(chdfit)[2,2]) + 
+  geom_hline(yintercept = (logLik(chdfit) - (qchisq(0.95, df = 1)/2))) + 
+  theme_classic() + 
+  ggtitle(paste(&quot;Asymmetry =&quot;, scales::percent(asym/100, accuracy = 0.1))) + theme(plot.title = element_text(hjust = 0.5))</code></pre>
+<pre><code>## Waiting for profiling to be done...</code></pre>
+<pre><code>## Waiting for profiling to be done...</code></pre>
+<p><img src="/post/2019-12-21-logistic-regression-chapter-1_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p>For a brief discussion of development of the <code>get_profile_glm</code> function, <em>see</em> this <a href="https://stackoverflow.com/questions/59345103/how-to-increase-the-number-of-values-returned-by-r-massprofile">stackoverflow post</a>. Note that the arguments to</p>
+<pre><code>prof &lt;- MASS:::profile.glm(chdfit, del = .05, maxsteps = 52)</code></pre>
+<p>were hand selected specifically for this example and will likely require adjustment for different data.</p>
+</div>
+</div>
+</div>
+<div id="commentary" class="section level1">
+<h1>Commentary</h1>
+<p>Chapter 1 is foundational. Understanding it adequately is key to further progress. Parsing the equations is part of the task. It is helpful to write them out in an equation formatter, such as <span class="math inline">\(\LaTeX\)</span>, which is built into <code>RStudio</code>.</p>
+<div id="equation-1.1" class="section level2">
+<h2>Equation 1.1</h2>
+<p>To produce</p>
+<p><span class="math display">\[\pi(x) = \frac{e^{\beta{_0}+\beta{_1}x}}{1 + e^{\beta{_0}+\beta{_1}x}}\]</span></p>
+<p>and</p>
+<p><span class="math display">\[g(x) = ln\Bigl[\frac{\pi(x)}{1 - \pi(x)}\Big] = \beta_0 +\beta_1x\]</span></p>
+<p>write</p>
+<pre>$$pi(x) = \frac{e^{\beta{_0}+\beta{_1}x}}{1 + e^{\beta{_0}+\beta{_1}$$</pre>
+<p>and</p>
+<pre>$$g(x) = ln\Bigl[\frac{\pi(x)6}{1 - \pi(x)}\Big] = \beta_0 +\beta_1x$$</pre>
+</div>
+<div id="equation-1.2" class="section level2">
+<h2>Equation 1.2</h2>
+<p><span class="math display">\[\pi(x_i)^{y_i}[1 - \pi(x_i)]^{1-y_i}\]</span></p>
+</div>
+<div id="equation-1.3" class="section level2">
+<h2>Equation 1.3</h2>
+<p><span class="math display">\[l\beta = \prod_{i = 1}^n\pi(x)^{y_i}[1 - \pi(x)]^{1-y_i}, n = 200\]</span></p>
+</div>
+<div id="equation-1.4" class="section level2">
+<h2>Equation 1.4</h2>
+<p><span class="math display">\[L(\beta) = ln[l(\beta)] = \sum_{i = 1}^{n}[y_i, ln[\pi(x_i)] + (1 - y_i)ln[1 -\pi(x-i)])\]</span></p>
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Why <em>S</em>core is capitalized is somewhat of a mystery, since it was developed by Rao.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>After Venzon and Moolgavkar, whose underlying methodology is the basis.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
