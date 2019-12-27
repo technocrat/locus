@@ -55,7 +55,7 @@ my_data <- tibble(type=rep(c(1:2), each= 9), hour= rep(1:9, 2), event = c(1,1,1,
 my_data
 ```
 
-Let `1` in column `event` indicate success and `0` failure. How when does each string of successes turn into failure?
+Let `1` in column `event` indicate success and `0` failure. Where  does each string of successes turn into failure?
 
 ```{r}
 runs <- rle(my_data$event)

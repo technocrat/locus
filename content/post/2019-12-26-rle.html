@@ -67,7 +67,7 @@ my_data</code></pre>
 ## 16     2     7     0
 ## 17     2     8     1
 ## 18     2     9     0</code></pre>
-<p>Let <code>1</code> in column <code>event</code> indicate success and <code>0</code> failure. How when does each string of successes turn into failure?</p>
+<p>Let <code>1</code> in column <code>event</code> indicate success and <code>0</code> failure. Where does each string of successes turn into failure?</p>
 <pre class="r"><code>runs &lt;- rle(my_data$event)
 runs &lt;- tibble(runs$lengths, runs$values)
 colnames(runs) &lt;- c(&quot;lengths&quot;, &quot;values&quot;)
