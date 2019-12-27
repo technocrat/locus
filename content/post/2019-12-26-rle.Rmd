@@ -76,7 +76,7 @@ my_data[result$indices,]
 ```
 
 
-The variable `type = 1` had one string of successes that ended a hour three, `type = 2` had three ending at hours two, six and eight.
+The variable `type = 1` had one string of successes that ended at hour three, `type = 2` had three ending at hours two, six and eight.
 
 More interesting, of course, is the case where `hour` is a `datetime` object and you can bring date arithmetic into play. 
 
