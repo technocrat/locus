@@ -19,8 +19,6 @@ A common task is to isolate records when some condition changes. Failure analysi
 
 The sometimes overlooked `which()` provides one part of the solution. Consider a simple case of two vectors, easily combinable into a data frame, one of which indicates a classification and the other, whether or not that classification is present.
 
-Consider a simple case of two vectors, easily combinable into a data frame, one of which indicates a classification and the other, whether or not that classification is present.
-
 ```{r, echo=TRUE}
 genres <- c("Action", "Animation", "Comedy", "Documentary", "Romance", "Short")
 row_vector <- c(0,0,1,1,0,0,0)

@@ -17,7 +17,6 @@ tags:
 
 <p>A common task is to isolate records when some condition changes. Failure analysis is an obvious example. When working in a <code>tidy</code> environment, this isn’t always easy because of its strong column bias. Looking back at previous rows is clunky, at best.</p>
 <p>The sometimes overlooked <code>which()</code> provides one part of the solution. Consider a simple case of two vectors, easily combinable into a data frame, one of which indicates a classification and the other, whether or not that classification is present.</p>
-<p>Consider a simple case of two vectors, easily combinable into a data frame, one of which indicates a classification and the other, whether or not that classification is present.</p>
 <pre class="r"><code>genres &lt;- c(&quot;Action&quot;, &quot;Animation&quot;, &quot;Comedy&quot;, &quot;Documentary&quot;, &quot;Romance&quot;, &quot;Short&quot;)
 row_vector &lt;- c(0,0,1,1,0,0,0)
 indices &lt;-min(which(row_vector == TRUE))
