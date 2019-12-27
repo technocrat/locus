@@ -1,0 +1,129 @@
+---
+title: "What happened to the streak? rle: run length encoding"
+author: "Richard Careaga"
+date: "2019-12-26"
+slug: run length encoding
+output: html_document
+categories:
+  - Data Science
+tags:
+  - R
+  - run length encoding
+---
+
+<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
+<script src="/rmarkdown-libs/elevate-section-attrs/elevate-section-attrs.js"></script>
+
+
+<p>A common task is to isolate records when some condition changes. Failure analysis is an obvious example. When working in a <code>tidy</code> environment, this isn’t always easy because of its strong column bias. Looking back at previous rows is clunky, at best.</p>
+<p>The sometimes overlooked <code>which()</code> provides one part of the solution. Consider a simple case of two vectors, easily combinable into a data frame, one of which indicates a classification and the other, whether or not that classification is present.</p>
+<p>Consider a simple case of two vectors, easily combinable into a data frame, one of which indicates a classification and the other, whether or not that classification is present.</p>
+<pre class="r"><code>genres &lt;- c(&quot;Action&quot;, &quot;Animation&quot;, &quot;Comedy&quot;, &quot;Documentary&quot;, &quot;Romance&quot;, &quot;Short&quot;)
+row_vector &lt;- c(0,0,1,1,0,0,0)
+indices &lt;-min(which(row_vector == TRUE))
+indices</code></pre>
+<pre><code>## [1] 3</code></pre>
+<p>Both <code>genres</code> and <code>row_vector</code> are equal-length character and numeric vectors and the correspondence depends on position, with the <code>Action 0</code> pair being the first and <code>Romance 0</code> the last. Python users will recognize this as a <code>hash</code>.</p>
+<p>The <code>indices</code> atomic (single element) vector applies, working from the inside out, the <code>which()</code> function to select the elements of <code>row_vector</code> that are <code>TRUE</code>, which evaluates to <code>1</code> and <code>min</code> finds the position of the first among that subset. So, we end up with <code>3</code> and <code>genres[3]</code> evaluates to <strong>Comedy</strong>.</p>
+<p>Using the positions of elements in one vector to identify elements in another provides a way to use <code>rle()</code>, the run-length encoding function.</p>
+<p>What <code>rle</code> does is to keep track of the number of times an element in a vector appears repeated zero or more times.</p>
+<p>As usual, it helps to run the <code>help()</code> example, with some inspection:</p>
+<pre class="r"><code>x &lt;- rev(rep(6:10, 1:5))
+x</code></pre>
+<pre><code>##  [1] 10 10 10 10 10  9  9  9  9  8  8  8  7  7  6</code></pre>
+<pre class="r"><code>y &lt;- rle(x)
+y</code></pre>
+<pre><code>## Run Length Encoding
+##   lengths: int [1:5] 5 4 3 2 1
+##   values : int [1:5] 10 9 8 7 6</code></pre>
+<pre class="r"><code>str(y)</code></pre>
+<pre><code>## List of 2
+##  $ lengths: int [1:5] 5 4 3 2 1
+##  $ values : int [1:5] 10 9 8 7 6
+##  - attr(*, &quot;class&quot;)= chr &quot;rle&quot;</code></pre>
+<p>The two pieces of <code>y</code>, <code>y$lengths</code> (or <code>y[1]</code>) and <code>y$values</code> tell us that there are five repetitions of 10, four of 9, etc.</p>
+<p>Let’s create a simple data frame</p>
+<pre class="r"><code>suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(tibble)) 
+my_data &lt;- tibble(type=rep(c(1:2), each= 9), hour= rep(1:9, 2), event = c(1,1,1,0,0,0,0,1,1,1,1,0,0,0,1,0,1,0))
+my_data</code></pre>
+<pre><code>## # A tibble: 18 x 3
+##     type  hour event
+##    &lt;int&gt; &lt;int&gt; &lt;dbl&gt;
+##  1     1     1     1
+##  2     1     2     1
+##  3     1     3     1
+##  4     1     4     0
+##  5     1     5     0
+##  6     1     6     0
+##  7     1     7     0
+##  8     1     8     1
+##  9     1     9     1
+## 10     2     1     1
+## 11     2     2     1
+## 12     2     3     0
+## 13     2     4     0
+## 14     2     5     0
+## 15     2     6     1
+## 16     2     7     0
+## 17     2     8     1
+## 18     2     9     0</code></pre>
+<p>Let <code>1</code> in column <code>event</code> indicate success and <code>0</code> failure. How when does each string of successes turn into failure?</p>
+<pre class="r"><code>runs &lt;- rle(my_data$event)
+runs &lt;- tibble(runs$lengths, runs$values)
+colnames(runs) &lt;- c(&quot;lengths&quot;, &quot;values&quot;)
+runs</code></pre>
+<pre><code>## # A tibble: 8 x 2
+##   lengths values
+##     &lt;int&gt;  &lt;dbl&gt;
+## 1       3      1
+## 2       4      0
+## 3       4      1
+## 4       3      0
+## 5       1      1
+## 6       1      0
+## 7       1      1
+## 8       1      0</code></pre>
+<pre class="r"><code>sequences &lt;- sequences &lt;- tibble(lengths = runs$lengths, values = runs$values) %&gt;% mutate(indices = cumsum(runs$lengths))
+sequences</code></pre>
+<pre><code>## # A tibble: 8 x 3
+##   lengths values indices
+##     &lt;int&gt;  &lt;dbl&gt;   &lt;int&gt;
+## 1       3      1       3
+## 2       4      0       7
+## 3       4      1      11
+## 4       3      0      14
+## 5       1      1      15
+## 6       1      0      16
+## 7       1      1      17
+## 8       1      0      18</code></pre>
+<pre class="r"><code>post_zero &lt;- sequences %&gt;%  filter(values == 0)
+post_zero</code></pre>
+<pre><code>## # A tibble: 4 x 3
+##   lengths values indices
+##     &lt;int&gt;  &lt;dbl&gt;   &lt;int&gt;
+## 1       4      0       7
+## 2       3      0      14
+## 3       1      0      16
+## 4       1      0      18</code></pre>
+<pre class="r"><code>result &lt;- left_join(sequences, post_zero, by = &quot;indices&quot;) %&gt;% select(1:3) %&gt;% filter(values.x == 1)
+colnames(result) &lt;- c(&quot;lengths&quot;, &quot;runs&quot;, &quot;indices&quot;)
+result</code></pre>
+<pre><code>## # A tibble: 4 x 3
+##   lengths  runs indices
+##     &lt;int&gt; &lt;dbl&gt;   &lt;int&gt;
+## 1       3     1       3
+## 2       4     1      11
+## 3       1     1      15
+## 4       1     1      17</code></pre>
+<pre class="r"><code>my_data[result$indices,]</code></pre>
+<pre><code>## # A tibble: 4 x 3
+##    type  hour event
+##   &lt;int&gt; &lt;int&gt; &lt;dbl&gt;
+## 1     1     3     1
+## 2     2     2     1
+## 3     2     6     1
+## 4     2     8     1</code></pre>
+<p>The variable <code>type = 1</code> had one string of successes that ended a hour three, <code>type = 2</code> had three ending at hours two, six and eight.</p>
+<p>More interesting, of course, is the case where <code>hour</code> is a <code>datetime</code> object and you can bring date arithmetic into play.</p>
+<p>The main point is that if you can design a logical test to mutate a numeric column, <code>rle</code> provides a straightforward way of subsetting sequences based on the the test result.</p>

@@ -1,0 +1,85 @@
+---
+title: "What happened to the streak? rle: run length encoding"
+author: "Richard Careaga"
+date: "2019-12-26"
+slug: run length encoding
+output: html_document
+categories:
+  - Data Science
+tags:
+  - R
+  - run length encoding
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+A common task is to isolate records when some condition changes. Failure analysis is an obvious example. When working in a `tidy` environment, this isn't always easy because of its strong column bias. Looking back at previous rows is clunky, at best.
+
+The sometimes overlooked `which()` provides one part of the solution. Consider a simple case of two vectors, easily combinable into a data frame, one of which indicates a classification and the other, whether or not that classification is present.
+
+Consider a simple case of two vectors, easily combinable into a data frame, one of which indicates a classification and the other, whether or not that classification is present.
+
+```{r, echo=TRUE}
+genres <- c("Action", "Animation", "Comedy", "Documentary", "Romance", "Short")
+row_vector <- c(0,0,1,1,0,0,0)
+indices <-min(which(row_vector == TRUE))
+indices
+```
+
+Both `genres` and `row_vector` are equal-length character and numeric vectors and the correspondence depends on position, with the `Action 0` pair being the first and `Romance 0` the last. Python users will recognize this as a `hash`.
+
+The `indices` atomic (single element) vector applies, working from the inside out, the `which()` function to select the elements of `row_vector` that are `TRUE`, which evaluates to `1` and `min` finds the position of the first among that subset. So, we end up with `3` and `genres[3]` evaluates to **`r genres[3]`**.
+
+Using the positions of elements in one vector to identify elements in another provides a way to use `rle()`, the run-length encoding function.
+
+What `rle` does is to keep track of the number of times an element in a vector appears repeated zero or more times.
+
+As usual, it helps to run the `help()` example, with some inspection:
+
+```{r}
+x <- rev(rep(6:10, 1:5))
+x
+y <- rle(x)
+y
+str(y)
+```
+
+The two pieces of `y`, `y$lengths` (or `y[1]`) and `y$values` tell us that there are five repetitions of 10, four of 9, etc.
+
+Let's create a simple data frame
+
+```{r}
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(tibble)) 
+my_data <- tibble(type=rep(c(1:2), each= 9), hour= rep(1:9, 2), event = c(1,1,1,0,0,0,0,1,1,1,1,0,0,0,1,0,1,0))
+my_data
+```
+
+Let `1` in column `event` indicate success and `0` failure. How when does each string of successes turn into failure?
+
+```{r}
+runs <- rle(my_data$event)
+runs <- tibble(runs$lengths, runs$values)
+colnames(runs) <- c("lengths", "values")
+runs
+```
+
+```{r}
+sequences <- sequences <- tibble(lengths = runs$lengths, values = runs$values) %>% mutate(indices = cumsum(runs$lengths))
+sequences
+post_zero <- sequences %>%  filter(values == 0)
+post_zero
+result <- left_join(sequences, post_zero, by = "indices") %>% select(1:3) %>% filter(values.x == 1)
+colnames(result) <- c("lengths", "runs", "indices")
+result
+my_data[result$indices,]
+```
+
+
+The variable `type = 1` had one string of successes that ended a hour three, `type = 2` had three ending at hours two, six and eight.
+
+More interesting, of course, is the case where `hour` is a `datetime` object and you can bring date arithmetic into play. 
+
+The main point is that if you can design a logical test to mutate a numeric column, `rle` provides a straightforward way of subsetting sequences based on the the test result.
