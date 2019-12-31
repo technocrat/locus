@@ -60,5 +60,5 @@ heading &lt;- &quot;Fed Balance Sheet vs S&amp;P 500\nOct 9-Dec 25, 2019&quot;
 x_lab &lt;- &quot;Weekly percentage change in S&amp;P 500 index&quot;
 y_lab &lt;- &quot;Weekly percentage change in Federal Reserve Bank assets&quot;
 p &lt;- ggplot(sp_v_fed, aes(SP500_PCH, WALCL_PCH))
-p + geom_point() + geom_abline(slope = slope) + annotate(&quot;text&quot;, x = 0.15, y = -0.25, label = sources, hjust = 0) + annotate(&quot;text&quot;, x = -0.25, y = -0.2, label = rsq) + xlab(x_lab) + ylab(y_lab) + theme_wsj() + ggtitle(heading)</code></pre>
-<p><img src="/post/2019-12-30-not-even-wrong_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+my_model_plot &lt;- p + geom_point() + geom_abline(slope = slope) + annotate(&quot;text&quot;, x = 0.15, y = -0.25, label = sources, hjust = 0) + annotate(&quot;text&quot;, x = -0.25, y = -0.2, label = rsq) + xlab(x_lab) + ylab(y_lab) + theme_wsj() + ggtitle(heading)</code></pre>
+<p><img src="https://tuva.s3-us-west-2.amazonaws.com/sp_v_fed.png" alt="Technocrat's model"></p>
