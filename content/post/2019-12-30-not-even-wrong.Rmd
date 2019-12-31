@@ -52,7 +52,7 @@ p <- ggplot(sp_v_fed, aes(SP500_PCH, WALCL_PCH))
 my_model_plot <- p + geom_point() + geom_abline(slope = slope) + annotate("text", x = 0.15, y = -0.25, label = sources, hjust = 0) + annotate("text", x = -0.25, y = -0.2, label = rsq) + xlab(x_lab) + ylab(y_lab) + theme_wsj() + ggtitle(heading)
 ```
 
-<img src="https://tuva.s3-us-west-2.amazonaws.com/sp_v_fed.png" alt="Technocrat's model">
+<img src="https://tuva.s3-us-west-2.amazonaws.com/sp_v_fed.png" width = "800" alt="Technocrat's model">
 
 
 
