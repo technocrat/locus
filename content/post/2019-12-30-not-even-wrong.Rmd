@@ -1,0 +1,56 @@
+---
+title: "Not even wrong"
+author: "Richard Careaga"
+date: "2019-12-30"
+slug: not even wrong
+output: html_document
+categories:
+  - Data Science
+  - R
+tags:
+  - Business
+---
+
+A recent tweet
+
+<blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">&quot;There is no bubble&quot;<br><br>via DB <a href="https://t.co/MnMSpE38q2">pic.twitter.com/MnMSpE38q2</a></p>&mdash; Daniel Lacalle (@dlacalle_IA) <a href="https://twitter.com/dlacalle_IA/status/1211682959994081280?ref_src=twsrc%5Etfw">December 30, 2019</a></blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+was commented on by [Nassim Nicolas Taleb](https://twitter.com/nntaleb/status/1211686845119115266).
+
+It contained the following image credited to Deutsche Bank Research.
+
+`r knitr::include_graphics("https://pbs.twimg.com/media/ENDDOieWsAEwvej.png")`
+
+Our ever-helpful friend [Fred](https://fred.stlouisfed.org/) has two data series, `SP500_PCH` and `WALCL_PCH` that cover the same ground, but only up to 2019-12-18, the latest date for which the S&P data was available as of 2019-12-30. 
+
+So, let's see if we can replicate the results:
+
+```{r, echo = TRUE}
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(ggthemes)) 
+suppressPackageStartupMessages(library(readr)) 
+fed <- read_csv("https://gist.githubusercontent.com/technocrat/d2b231087f35ce987981c98ed5c90042/raw/f266d593bd33c72bcc8f1cb8c0c6415dd6e15fbb/WALCL.csv")
+fed <- head(fed, -1) # data for S&P through 2019-12-18 
+sp <- read_csv("https://gist.githubusercontent.com/technocrat/b93617e7574ff88ddeeb815af529b38c/raw/6d55d1de4efd5ff502b6ab64e8eb1877175a76ac/SP500_PCH.csv")
+sp <- sp %>% mutate(SP500_PCH = as.numeric(SP500_PCH))
+sp_v_fed <- inner_join(sp, fed, by = "DATE")
+fit <- lm(formula = SP500_PCH ~ WALCL_PCH, data = sp_v_fed)
+slope <- fit$coefficients[2]
+r2 <- summary(fit)$r.squared
+rsq <- paste("R squared = ",round(r2,5))
+sources <- "Sources:
+WALCL: https://fred.stlouisfed.org/series/WALCL
+SP500: https://fred.stlouisfed.org/series/SP500
+https//technocrat.rbind.io/2019-12-30-not-even-wrong/" 
+heading <- "Fed Balance Sheet vs S&P 500\nOct 9-Dec 25, 2019"
+x_lab <- "Weekly percentage change in S&P 500 index"
+y_lab <- "Weekly percentage change in Federal Reserve Bank assets"
+p <- ggplot(sp_v_fed, aes(SP500_PCH, WALCL_PCH))
+p + geom_point() + geom_abline(slope = slope) + annotate("text", x = 0.15, y = -0.25, label = sources, hjust = 0) + annotate("text", x = -0.25, y = -0.2, label = rsq) + xlab(x_lab) + ylab(y_lab) + theme_wsj() + ggtitle(heading)
+```
+
+
+
+

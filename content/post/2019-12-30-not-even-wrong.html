@@ -1,0 +1,64 @@
+---
+title: "Not even wrong"
+author: "Richard Careaga"
+date: "2019-12-30"
+slug: not even wrong
+output: html_document
+categories:
+  - Data Science
+  - R
+tags:
+  - Business
+---
+
+<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
+<script src="/rmarkdown-libs/elevate-section-attrs/elevate-section-attrs.js"></script>
+
+
+<p>A recent tweet</p>
+<blockquote class="twitter-tweet" data-lang="en">
+<p lang="en" dir="ltr">
+“There is no bubble”<br><br>via DB <a href="https://t.co/MnMSpE38q2">pic.twitter.com/MnMSpE38q2</a>
+</p>
+— Daniel Lacalle (<span class="citation">@dlacalle_IA</span>) <a href="https://twitter.com/dlacalle_IA/status/1211682959994081280?ref_src=twsrc%5Etfw">December 30, 2019</a>
+</blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<p>was commented on by <a href="https://twitter.com/nntaleb/status/1211686845119115266">Nassim Nicolas Taleb</a>.</p>
+<p>It contained the following image credited to Deutsche Bank Research.</p>
+<p><img src="https://pbs.twimg.com/media/ENDDOieWsAEwvej.png" /><!-- --></p>
+<p>Our ever-helpful friend <a href="https://fred.stlouisfed.org/">Fred</a> has two data series, <code>SP500_PCH</code> and <code>WALCL_PCH</code> that cover the same ground, but only up to 2019-12-18, the latest date for which the S&amp;P data was available as of 2019-12-30.</p>
+<p>So, let’s see if we can replicate the results:</p>
+<pre class="r"><code>suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(ggthemes)) 
+suppressPackageStartupMessages(library(readr)) 
+fed &lt;- read_csv(&quot;https://gist.githubusercontent.com/technocrat/d2b231087f35ce987981c98ed5c90042/raw/f266d593bd33c72bcc8f1cb8c0c6415dd6e15fbb/WALCL.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   DATE = col_date(format = &quot;&quot;),
+##   WALCL_PCH = col_double()
+## )</code></pre>
+<pre class="r"><code>fed &lt;- head(fed, -1) # data for S&amp;P through 2019-12-18 
+sp &lt;- read_csv(&quot;https://gist.githubusercontent.com/technocrat/b93617e7574ff88ddeeb815af529b38c/raw/6d55d1de4efd5ff502b6ab64e8eb1877175a76ac/SP500_PCH.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   DATE = col_date(format = &quot;&quot;),
+##   SP500_PCH = col_character()
+## )</code></pre>
+<pre class="r"><code>sp &lt;- sp %&gt;% mutate(SP500_PCH = as.numeric(SP500_PCH))</code></pre>
+<pre><code>## Warning: NAs introduced by coercion</code></pre>
+<pre class="r"><code>sp_v_fed &lt;- inner_join(sp, fed, by = &quot;DATE&quot;)
+fit &lt;- lm(formula = SP500_PCH ~ WALCL_PCH, data = sp_v_fed)
+slope &lt;- fit$coefficients[2]
+r2 &lt;- summary(fit)$r.squared
+rsq &lt;- paste(&quot;R squared = &quot;,round(r2,5))
+sources &lt;- &quot;Sources:
+WALCL: https://fred.stlouisfed.org/series/WALCL
+SP500: https://fred.stlouisfed.org/series/SP500
+https//technocrat.rbind.io/2019-12-30-not-even-wrong/&quot; 
+heading &lt;- &quot;Fed Balance Sheet vs S&amp;P 500\nOct 9-Dec 25, 2019&quot;
+x_lab &lt;- &quot;Weekly percentage change in S&amp;P 500 index&quot;
+y_lab &lt;- &quot;Weekly percentage change in Federal Reserve Bank assets&quot;
+p &lt;- ggplot(sp_v_fed, aes(SP500_PCH, WALCL_PCH))
+p + geom_point() + geom_abline(slope = slope) + annotate(&quot;text&quot;, x = 0.15, y = -0.25, label = sources, hjust = 0) + annotate(&quot;text&quot;, x = -0.25, y = -0.2, label = rsq) + xlab(x_lab) + ylab(y_lab) + theme_wsj() + ggtitle(heading)</code></pre>
+<p><img src="/post/2019-12-30-not-even-wrong_files/figure-html/unnamed-chunk-1-2.png" width="672" /></p>
