@@ -49,10 +49,12 @@ heading <- "Fed Balance Sheet vs S&P 500\nOct 9-Dec 25, 2019"
 x_lab <- "Weekly percentage change in S&P 500 index"
 y_lab <- "Weekly percentage change in Federal Reserve Bank assets"
 p <- ggplot(sp_v_fed, aes(SP500_PCH, WALCL_PCH))
-my_model_plot <- p + geom_point() + geom_abline(slope = slope) + annotate("text", x = 0.15, y = -0.25, label = sources, hjust = 0) + annotate("text", x = -0.25, y = -0.2, label = rsq) + xlab(x_lab) + ylab(y_lab) + theme_wsj() + ggtitle(heading)
+my_model_plot <- p + geom_point() + geom_abline(slope = slope) + annotate("text", x = 0.15, y = -0.25, label = sources, hjust = 0) + annotate("text", x = -0.25, y = -0.2, label = rsq) + labs(x = x_lab, y = y_lab) + theme_economist() + ggtitle(heading)
 ```
 
-<img src="https://tuva.s3-us-west-2.amazonaws.com/sp_v_fed.jpg">
+<img src="https://tuva.s3-us-west-2.amazonaws.com/sp_v_fed.png" width = 
+"800">
+
 
 
 
