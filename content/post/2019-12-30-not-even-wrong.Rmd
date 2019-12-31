@@ -56,7 +56,7 @@ What we used to call a `wire house` (albeit one whose affiliate is known to have
 
 The only way to tell, is by the maxim of St. Ronald `доверяй, но проверяй` by one's own replication. After all, it's hard to exclude the possibility that neither model is well-formed, and, more importantly, that neither may be particularly useful as an insight.
 
-It's also worth taking a look at the `p-value` of the `F-statistic` for my model: `r round(glance(fit)$statistic, 3)` -- not even close to the $\alpha = 0.05$ laugh test.  
+It's also worth taking a look at the `p-value` of the `F-statistic` for my model: `r round(glance(fit)$p.value, 3)` -- not even close to the $\alpha = 0.05$ laugh test.  
 
 
 
