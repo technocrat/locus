@@ -20,7 +20,9 @@ was commented on by [Nassim Nicolas Taleb](https://twitter.com/nntaleb/status/12
 
 It contained the following image credited to Deutsche Bank Research.
 
-`r knitr::include_graphics("https://pbs.twimg.com/media/ENDDOieWsAEwvej.png")`
+r knitr::include_graphics("https://pbs.twimg.com/media/ENDDOieWsAEwvej.png")
+
+ <img src="https://pbs.twimg.com/media/ENDDOieWsAEwvej.png" alt="DB Model">
 
 Our ever-helpful friend [Fred](https://fred.stlouisfed.org/) has two data series, `SP500_PCH` and `WALCL_PCH` that cover the same ground, but only up to 2019-12-18, the latest date for which the S&P data was available as of 2019-12-30. 
 
