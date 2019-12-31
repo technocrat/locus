@@ -45,8 +45,8 @@ fed &lt;- read_csv(&quot;https://gist.githubusercontent.com/technocrat/d2b231087
 ##   DATE = col_date(format = &quot;&quot;),
 ##   SP500_PCH = col_double()
 ## )</code></pre>
-<pre class="r"><code>sp_v_fed &lt;- inner_join(sp, fed, by = &quot;DATE&quot;)
-fit &lt;- lm(formula = SP500_PCH ~ WALCL_PCH, data = sp_v_fed)
+<pre class="r"><code>fed_v_sp &lt;- inner_join(sp, fed, by = &quot;DATE&quot;)
+fit &lt;- lm(formula = WALCL_PCH ~ SP500_PCH, data = fed_v_sp)
 slope &lt;- fit$coefficients[2]
 r2 &lt;- summary(fit)$r.squared
 rsq &lt;- paste(&quot;R squared = &quot;,round(r2,5))
@@ -55,11 +55,11 @@ WALCL: https://fred.stlouisfed.org/series/WALCL
 SP500: https://fred.stlouisfed.org/series/SP500
 https//technocrat.rbind.io/2019-12-30-not-even-wrong/&quot; 
 heading &lt;- &quot;Fed Balance Sheet vs S&amp;P 500\nOct 9-Dec 18, 2019&quot;
-x_lab &lt;- &quot;Weekly percentage change in S&amp;P 500 index&quot;
-y_lab &lt;- &quot;Weekly percentage change in Federal Reserve Bank assets&quot;
-p &lt;- ggplot(sp_v_fed, aes(SP500_PCH, WALCL_PCH))
+y_lab &lt;- &quot;Weekly percentage change in S&amp;P 500 index&quot;
+x_lab &lt;- &quot;Weekly percentage change in Federal Reserve Bank assets&quot;
+p &lt;- ggplot(fed_v_sp, aes(SP500_PCH, WALCL_PCH))
 my_model_plot &lt;- p + geom_point() + geom_abline(slope = slope) + annotate(&quot;text&quot;, x = 0.15, y = -0.6, label = sources, hjust = 0) + annotate(&quot;text&quot;, x = -0.25, y = -0.75, label = rsq) + labs(x = x_lab, y = y_lab) + theme_economist() + ggtitle(heading)</code></pre>
-<p><img src="https://tuva.s3-us-west-2.amazonaws.com/sp_v_fed.png" width = 
+<p><img src="https://tuva.s3-us-west-2.amazonaws.com/fed_v_sp.png" width = 
 "800"></p>
 <p>What we used to call a <code>wire house</code> (albeit one whose affiliate is known to have made poorly secured real estate loans) is right and your blogger is wrong, or <em>v.v</em>. or both. One of them may also be <code>bullshit</code>, a proposition offered, according to the philospher <a href="https://en.wikipedia.org/wiki/Harry_Frankfurt">Harry Frankfurt</a> not for its truth but simply to influence. <em>See</em> <a href="https://en.wikipedia.org/wiki/On_Bullshit">On Bullshit</a>.</p>
 <p>The only way to tell, is by the maxim of St. Ronald <code>доверяй, но проверяй</code> by one’s own replication. After all, it’s hard to exclude the possibility that neither model is well-formed, and, more importantly, that neither may be particularly useful as an insight.</p>
