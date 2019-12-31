@@ -32,9 +32,7 @@ suppressPackageStartupMessages(library(ggthemes))
 suppressPackageStartupMessages(library(readr)) 
 
 fed <- read_csv("https://gist.githubusercontent.com/technocrat/d2b231087f35ce987981c98ed5c90042/raw/f266d593bd33c72bcc8f1cb8c0c6415dd6e15fbb/WALCL.csv")
-fed <- head(fed, -1) # data for S&P through 2019-12-18 
-sp <- read_csv("https://gist.githubusercontent.com/technocrat/b93617e7574ff88ddeeb815af529b38c/raw/6d55d1de4efd5ff502b6ab64e8eb1877175a76ac/SP500_PCH.csv")
-sp <- sp %>% mutate(SP500_PCH = as.numeric(SP500_PCH))
+sp <- read_csv("https://gist.githubusercontent.com/technocrat/b93617e7574ff88ddeeb815af529b38c/raw/b9453495b2cf7a55af1ee79806477c0c896eb9f7/SP500_PCH.csv")
 sp_v_fed <- inner_join(sp, fed, by = "DATE")
 fit <- lm(formula = SP500_PCH ~ WALCL_PCH, data = sp_v_fed)
 slope <- fit$coefficients[2]
@@ -44,11 +42,11 @@ sources <- "Sources:
 WALCL: https://fred.stlouisfed.org/series/WALCL
 SP500: https://fred.stlouisfed.org/series/SP500
 https//technocrat.rbind.io/2019-12-30-not-even-wrong/" 
-heading <- "Fed Balance Sheet vs S&P 500\nOct 9-Dec 25, 2019"
+heading <- "Fed Balance Sheet vs S&P 500\nOct 9-Dec 18, 2019"
 x_lab <- "Weekly percentage change in S&P 500 index"
 y_lab <- "Weekly percentage change in Federal Reserve Bank assets"
 p <- ggplot(sp_v_fed, aes(SP500_PCH, WALCL_PCH))
-my_model_plot <- p + geom_point() + geom_abline(slope = slope) + annotate("text", x = 0.15, y = -0.25, label = sources, hjust = 0) + annotate("text", x = -0.25, y = -0.2, label = rsq) + labs(x = x_lab, y = y_lab) + theme_economist() + ggtitle(heading)
+my_model_plot <- p + geom_point() + geom_abline(slope = slope) + annotate("text", x = 0.15, y = -0.6, label = sources, hjust = 0) + annotate("text", x = -0.25, y = -0.75, label = rsq) + labs(x = x_lab, y = y_lab) + theme_economist() + ggtitle(heading)
 ```
 
 <img src="https://tuva.s3-us-west-2.amazonaws.com/sp_v_fed.png" width = 
