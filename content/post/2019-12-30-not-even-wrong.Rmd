@@ -18,20 +18,19 @@ A recent tweet
 
 was commented on by [Nassim Nicolas Taleb](https://twitter.com/nntaleb/status/1211686845119115266).
 
-It contained the following image credited to Deutsche Bank Research.
-
-
-<img src="https://pbs.twimg.com/media/ENDDOieWsAEwvej.png" alt="DB Model">
+The plot was attributed to Deutche Bank Research.
 
 Our ever-helpful friend [Fred](https://fred.stlouisfed.org/) has two data series, `SP500_PCH` and `WALCL_PCH` that cover the same ground, but only up to 2019-12-18, the latest date for which the S&P data was available as of 2019-12-30. 
 
-So, let's see if we can replicate the results:
+So, let's see if we can replicate the DB results:
 
 ```{r, echo = TRUE}
+suppressPackageStartupMessages(library(broom))
 suppressPackageStartupMessages(library(dplyr))
 suppressPackageStartupMessages(library(ggplot2))
 suppressPackageStartupMessages(library(ggthemes)) 
 suppressPackageStartupMessages(library(readr)) 
+
 fed <- read_csv("https://gist.githubusercontent.com/technocrat/d2b231087f35ce987981c98ed5c90042/raw/f266d593bd33c72bcc8f1cb8c0c6415dd6e15fbb/WALCL.csv")
 fed <- head(fed, -1) # data for S&P through 2019-12-18 
 sp <- read_csv("https://gist.githubusercontent.com/technocrat/b93617e7574ff88ddeeb815af529b38c/raw/6d55d1de4efd5ff502b6ab64e8eb1877175a76ac/SP500_PCH.csv")
@@ -55,6 +54,11 @@ my_model_plot <- p + geom_point() + geom_abline(slope = slope) + annotate("text"
 <img src="https://tuva.s3-us-west-2.amazonaws.com/sp_v_fed.png" width = 
 "800">
 
+What we used to call a `wire house` (albeit one whose affiliate is known to have made poorly secured real estate loans) is right and your blogger is wrong, or *v.v*. or both. One of them may also be `bullshit`, a proposition offered, according to the philospher [Harry Frankfurt](https://en.wikipedia.org/wiki/Harry_Frankfurt) not for its truth but simply to influence. *See* [On Bullshit](https://en.wikipedia.org/wiki/On_Bullshit).
+
+The only way to tell, is by the maxim of St. Ronald `доверяй, но проверяй` by one's own replication. After all, it's hard to exclude the possibility that neither model is well-formed, and, more importantly, that neither may be particularly useful as an insight.
+
+It's also worth taking a look at the `p-value` of the `F-statistic` for my model: `r round(glance(fit)$statistic, 3)` -- not even close to the $\alpha = 0.05$ laugh test.  
 
 
 

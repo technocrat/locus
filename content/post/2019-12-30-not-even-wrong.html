@@ -24,14 +24,15 @@ tags:
 </blockquote>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 <p>was commented on by <a href="https://twitter.com/nntaleb/status/1211686845119115266">Nassim Nicolas Taleb</a>.</p>
-<p>It contained the following image credited to Deutsche Bank Research.</p>
-<p><img src="https://pbs.twimg.com/media/ENDDOieWsAEwvej.png" alt="DB Model"></p>
+<p>The plot was attributed to Deutche Bank Research.</p>
 <p>Our ever-helpful friend <a href="https://fred.stlouisfed.org/">Fred</a> has two data series, <code>SP500_PCH</code> and <code>WALCL_PCH</code> that cover the same ground, but only up to 2019-12-18, the latest date for which the S&amp;P data was available as of 2019-12-30.</p>
-<p>So, let’s see if we can replicate the results:</p>
-<pre class="r"><code>suppressPackageStartupMessages(library(dplyr))
+<p>So, let’s see if we can replicate the DB results:</p>
+<pre class="r"><code>suppressPackageStartupMessages(library(broom))
+suppressPackageStartupMessages(library(dplyr))
 suppressPackageStartupMessages(library(ggplot2))
 suppressPackageStartupMessages(library(ggthemes)) 
 suppressPackageStartupMessages(library(readr)) 
+
 fed &lt;- read_csv(&quot;https://gist.githubusercontent.com/technocrat/d2b231087f35ce987981c98ed5c90042/raw/f266d593bd33c72bcc8f1cb8c0c6415dd6e15fbb/WALCL.csv&quot;)</code></pre>
 <pre><code>## Parsed with column specification:
 ## cols(
@@ -63,3 +64,6 @@ p &lt;- ggplot(sp_v_fed, aes(SP500_PCH, WALCL_PCH))
 my_model_plot &lt;- p + geom_point() + geom_abline(slope = slope) + annotate(&quot;text&quot;, x = 0.15, y = -0.25, label = sources, hjust = 0) + annotate(&quot;text&quot;, x = -0.25, y = -0.2, label = rsq) + labs(x = x_lab, y = y_lab) + theme_economist() + ggtitle(heading)</code></pre>
 <p><img src="https://tuva.s3-us-west-2.amazonaws.com/sp_v_fed.png" width = 
 "800"></p>
+<p>What we used to call a <code>wire house</code> (albeit one whose affiliate is known to have made poorly secured real estate loans) is right and your blogger is wrong, or <em>v.v</em>. or both. One of them may also be <code>bullshit</code>, a proposition offered, according to the philospher <a href="https://en.wikipedia.org/wiki/Harry_Frankfurt">Harry Frankfurt</a> not for its truth but simply to influence. <em>See</em> <a href="https://en.wikipedia.org/wiki/On_Bullshit">On Bullshit</a>.</p>
+<p>The only way to tell, is by the maxim of St. Ronald <code>доверяй, но проверяй</code> by one’s own replication. After all, it’s hard to exclude the possibility that neither model is well-formed, and, more importantly, that neither may be particularly useful as an insight.</p>
+<p>It’s also worth taking a look at the <code>p-value</code> of the <code>F-statistic</code> for my model: 0.164 – not even close to the <span class="math inline">\(\alpha = 0.05\)</span> laugh test.</p>
