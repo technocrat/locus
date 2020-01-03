@@ -1,0 +1,65 @@
+---
+title: "Even more wrong"
+author: "Richard Careaga"
+date: "2020-01-02"
+slug: even-more-wrong
+output: html_document
+categories:
+  - Data Science
+  - R
+tags:
+  - Business
+  - statistics
+---
+
+<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
+<script src="/rmarkdown-libs/elevate-section-attrs/elevate-section-attrs.js"></script>
+
+
+<p><a href="https://en.wikipedia.org/wiki/Woody_Hayes">Woody Hayes</a> was supposedd to have run up the score 42-12 late in the third quarter and went for a two-point conversion, shortly before the clock ran out. Asked why, he was said to have answered</p>
+<blockquote>
+<p>There are not 3-point conversions!</p>
+</blockquote>
+<p>In the same spirit, I posted <a href="https://technocrat.rbind.io/2019/12/30/not-even-wrong/">the other day</a> about a tweet</p>
+<blockquote class="twitter-tweet" data-lang="en">
+<p lang="en" dir="ltr">
+“There is no bubble”<br><br>via DB <a href="https://t.co/MnMSpE38q2">pic.twitter.com/MnMSpE38q2</a>
+</p>
+— Daniel Lacalle (<span class="citation">@dlacalle_IA</span>) <a href="https://twitter.com/dlacalle_IA/status/1211682959994081280?ref_src=twsrc%5Etfw">December 30, 2019</a>
+</blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<p>propagating a plot was attributed to Deutche Bank Research purporting to show a linear regression of the weekly change in Federal Reserve Bank assets against the weekly change in the S&amp;P Index.</p>
+<p>I ran the model with data from <a href="https://fred.stlouisfed.org/">Fred</a> for the paltry number of weeks in 2019Q4.</p>
+<p><img src="https://tuva.s3-us-west-2.amazonaws.com/fed_v_sp.png" width = "800"></p>
+<p>For snicks, I’m now taking a look at <span class="math inline">\(n = 52\)</span>, the entire year.</p>
+<p>```r{echo = TRUE}
+suppressPackageStartupMessages(library(broom))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(ggthemes))
+suppressPackageStartupMessages(library(readr))</p>
+<p>fed &lt;- read_csv(“<a href="https://gist.githubusercontent.com/technocrat/742747b30ea4c0270f5dbdda0db95a36/raw/47b49a188273af3aed2068017d30b7522500fd23/walcl_2019_PCH.csv" class="uri">https://gist.githubusercontent.com/technocrat/742747b30ea4c0270f5dbdda0db95a36/raw/47b49a188273af3aed2068017d30b7522500fd23/walcl_2019_PCH.csv</a>”)</p>
+<p>sp &lt;- read_csv(“<a href="https://gist.githubusercontent.com/technocrat/d3dc120528026a634c7a9cbd223ff003/raw/c5127108739298743ad6ee16ce937c49ab321b22/sp500_2019_PHC.csv" class="uri">https://gist.githubusercontent.com/technocrat/d3dc120528026a634c7a9cbd223ff003/raw/c5127108739298743ad6ee16ce937c49ab321b22/sp500_2019_PHC.csv</a>”)
+fed_v_sp &lt;- inner_join(sp, fed, by = “DATE”)
+fit &lt;- lm(formula = WALCL_PCH ~ SP500_PCH, data = fed_v_sp)
+slope &lt;- fit<span class="math inline">\(coefficients[2] r2 &lt;- summary(fit)\)</span>r.squared
+rsq &lt;- paste(“R squared =”,round(r2,5))
+sources &lt;- “Sources:
+WALCL: <a href="https://fred.stlouisfed.org/series/WALCL" class="uri">https://fred.stlouisfed.org/series/WALCL</a>
+SP500: <a href="https://fred.stlouisfed.org/series/SP500" class="uri">https://fred.stlouisfed.org/series/SP500</a>
+https//technocrat.rbind.io/2019-12-30-not-even-wrong/”
+heading &lt;- “Fed Balance Sheet vs S&amp;P 500 2018-Dec 18, 2019”
+y_lab &lt;- “Weekly percentage change in S&amp;P 500 index”
+x_lab &lt;- “Weekly percentage change in Federal Reserve Bank assets”
+p &lt;- ggplot(fed_v_sp, aes(SP500_PCH, WALCL_PCH))
+my_model_plot &lt;- p + geom_point() + geom_abline(slope = slope) + annotate(“text”, x = 0.15, y = -0.6, label = sources, hjust = 0) + annotate(“text”, x = -0.25, y = -0.75, label = rsq) + labs(x = x_lab, y = y_lab) + theme_economist() + ggtitle(heading)
+```</p>
+<p><img src="https://tuva.s3-us-west-2.amazonaws.com/fed_v_sp_2019.png" width = "800"></p>
+<p>If <a href="https://www.dbresearch.com/PROD/RPS_EN-PROD/Our_mission/RPS_MISSION.alias">Deutche Bank Research’s mission statement</a></p>
+<blockquote>
+<p>Deutsche Bank Research is responsible for economic analysis within Deutsche Bank Group and covers asset allocation and all major industry sectors. We analyse relevant trends for the bank in financial markets, the economy and society, highlight risks and opportunities and act as consultant for the bank, its clients and stakeholders.</p>
+</blockquote>
+<blockquote>
+<p>Deutsche Bank Research delivers high-quality, independent analysis and actively promotes public debate on economic, fiscal, labour market and social policy issues.</p>
+</blockquote>
+<p>is a an accurate reflection of the plot in the original tweet, then obviously its attribution was in error. On the other hand … . Alternatives are left as an exercise for the reader.</p>

@@ -16,7 +16,7 @@ A recent tweet
 <blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">&quot;There is no bubble&quot;<br><br>via DB <a href="https://t.co/MnMSpE38q2">pic.twitter.com/MnMSpE38q2</a></p>&mdash; Daniel Lacalle (@dlacalle_IA) <a href="https://twitter.com/dlacalle_IA/status/1211682959994081280?ref_src=twsrc%5Etfw">December 30, 2019</a></blockquote>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
-was commented on by [Nassim Nicolas Taleb](https://twitter.com/nntaleb/status/1211686845119115266).
+was commented on by [Nassim Nicholas Taleb](https://twitter.com/nntaleb/status/1211686845119115266).
 
 The plot was attributed to Deutche Bank Research.
 
