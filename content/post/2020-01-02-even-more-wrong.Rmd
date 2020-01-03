@@ -13,9 +13,9 @@ tags:
 ---
 
 
-[Woody Hayes](https://en.wikipedia.org/wiki/Woody_Hayes) was supposedd to have run up the score 42-12 late in the third quarter and went for a two-point conversion, shortly before the clock ran out. Asked why, he was said to have answered
+[Woody Hayes](https://en.wikipedia.org/wiki/Woody_Hayes) was supposed to have run up the score 42-12 late in the third quarter and went for a two-point conversion, shortly before the clock ran out. Asked why, he was said to have answered
 
-> There are not 3-point conversions!
+> There are no 3-point conversions!
 
 In the same spirit, I posted [the other day](https://technocrat.rbind.io/2019/12/30/not-even-wrong/) about a tweet
 
@@ -30,7 +30,7 @@ I ran the model with data from [Fred](https://fred.stlouisfed.org/) for the palt
 
 For snicks, I'm now taking a look at $n = 52$, the entire year. 
 
-```r{echo = TRUE}
+```{r, echo = TRUE}
 suppressPackageStartupMessages(library(broom))
 suppressPackageStartupMessages(library(dplyr))
 suppressPackageStartupMessages(library(ggplot2))
