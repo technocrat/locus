@@ -16,9 +16,9 @@ tags:
 <script src="/rmarkdown-libs/elevate-section-attrs/elevate-section-attrs.js"></script>
 
 
-<p><a href="https://en.wikipedia.org/wiki/Woody_Hayes">Woody Hayes</a> was supposedd to have run up the score 42-12 late in the third quarter and went for a two-point conversion, shortly before the clock ran out. Asked why, he was said to have answered</p>
+<p><a href="https://en.wikipedia.org/wiki/Woody_Hayes">Woody Hayes</a> was supposed to have run up the score 42-12 late in the third quarter and went for a two-point conversion, shortly before the clock ran out. Asked why, he was said to have answered</p>
 <blockquote>
-<p>There are not 3-point conversions!</p>
+<p>There are no 3-point conversions!</p>
 </blockquote>
 <p>In the same spirit, I posted <a href="https://technocrat.rbind.io/2019/12/30/not-even-wrong/">the other day</a> about a tweet</p>
 <blockquote class="twitter-tweet" data-lang="en">
@@ -32,28 +32,38 @@ tags:
 <p>I ran the model with data from <a href="https://fred.stlouisfed.org/">Fred</a> for the paltry number of weeks in 2019Q4.</p>
 <p><img src="https://tuva.s3-us-west-2.amazonaws.com/fed_v_sp.png" width = "800"></p>
 <p>For snicks, I’m now taking a look at <span class="math inline">\(n = 52\)</span>, the entire year.</p>
-<p>```r{echo = TRUE}
-suppressPackageStartupMessages(library(broom))
+<pre class="r"><code>suppressPackageStartupMessages(library(broom))
 suppressPackageStartupMessages(library(dplyr))
 suppressPackageStartupMessages(library(ggplot2))
-suppressPackageStartupMessages(library(ggthemes))
-suppressPackageStartupMessages(library(readr))</p>
-<p>fed &lt;- read_csv(“<a href="https://gist.githubusercontent.com/technocrat/742747b30ea4c0270f5dbdda0db95a36/raw/47b49a188273af3aed2068017d30b7522500fd23/walcl_2019_PCH.csv" class="uri">https://gist.githubusercontent.com/technocrat/742747b30ea4c0270f5dbdda0db95a36/raw/47b49a188273af3aed2068017d30b7522500fd23/walcl_2019_PCH.csv</a>”)</p>
-<p>sp &lt;- read_csv(“<a href="https://gist.githubusercontent.com/technocrat/d3dc120528026a634c7a9cbd223ff003/raw/c5127108739298743ad6ee16ce937c49ab321b22/sp500_2019_PHC.csv" class="uri">https://gist.githubusercontent.com/technocrat/d3dc120528026a634c7a9cbd223ff003/raw/c5127108739298743ad6ee16ce937c49ab321b22/sp500_2019_PHC.csv</a>”)
-fed_v_sp &lt;- inner_join(sp, fed, by = “DATE”)
+suppressPackageStartupMessages(library(ggthemes)) 
+suppressPackageStartupMessages(library(readr)) 
+
+fed &lt;- read_csv(&quot;https://gist.githubusercontent.com/technocrat/742747b30ea4c0270f5dbdda0db95a36/raw/47b49a188273af3aed2068017d30b7522500fd23/walcl_2019_PCH.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   DATE = col_date(format = &quot;&quot;),
+##   WALCL_PCH = col_double()
+## )</code></pre>
+<pre class="r"><code>sp &lt;- read_csv(&quot;https://gist.githubusercontent.com/technocrat/d3dc120528026a634c7a9cbd223ff003/raw/c5127108739298743ad6ee16ce937c49ab321b22/sp500_2019_PHC.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   DATE = col_date(format = &quot;&quot;),
+##   SP500_PCH = col_double()
+## )</code></pre>
+<pre class="r"><code>fed_v_sp &lt;- inner_join(sp, fed, by = &quot;DATE&quot;)
 fit &lt;- lm(formula = WALCL_PCH ~ SP500_PCH, data = fed_v_sp)
-slope &lt;- fit<span class="math inline">\(coefficients[2] r2 &lt;- summary(fit)\)</span>r.squared
-rsq &lt;- paste(“R squared =”,round(r2,5))
-sources &lt;- “Sources:
-WALCL: <a href="https://fred.stlouisfed.org/series/WALCL" class="uri">https://fred.stlouisfed.org/series/WALCL</a>
-SP500: <a href="https://fred.stlouisfed.org/series/SP500" class="uri">https://fred.stlouisfed.org/series/SP500</a>
-https//technocrat.rbind.io/2019-12-30-not-even-wrong/”
-heading &lt;- “Fed Balance Sheet vs S&amp;P 500 2018-Dec 18, 2019”
-y_lab &lt;- “Weekly percentage change in S&amp;P 500 index”
-x_lab &lt;- “Weekly percentage change in Federal Reserve Bank assets”
+slope &lt;- fit$coefficients[2]
+r2 &lt;- summary(fit)$r.squared
+rsq &lt;- paste(&quot;R squared = &quot;,round(r2,5))
+sources &lt;- &quot;Sources:
+WALCL: https://fred.stlouisfed.org/series/WALCL
+SP500: https://fred.stlouisfed.org/series/SP500
+https//technocrat.rbind.io/2019-12-30-not-even-wrong/&quot; 
+heading &lt;- &quot;Fed Balance Sheet vs S&amp;P 500\nJan 2 2018-Dec 18, 2019&quot;
+y_lab &lt;- &quot;Weekly percentage change in S&amp;P 500 index&quot;
+x_lab &lt;- &quot;Weekly percentage change in Federal Reserve Bank assets&quot;
 p &lt;- ggplot(fed_v_sp, aes(SP500_PCH, WALCL_PCH))
-my_model_plot &lt;- p + geom_point() + geom_abline(slope = slope) + annotate(“text”, x = 0.15, y = -0.6, label = sources, hjust = 0) + annotate(“text”, x = -0.25, y = -0.75, label = rsq) + labs(x = x_lab, y = y_lab) + theme_economist() + ggtitle(heading)
-```</p>
+my_model_plot &lt;- p + geom_point() + geom_abline(slope = slope) + annotate(&quot;text&quot;, x = 0.15, y = -0.6, label = sources, hjust = 0) + annotate(&quot;text&quot;, x = -0.25, y = -0.75, label = rsq) + labs(x = x_lab, y = y_lab) + theme_economist() + ggtitle(heading)</code></pre>
 <p><img src="https://tuva.s3-us-west-2.amazonaws.com/fed_v_sp_2019.png" width = "800"></p>
 <p>If <a href="https://www.dbresearch.com/PROD/RPS_EN-PROD/Our_mission/RPS_MISSION.alias">Deutche Bank Research’s mission statement</a></p>
 <blockquote>
