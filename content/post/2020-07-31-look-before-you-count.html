@@ -1,0 +1,31 @@
+---
+title: Look before you count
+author: technocrat
+date: '2020-07-31'
+slug: look-before-you-count
+categories:
+  - Data Science
+tags:
+  - design
+  - heuristics
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<p>Often, it is possible to back into a number from other numbers, basic K12 learning; we got it pretty well, not knowing any better.</p>
+<p>Like all learning, though, it is perishable, as I learned preparing a recent <a href="https://tuva.s3-us-west-2.amazonaws.com/md_covid.html">short take</a>.</p>
+<p>This all began with a question about data wrangling and how to combine Census data with Bureau of Labor Statistics data to estimate how many residents of Maryland had lost health insurance coverage as a result of COVID-19 related unemployment.</p>
+<p>Seems obvious – a person was the unit of analysis, no?</p>
+<p>Wrong call. The consequent water boarding of the data would yield no confession. It was not until reframing the question as</p>
+<blockquote>
+<p>How many employment related health insurance <strong>policies</strong> lapsed?</p>
+</blockquote>
+<p>was progress made.</p>
+<p>It was not possible to go from a count of persons employed in 2018 who had employment related insurance coverage directly to the answer. For one thing, some beneficiaries of coverage were dependents, and their own employment status did not change.</p>
+<p>It was not possible to use the Bureau of Labor Statistics Community Survey of Employment because it was based on reports by business establishments of changes in positions filled. Due to part-time positions and interstate commutes employment estimates for state residents could not be directly derived.</p>
+<p>This brought the job inquiry down to how many fewer Maryland residents had jobs in May 2020 compared to 2018? Data was available on the same basis for both. The difference was approximately 290K fewer persons employed. Each of those can be assumed to have lost the related coverage. And each other person covered under the policy also lost coverage. Those were the lost policies.</p>
+<p>Further assumptions were needed to arrive at the estimate of approximately 337K residents who lost coverage, which is a reasonable upper limit.</p>
+<p>Why the delay?</p>
+<p>In approaching any analysis from <em>how do I do X</em>, rather than <em>what do I want to know</em>, the risk is that the answer to <em>how</em> masks a mis-specification of <em>what</em>.</p>
+<p>The lesson re-learned is <em>validate the question first.</em></p>
