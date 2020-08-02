@@ -1,0 +1,32 @@
+---
+title: A minor lubridate snip
+author: technocrat
+date: '2020-08-01'
+slug: a-minor-lubridate-snip
+categories:
+  - R
+tags:
+  - tools
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<p>Dates can be fussy. (Especially when they come to you mangled by manual formatting in spreadsheets.)</p>
+<p>Sometimes, it’s easier, when there are consecutive dates, it’s simply easier to create them with <code>seq</code>. For <code>ts</code>, don’t even bother, just use <code>object &lt;- ts(source, start = c(2018,1 ) ...)</code></p>
+<p>The <code>date</code> can be unpacked multiple ways to make presentation easier. Here’s what can be done with days of the week.</p>
+<pre class="r"><code>suppressPackageStartupMessages(library(lubridate))
+seq(c(ISOdate(2020,7,19)), by = &quot;day&quot;, length.out = 7) -&gt; the_days
+
+wday(the_days)</code></pre>
+<pre><code>## [1] 1 2 3 4 5 6 7</code></pre>
+<pre class="r"><code>wday(the_days, label = TRUE)</code></pre>
+<pre><code>## [1] Sun Mon Tue Wed Thu Fri Sat
+## Levels: Sun &lt; Mon &lt; Tue &lt; Wed &lt; Thu &lt; Fri &lt; Sat</code></pre>
+<pre class="r"><code>wday(the_days, label = TRUE, abbr = FALSE)</code></pre>
+<pre><code>## [1] Sunday    Monday    Tuesday   Wednesday Thursday  Friday    Saturday 
+## 7 Levels: Sunday &lt; Monday &lt; Tuesday &lt; Wednesday &lt; Thursday &lt; ... &lt; Saturday</code></pre>
+<pre class="r"><code># locale argument is OS specific
+wday(the_days, label = TRUE, abbr = FALSE, locale = &quot;fr_FR.utf8&quot;)</code></pre>
+<pre><code>## [1] dimanche lundi    mardi    mercredi jeudi    vendredi samedi  
+## 7 Levels: dimanche &lt; lundi &lt; mardi &lt; mercredi &lt; jeudi &lt; ... &lt; samedi</code></pre>

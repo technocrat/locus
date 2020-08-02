@@ -1,0 +1,32 @@
+---
+title: A minor lubridate snip
+author: technocrat
+date: '2020-08-01'
+slug: a-minor-lubridate-snip
+categories:
+  - R
+tags:
+  - tools
+---
+
+```{r setup, include=FALSE, echo=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Dates can be fussy. (Especially when they come to you mangled by manual formatting in spreadsheets.)
+
+Sometimes, it's easier, when there are consecutive dates, it's simply easier to create them with `seq`. For `ts`, don't even bother, just use `object <- ts(source, start = c(2018,1 ) ...)`
+
+The `date` can be unpacked multiple ways to make presentation easier. Here's what can be done with days of the week.
+
+```{r}
+suppressPackageStartupMessages(library(lubridate))
+seq(c(ISOdate(2020,7,19)), by = "day", length.out = 7) -> the_days
+
+wday(the_days)
+wday(the_days, label = TRUE)
+wday(the_days, label = TRUE, abbr = FALSE)
+# locale argument is OS specific
+wday(the_days, label = TRUE, abbr = FALSE, locale = "fr_FR.utf8")
+```
+
