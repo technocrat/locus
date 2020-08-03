@@ -12,53 +12,54 @@ tags:
 ---
 
 ```{r setup, results="asis", echo = FALSE, warning=FALSE}
-```{r setup, results="asis", echo = FALSE, warning=FALSE}
-suppressPackageStartupMessages(library(kableExtra))
-suppressPackageStartupMessages(library(knitr))
-suppressPackageStartupMessages(library(munsell))
-suppressPackageStartupMessages(library(RColorBrewer))
-suppressPackageStartupMessages(library(scales)) # needed for label = comma
-suppressPackageStartupMessages(library(sf))
-suppressPackageStartupMessages(library(tidycensus))
-suppressPackageStartupMessages(library(tidyverse))
-
+knitr::opts_chunk$set(echo = TRUE)
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(here)
+  library(ggplot2)
+  library(kableExtra)
+  library(munsell)
+  library(RColorBrewer)
+  library(readr)
+  library(scales) # needed for label = comma
+  library(sf)
+  library(tidycensus)
+})
 
 states_pop <- get_estimates("state", product = "population", geometry = TRUE, shift_geo = TRUE) %>% filter(variable == "POP") %>% filter(GEOID != 11) %>% mutate(geoid = as.integer(GEOID)) %>% select(GEOID, NAME, geoid, value) %>% mutate(POP_TOT = value) %>% select(-value)
 
 # obtain state names, identifier and postal abbreviations
-converter <-  read.csv("https://gist.githubusercontent.com/technocrat/93470bf9abead06ef926/raw/f652f8171374e7808455f42167f5480ea15f7f4e/state_fips_postal.csv", header = FALSE, stringsAsFactors = FALSE)
+converter <-  read.csv(here("content/post/data/state_fips_postal.csv"), header = FALSE, stringsAsFactors = FALSE)
 converter <-  rename(converter, NAME = V1, geoid = V2, id = V3)
-states_key <- converter %>% filter(id != 'DC') 
+states_key <- converter %>% filter(id != 'DC')
 
-plain_theme = theme(axis.text=element_blank()) + 
-    theme(panel.background = element_blank(), 
-        panel.grid = element_blank(), 
+plain_theme = theme(axis.text=element_blank()) +
+    theme(panel.background = element_blank(),
+        panel.grid = element_blank(),
         axis.ticks = element_blank())
 
-no_ylab = ylab("") 
+no_ylab = ylab("")
 no_xlab = xlab("")
 
 
 # get locations for state postal code placement
 states_centroid_matrix <- st_coordinates(st_centroid(states_pop$geometry))
-states_centroid <- as_tibble(states_centroid_matrix) %>% transmute(clong = X, clat = Y) 
+states_centroid <- as_tibble(states_centroid_matrix) %>% transmute(clong = X, clat = Y)
 # construct a key
 geoid <- as_tibble(states_pop$geoid)
 colnames(geoid) <- "geoid"
 # combine to tibble
 states_centroid <- cbind(geoid, states_centroid)
 # bring into states tibble and create columns for position adjustment
+
 states <- left_join(states_pop, states_centroid, by = "geoid") %>% mutate(offset_clong = 0, offset_clat = 0)
 # abbreviations
 states <- left_join(states,converter, by = "NAME")
 
-```
-
-```{r adjust-labels, results="asis", echo = FALSE, warning=FALSE}
 # create blank base map with state id codes
 blank_map <- ggplot(states) +
   geom_sf(color = "gray", size = 0.2, fill = NA) +
-  coord_sf() + 
+  coord_sf() +
   plain_theme +
   theme(panel.grid.major = element_line(colour = "white"))
 ## not run
@@ -96,21 +97,23 @@ basemap <- blank_map + geom_text(data = states, aes(x=clong + offset_clong, clat
 
 blank_map_90 <- ggplot(states) +
   geom_sf(color = "white", size = 0.2, fill = "grey") +
-  coord_sf() + 
+  coord_sf() +
   plain_theme +
   theme(panel.grid.major = element_line(colour = "white"))
 
 basemap_90 <- blank_map_90 + geom_text(data = states, aes(x=clong + offset_clong, clat + offset_clat, label = id), size = 2.5) + no_xlab + no_ylab
 
-q2_2018_gdp <- as_tibble(read.csv("data/Q2_2018_GDP.csv", header = FALSE, stringsAsFactors = FALSE)) %>% rename(NAME = V1, Q22018_GDP = V2)
-econ <- left_join(q2_2018_gdp, states, by = "NAME") %>% mutate(GDP = Q22018_GDP) %>% mutate(capita = GDP/(POP_TOT/1e5)) %>% select(NAME, id, GDP, capita, clong, clat, offset_clong, offset_clat, geometry)
+q2_2018_gdp <- as_tibble(read.csv(here("content/post/data/Q2_2018_GDP.csv"), header = FALSE, stringsAsFactors = FALSE)) %>% rename(NAME = V1, Q22018_GDP = V2)
+# econ <- left_join(q2_2018_gdp, states, by = "NAME") %>% mutate(GDP = Q22018_GDP) %>% mutate(capita = GDP/(POP_TOT/1e5)) %>% select(NAME, id, GDP, capita, clong, clat, offset_clong, offset_clat, geometry)
+econ <- inner_join(states, q2_2018_gdp,by = "NAME") %>% mutate(GDP = Q22018_GDP) %>% mutate(capita = GDP/(POP_TOT/1e5)) %>% select(NAME, id, GDP, capita, clong, clat, offset_clong, offset_clat, geometry)
+# econ <- as.data.frame(econ)
 
-plain_theme = theme(axis.text=element_blank()) + 
-    theme(panel.background = element_blank(), 
-        panel.grid = element_blank(), 
+plain_theme = theme(axis.text=element_blank()) +
+    theme(panel.background = element_blank(),
+        panel.grid = element_blank(),
         axis.ticks = element_blank())
 
-no_ylab = ylab("") 
+no_ylab = ylab("")
 no_xlab = xlab("")
 
 pal_lab <- ""
@@ -121,31 +124,28 @@ box_lab <- function(pal) {
 econ_source <- '"Source: Bureau of Economic Analysis, Gross Domestic Product By State, 2nd Quarter 2018 https://goo.gl/Jc6XyK"'
 
 gdp_table <- econ %>% select(NAME,GDP)
-gdp_pop <- left_join(gdp_table, states, by = "NAME") %>% select(NAME, id, GDP, clong, clat, offset_clong, offset_clat, geometry)
+gdp_pop <- st_join(states,gdp_table, by = "NAME") %>% select(NAME.x, geoid.x, GDP, clong, clat, offset_clong, offset_clat, geometry)
 
-pop_map <- ggplot(states) + geom_sf(aes(fill = POP_TOT)) +   
+pop_map <- ggplot(states) + geom_sf(aes(fill = POP_TOT)) +
 coord_sf() +
 plain_theme +
 theme(panel.grid.major = element_line(colour = "white")) +
 ggtitle("ASC 2017 Estimate of Population") +
   guides(fill = guide_legend(title = "Population"))  + geom_text(data = states, aes(x=clong + offset_clong , clat + offset_clat, label = id), size = 2.5) +  geom_text(data = states, aes(x=clong + offset_clong , clat + offset_clat, label = id), size = 2.5) + no_ylab + no_xlab
 
-econ_pop <- ggplot(gdp_pop) + geom_sf(aes(fill = GDP)) +  
+econ_pop <- ggplot(gdp_pop) + geom_sf(aes(fill = GDP)) +
 coord_sf() +
 plain_theme +
 theme(panel.grid.major = element_line(colour = "white")) +
 ggtitle("Second Quarter 2018 State GDP") +
   guides(fill = guide_legend(title = "GDP"))  + geom_text(data = states, aes(x=clong + offset_clong , clat + offset_clat, label = id), size = 2.5) +  geom_text(data = states, aes(x=clong + offset_clong , clat + offset_clat, label = id), size = 2.5) + no_ylab + no_xlab
 
-econ_map <- ggplot(econ) + geom_sf(aes(fill = capita)) +  
+econ_map <- ggplot(econ) + geom_sf(aes(fill = capita)) +
 coord_sf() +
 plain_theme +
 theme(panel.grid.major = element_line(colour = "white")) +
 ggtitle("Second Quarter 2018 State GDP per 100,000 Population") +
   guides(fill = guide_legend(title = "GDP/100,000"))  + geom_text(data = states, aes(x=clong + offset_clong , clat + offset_clat, label = id), size = 2.5) +  geom_text(data = states, aes(x=clong + offset_clong , clat + offset_clat, label = id), size = 2.5) + no_ylab + no_xlab
-``` 
-
-```{r palettes, results="asis", echo = FALSE, warning=FALSE}
 # default with alpha default
 Alpha_default <- scale_alpha_continuous(range = c(0.1, 1))
 Alpha_75      <- scale_alpha_continuous(range = c(0.1, 0.75))

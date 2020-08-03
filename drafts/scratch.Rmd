@@ -1,0 +1,198 @@
+title: "HSL in R, Chapter 1"
+author: "Richard Careaga"
+date: "2019-10-31"
+slug: logistic regression chapter 1
+output: html_document
+categories:
+  - Data Science
+tags:
+  - R
+  - logistic regression
+  - HSL
+---
+
+```{r setup, echo=FALSE, results='asis',warning=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(ggthemes))
+suppressPackageStartupMessages(library(kableExtra))
+suppressPackageStartupMessages(library(pander))
+suppressPackageStartupMessages(library(readr))
+suppressPackageStartupMessages(library(tidyverse))
+
+panderOptions("table.style", "rmarkdown")
+```
+
+```{r, echo=FALSE, message=FALSE}
+
+# Hosner Table 1.2 and Figure 1.2 logistic equivalent
+# of scatterplot
+
+# find the median of two ages
+
+md <- function(x,y) {median(c(x,y))}
+
+df <- readr::read_tsv("../data/CHDAGE/CHDAGE.txt")
+p <- ggplot(data = df, aes(x = AGE, y = CHD)) + geom_point() + theme_tufte()
+p
+# Classify ages into 5 or 10 year cohorts
+
+df <- df %>% mutate(cohort = ifelse(AGE < 30,1, 0))
+df <- df %>% mutate(cohort = ifelse(AGE >= 30 & AGE <= 34,2, cohort))
+df <- df %>% mutate(cohort = ifelse(AGE >= 30 & AGE <= 34,2, cohort))
+df <- df %>% mutate(cohort = ifelse(AGE >= 35 & AGE <= 39,3, cohort))
+df <- df %>% mutate(cohort = ifelse(AGE >= 40 & AGE <= 44,4, cohort))
+df <- df %>% mutate(cohort = ifelse(AGE >= 45 & AGE <= 49,5, cohort))
+df <- df %>% mutate(cohort = ifelse(AGE >= 50 & AGE <= 54,6, cohort))
+df <- df %>% mutate(cohort = ifelse(AGE >= 55 & AGE <= 59,7, cohort))
+df <- df %>% mutate(cohort = ifelse(AGE >= 60 & AGE <= 90,8, cohort))
+
+# use medians of cohort endpoints for plotting
+# medians obtained by hand using md function
+# 
+df <- df %>% mutate(plotpoint = ifelse(cohort == 1,24.5, 0))
+df <- df %>% mutate(plotpoint = ifelse(cohort == 2,32, plotpoint))
+df <- df %>% mutate(plotpoint = ifelse(cohort == 3,37, plotpoint))
+df <- df %>% mutate(plotpoint = ifelse(cohort == 4,42, plotpoint))
+df <- df %>% mutate(plotpoint = ifelse(cohort == 5,47, plotpoint))
+df <- df %>% mutate(plotpoint = ifelse(cohort == 6,52, plotpoint))
+df <- df %>% mutate(plotpoint = ifelse(cohort == 7,57, plotpoint))
+df <- df %>% mutate(plotpoint = ifelse(cohort == 8,65, plotpoint))
+
+# Create a text column for cohort lables
+
+df <- df %>% mutate(AgeGroup = ifelse(cohort == 1,"20-29", 0))
+df <- df %>% mutate(AgeGroup = ifelse(cohort == 2,"30-34", AgeGroup))
+df <- df %>% mutate(AgeGroup = ifelse(cohort == 3,"35-39", AgeGroup))
+df <- df %>% mutate(AgeGroup = ifelse(cohort == 4,"40-44", AgeGroup))
+df <- df %>% mutate(AgeGroup = ifelse(cohort == 5,"45-49", AgeGroup))
+df <- df %>% mutate(AgeGroup = ifelse(cohort == 6,"50-54", AgeGroup))
+df <- df %>% mutate(AgeGroup = ifelse(cohort == 7,"55-59", AgeGroup))
+df <- df %>% mutate(AgeGroup = ifelse(cohort == 8,"60-70", AgeGroup))
+
+# split CHD column
+
+df <- df %>% mutate(absent  = ifelse(CHD == 0,1,0))
+df <- df %>% mutate(present = ifelse(CHD == 1,1,0))
+
+# Create table with plotting information
+# 
+means_tab <- df %>% group_by(AgeGroup) %>%  summarize(n = n(), Absent = sum(absent), Present = sum(present), Mean = mean(CHD), plotpoint = mean(plotpoint)) %>% ungroup()
+# Create plot
+# # 
+p <- ggplot(data = means_tab, aes(x = plotpoint, y = Mean)) + xlab("Age (years)") + ylab("Coronary Heart Disease (mean)")
+
+```
+
+# Why learn about logistic regression?
+
+> Because the outcome, $Y$, is binary, rather than continous, we choose logistic regression, rather than linear regression.
+
+Hosmer, David W., Stanley Lemeshow, and Rodney X. Sturdivant. *Applied logistic regression*. Hoboken, New Jersey: Wiley, 2013, the standard text (**HLS**). This post closely follows chapter 1 of HLS, which provides no code, by providing illustrations in `R`.  n
+![HSL](https://images-na.ssl-images-amazon.com/images/I/41qT9mkbB0L._SX313_BO1,204,203,200_.jpg)
+ 
+# CHD vs. Age
+
+Data from Table 1.1. Replicate binned summary from Table 1.2
+
+```{r, echo = FALSE}
+# omit plotting points
+pander(means_tab %>% select(-plotpoint), justify = 'right', digits = 3)
+```
+
+## Replicate line graph used in place of scattergraph
+
+```{r, echo=FALSE}
+# line with points at inflections
+
+p <- ggplot(data = means_tab, aes(x = plotpoint, y = Mean)) + geom_line() + geom_point() + xlab("Age (years)") + ylab("Coronary Heart Disease (mean)")
+p
+```
+
+# ICU data from exercises
+
+## Logistic equation of vital status (STA) on AGE at discharge
+
+The conditional mean of Y (SNA) given x (AGE) is 
+
+$$ E(Y|X) $$
+
+which is conventionally expressed as
+
+$$ \pi(x) $$
+The form of the logistic model of $\pi(x)$ is
+
+$$\pi(x) = \frac{e^{\beta{_0}+\beta{_1}x}}{1 + e^{\beta{_0}+\beta{_1}x}}$$ 
+
+The *logit tranformation* is defined as
+
+$$g(x) = ln\Bigl[\frac{\pi(x)}{1 - \pi(x)}\Big] = \beta_0 +\beta_1x$$
+
+Because the outcome, $Y$, is binary, rather than continous, we choose logistic regression, rather than linear regression.
+
+## Scatterplot
+
+```{r, echo=FALSE, message=FALSE}
+icu <- read_tsv("../data/ICU/ICU.txt")
+p <- ggplot(data = icu, aes(x = AGE, y = STA)) + geom_point() + theme_tufte()
+p
+```
+
+## Scatterplot and cohort table
+
+```{r, echo=FALSE}
+df <- icu
+df <- df %>% mutate(cohort = ifelse(AGE >= 15 & AGE <= 24,1, 1))
+df <- df %>% mutate(cohort = ifelse(AGE >= 30 & AGE <= 34,2, cohort))
+df <- df %>% mutate(cohort = ifelse(AGE >= 35 & AGE <= 39,3, cohort))
+df <- df %>% mutate(cohort = ifelse(AGE >= 40 & AGE <= 54,4, cohort))
+df <- df %>% mutate(cohort = ifelse(AGE >= 54 & AGE <= 64,5, cohort))
+df <- df %>% mutate(cohort = ifelse(AGE >= 65 & AGE <= 74,6, cohort))
+df <- df %>% mutate(cohort = ifelse(AGE >= 75 & AGE <= 84,7, cohort))
+df <- df %>% mutate(cohort = ifelse(AGE >= 85 & AGE <= 94,8, cohort))
+
+df <- df %>% mutate(plotpoint = ifelse(cohort == 1,19.5, 0))
+df <- df %>% mutate(plotpoint = ifelse(cohort == 2,29.5, plotpoint))
+df <- df %>% mutate(plotpoint = ifelse(cohort == 3,39.5, plotpoint))
+df <- df %>% mutate(plotpoint = ifelse(cohort == 4,49.5, plotpoint))
+df <- df %>% mutate(plotpoint = ifelse(cohort == 5,59.5, plotpoint))
+df <- df %>% mutate(plotpoint = ifelse(cohort == 6,69.5, plotpoint))
+df <- df %>% mutate(plotpoint = ifelse(cohort == 7,79.5, plotpoint))
+df <- df %>% mutate(plotpoint = ifelse(cohort == 8,89.5, plotpoint))
+
+df <- df %>% mutate(AgeGroup = ifelse(cohort == 1,"15-24", 0))
+df <- df %>% mutate(AgeGroup = ifelse(cohort == 2,"25-34", AgeGroup))
+df <- df %>% mutate(AgeGroup = ifelse(cohort == 3,"35-44", AgeGroup))
+df <- df %>% mutate(AgeGroup = ifelse(cohort == 4,"55-64", AgeGroup))
+df <- df %>% mutate(AgeGroup = ifelse(cohort == 5,"65-74", AgeGroup))
+df <- df %>% mutate(AgeGroup = ifelse(cohort == 6,"75-84", AgeGroup))
+df <- df %>% mutate(AgeGroup = ifelse(cohort == 7,"75-84", AgeGroup))
+df <- df %>% mutate(AgeGroup = ifelse(cohort == 8,"85-94", AgeGroup))
+
+df <- df %>% mutate(Dead  = ifelse(STA == 0,0,1))
+df <- df %>% mutate(Lived = ifelse(STA == 1,1,0))
+
+means <- df %>% group_by(cohort) %>% summarize(Mean = mean(STA), plotpoint = mean(plotpoint))
+means_tab <- df %>% group_by(AgeGroup) %>%  summarize(n = n(), Died = sum(Dead), Lived = sum(Lived), Mean = mean(STA), plotpoint = mean(plotpoint)) %>% ungroup()
+pander(means_tab %>% select(-plotpoint), justify = 'right', digits = 3)
+```
+
+Replicate line graph used in place of scatterplot
+
+```{r, echo=FALSE}
+p <- ggplot(data = means, aes(x = plotpoint, y = Mean))
+p + geom_line() + xlim(15,95) + geom_point() + xlab("Age") + ylab("Mean Dead") + theme_tufte()
+```
+
+## Likelihood and log likelihood
+
+$$l\beta = \prod_{i = 1}^n\pi(x)^{y_i}[1 - \pi(x)]^{1-y_i}, n = 200$$
+
+
+$$L(\beta) = ln[l(\beta)] = \prod_{i = 1}^n{y, ln[\pi(x_i)]), ln[1 - \pi(x_i)]}$$
+
+## Likelihood estimates
+
+To find $\beta$ that maximizes $L(\beta)$, we cannot differentiate the sum of squared deviation functions with repect to $\beta$ because they are not linear.
+

@@ -20,7 +20,7 @@ Update 2015-08-01: Scott Chamerlain at ropensci.org brought **attr* to my attent
 # A minimal example
 * Create data frame and a separate metadata list
 ```{r}
-fips <- read.csv("data/state_fips_postal.csv", header = FALSE)
+fips <- read.csv("https://tuva.s3-us-west-2.amazonaws.com/state_fips_postal.csv", header = FALSE)
 fips
 names(fips) = c("state", "fip", 'id')
 require(rjson) # easier to use JSON to write metadata
@@ -56,7 +56,6 @@ mostattributes(x) <- list(meta = meta)
 x
 ```
 
-
 # My now deprecated approach
 
 Metadata are surprisingly easy to create through **S4** classes, which was my original thought.
@@ -71,12 +70,14 @@ In using U.S. state map data, polygons are sometimes keyed to state names, somet
 
 ```{r}
 
-fips <- read.csv("/Users/rc/Desktop/gitmo/playpen/r/csv/state_fips_postal.csv", header = FALSE)
+fips <- read.csv("https://tuva.s3-us-west-2.amazonaws.com/state_fips_postal.csv", header = FALSE)
+
 fips
-names(fips) = c("state", "fip", 'id')
+names(fips) = c("state", "fip", "id")
 ```
 
 Documenting something so simple seems like overkill until the inevitable question arises *is that even right?* I used a simple JSON file to make[^rjson] a record
+
 ```{r}
 require(rjson)
 meta <- fromJSON(file = "data/meta.json")

@@ -18,7 +18,7 @@ So, I decided to find out. Data on [Seattle area housing prices](https://www.kag
 ```{r mlr-example, echo=FALSE}
 library(readr)
 print("Data Structure")
-house <- read_csv('/Users/rc/projects/statistics-for-data-scientists/kc_house_data.csv', comment = '')
+house <- read_csv('https://tuva.s3-us-west-2.amazonaws.com/kc_house_data.csv' , comment = '')
 spec(house)
 summary(lm(price ~ bedrooms + bathrooms + sqft_living + sqft_lot + yr_built, data = house))
 ```

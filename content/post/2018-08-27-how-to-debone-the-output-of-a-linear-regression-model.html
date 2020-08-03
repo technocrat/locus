@@ -9,6 +9,7 @@ tags:
   - statistics
 ---
 
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
 <p>I was recently puzzling over an academic paper in the social sciences with a multiple linear regression model that seemed off. (Communication with the authors educated me on considerations that resolved my concerns.)</p>
@@ -22,9 +23,6 @@ tags:
 ##   date = col_datetime(format = &quot;&quot;)
 ## )</code></pre>
 <pre><code>## See spec(...) for full column specifications.</code></pre>
-<pre><code>## Warning: 1 parsing failure.
-##  row col   expected     actual                                                                  file
-## 3165  -- 21 columns 19 columns &#39;/Users/rc/projects/statistics-for-data-scientists/kc_house_data.csv&#39;</code></pre>
 <pre><code>## cols(
 ##   id = col_character(),
 ##   date = col_datetime(format = &quot;&quot;),
@@ -55,22 +53,22 @@ tags:
 ## 
 ## Residuals:
 ##      Min       1Q   Median       3Q      Max 
-## -1013022  -123183   -11192   101635  3057245 
+## -1784413  -131451   -16905   100357  3933748 
 ## 
 ## Coefficients:
-##              Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)  6.50e+06   3.55e+05   18.28  &lt; 2e-16 ***
-## bedrooms    -7.75e+04   6.22e+03  -12.46  &lt; 2e-16 ***
-## bathrooms    7.44e+04   9.96e+03    7.47  1.1e-13 ***
-## sqft_living  3.19e+02   7.96e+00   40.05  &lt; 2e-16 ***
-## sqft_lot    -8.86e-02   1.07e-01   -0.83     0.41    
-## yr_built    -3.31e+03   1.83e+02  -18.09  &lt; 2e-16 ***
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  6.006e+06  1.298e+05  46.281   &lt;2e-16 ***
+## bedrooms    -7.096e+04  2.246e+03 -31.592   &lt;2e-16 ***
+## bathrooms    8.114e+04  3.730e+03  21.755   &lt;2e-16 ***
+## sqft_living  3.044e+02  2.998e+00 101.544   &lt;2e-16 ***
+## sqft_lot    -3.388e-01  4.119e-02  -8.225   &lt;2e-16 ***
+## yr_built    -3.057e+03  6.686e+01 -45.730   &lt;2e-16 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-## Residual standard error: 253000 on 3159 degrees of freedom
-## Multiple R-squared:  0.559,  Adjusted R-squared:  0.558 
-## F-statistic:  801 on 5 and 3159 DF,  p-value: &lt;2e-16</code></pre>
+## Residual standard error: 245800 on 21607 degrees of freedom
+## Multiple R-squared:  0.552,  Adjusted R-squared:  0.5519 
+## F-statistic:  5325 on 5 and 21607 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>Well now! I pick a handful of variables off the top of my head and presto! My model explains over 50% of the variation in price. Am I good or what?</p>
 <p>Not really, and I’ll explain all the bonehead errors in another post (didn’t normalize, didn’t split into training and test sets, used variables that are not truly independent, didn’t check the distribution of residual errors and a host of other sins). Let’s talk about the information you get from a multiple linear regression results table.</p>
 <ol style="list-style-type: decimal">

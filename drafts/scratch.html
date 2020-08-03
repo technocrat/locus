@@ -1,0 +1,198 @@
+
+<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
+<script src="/rmarkdown-libs/elevate-section-attrs/elevate-section-attrs.js"></script>
+
+
+<p>title: “HSL in R, Chapter 1”
+author: “Richard Careaga”
+date: “2019-10-31”
+slug: logistic regression chapter 1
+output: html_document
+categories:
+- Data Science
+tags:
+- R
+- logistic regression
+- HSL
+—</p>
+<p><img src="/post/drafts/scratch_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<div id="why-learn-about-logistic-regression" class="section level1">
+<h1>Why learn about logistic regression?</h1>
+<blockquote>
+<p>Because the outcome, <span class="math inline">\(Y\)</span>, is binary, rather than continous, we choose logistic regression, rather than linear regression.</p>
+</blockquote>
+<p>Hosmer, David W., Stanley Lemeshow, and Rodney X. Sturdivant. <em>Applied logistic regression</em>. Hoboken, New Jersey: Wiley, 2013, the standard text (<strong>HLS</strong>). This post closely follows chapter 1 of HLS, which provides no code, by providing illustrations in <code>R</code>. n
+<img src="https://images-na.ssl-images-amazon.com/images/I/41qT9mkbB0L._SX313_BO1,204,203,200_.jpg" alt="HSL" /></p>
+</div>
+<div id="chd-vs.-age" class="section level1">
+<h1>CHD vs. Age</h1>
+<p>Data from Table 1.1. Replicate binned summary from Table 1.2</p>
+<table>
+<thead>
+<tr class="header">
+<th align="right">AgeGroup</th>
+<th align="right">n</th>
+<th align="right">Absent</th>
+<th align="right">Present</th>
+<th align="right">Mean</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">20-29</td>
+<td align="right">10</td>
+<td align="right">9</td>
+<td align="right">1</td>
+<td align="right">0.1</td>
+</tr>
+<tr class="even">
+<td align="right">30-34</td>
+<td align="right">15</td>
+<td align="right">13</td>
+<td align="right">2</td>
+<td align="right">0.133</td>
+</tr>
+<tr class="odd">
+<td align="right">35-39</td>
+<td align="right">12</td>
+<td align="right">9</td>
+<td align="right">3</td>
+<td align="right">0.25</td>
+</tr>
+<tr class="even">
+<td align="right">40-44</td>
+<td align="right">15</td>
+<td align="right">10</td>
+<td align="right">5</td>
+<td align="right">0.333</td>
+</tr>
+<tr class="odd">
+<td align="right">45-49</td>
+<td align="right">13</td>
+<td align="right">7</td>
+<td align="right">6</td>
+<td align="right">0.462</td>
+</tr>
+<tr class="even">
+<td align="right">50-54</td>
+<td align="right">8</td>
+<td align="right">3</td>
+<td align="right">5</td>
+<td align="right">0.625</td>
+</tr>
+<tr class="odd">
+<td align="right">55-59</td>
+<td align="right">17</td>
+<td align="right">4</td>
+<td align="right">13</td>
+<td align="right">0.765</td>
+</tr>
+<tr class="even">
+<td align="right">60-70</td>
+<td align="right">10</td>
+<td align="right">2</td>
+<td align="right">8</td>
+<td align="right">0.8</td>
+</tr>
+</tbody>
+</table>
+<div id="replicate-line-graph-used-in-place-of-scattergraph" class="section level2">
+<h2>Replicate line graph used in place of scattergraph</h2>
+<p><img src="/post/drafts/scratch_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+</div>
+<div id="icu-data-from-exercises" class="section level1">
+<h1>ICU data from exercises</h1>
+<div id="logistic-equation-of-vital-status-sta-on-age-at-discharge" class="section level2">
+<h2>Logistic equation of vital status (STA) on AGE at discharge</h2>
+<p>The conditional mean of Y (SNA) given x (AGE) is</p>
+<p><span class="math display">\[ E(Y|X) \]</span></p>
+<p>which is conventionally expressed as</p>
+<p><span class="math display">\[ \pi(x) \]</span>
+The form of the logistic model of <span class="math inline">\(\pi(x)\)</span> is</p>
+<p><span class="math display">\[\pi(x) = \frac{e^{\beta{_0}+\beta{_1}x}}{1 + e^{\beta{_0}+\beta{_1}x}}\]</span></p>
+<p>The <em>logit tranformation</em> is defined as</p>
+<p><span class="math display">\[g(x) = ln\Bigl[\frac{\pi(x)}{1 - \pi(x)}\Big] = \beta_0 +\beta_1x\]</span></p>
+<p>Because the outcome, <span class="math inline">\(Y\)</span>, is binary, rather than continous, we choose logistic regression, rather than linear regression.</p>
+</div>
+<div id="scatterplot" class="section level2">
+<h2>Scatterplot</h2>
+<p><img src="/post/drafts/scratch_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="scatterplot-and-cohort-table" class="section level2">
+<h2>Scatterplot and cohort table</h2>
+<table>
+<thead>
+<tr class="header">
+<th align="right">AgeGroup</th>
+<th align="right">n</th>
+<th align="right">Died</th>
+<th align="right">Lived</th>
+<th align="right">Mean</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">15-24</td>
+<td align="right">29</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">0.069</td>
+</tr>
+<tr class="even">
+<td align="right">25-34</td>
+<td align="right">5</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">35-44</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">55-64</td>
+<td align="right">31</td>
+<td align="right">7</td>
+<td align="right">7</td>
+<td align="right">0.226</td>
+</tr>
+<tr class="odd">
+<td align="right">65-74</td>
+<td align="right">41</td>
+<td align="right">8</td>
+<td align="right">8</td>
+<td align="right">0.195</td>
+</tr>
+<tr class="even">
+<td align="right">75-84</td>
+<td align="right">80</td>
+<td align="right">18</td>
+<td align="right">18</td>
+<td align="right">0.225</td>
+</tr>
+<tr class="odd">
+<td align="right">85-94</td>
+<td align="right">11</td>
+<td align="right">5</td>
+<td align="right">5</td>
+<td align="right">0.455</td>
+</tr>
+</tbody>
+</table>
+<p>Replicate line graph used in place of scatterplot</p>
+<p><img src="/post/drafts/scratch_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+<div id="likelihood-and-log-likelihood" class="section level2">
+<h2>Likelihood and log likelihood</h2>
+<p><span class="math display">\[l\beta = \prod_{i = 1}^n\pi(x)^{y_i}[1 - \pi(x)]^{1-y_i}, n = 200\]</span></p>
+<p><span class="math display">\[L(\beta) = ln[l(\beta)] = \prod_{i = 1}^n{y, ln[\pi(x_i)]), ln[1 - \pi(x_i)]}\]</span></p>
+</div>
+<div id="likelihood-estimates" class="section level2">
+<h2>Likelihood estimates</h2>
+<p>To find <span class="math inline">\(\beta\)</span> that maximizes <span class="math inline">\(L(\beta)\)</span>, we cannot differentiate the sum of squared deviation functions with repect to <span class="math inline">\(\beta\)</span> because they are not linear.</p>
+</div>
+</div>
