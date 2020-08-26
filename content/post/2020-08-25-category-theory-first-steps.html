@@ -1,0 +1,63 @@
+---
+title: Category theory, first steps
+author: technocrat
+date: '2020-08-25'
+slug: category-theory-first-steps
+categories:
+  - Maths
+tags:
+  - heuristics
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<blockquote>
+<p>observation is “lossy” – <em>Fong &amp; Spivak<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></em></p>
+</blockquote>
+<p><em>compositionality</em> systems or relationships combined to form new systems or relationships</p>
+<p><em>structures</em> and <em>structure-preserving maps</em> <span class="math inline">\(f: X \rightarrow Y\)</span>: which aspects of <span class="math inline">\(X\)</span> are preserved by <span class="math inline">\(f\)</span>?</p>
+<p>Consider functions in <span class="math inline">\(\mathbb{R}\)</span>: only <em>some</em> preserve order, distance, sum:</p>
+<p>A function <span class="math inline">\(f: \mathbb{R} \Rightarrow \mathbb{R}\)</span> is said to be</p>
+<ul>
+<li><em>order-preserving</em> <span class="math inline">\(\iff x \leq y \Rightarrow f(x) \leq f(y), \forall x \in \mathbb{R}\)</span> (<em>aka</em> monotonically increasing)
+<ul>
+<li>Is order preserving
+<ul>
+<li>Let <span class="math inline">\(f(x) = x\)</span>; arguments and results are identical so order is preserved. <em>Trivial</em></li>
+</ul></li>
+<li>Is not order preserving
+<ul>
+<li><span class="math inline">\(f(x) = 1/x\)</span></li>
+</ul></li>
+</ul></li>
+<li><em>metric-preserving</em> <span class="math inline">\(\iff |x-y| = |f(x)-f(y)|\)</span>
+<ul>
+<li>Is order preserving
+<ul>
+<li><span class="math inline">\(f(x) = x\)</span> <em>Trivial</em></li>
+</ul></li>
+<li>Is not order preserving
+<ul>
+<li><span class="math inline">\(f(x) = 1/x\)</span></li>
+</ul></li>
+</ul></li>
+<li><em>addition-preserving</em> <span class="math inline">\(\iff f(x+y) = f(x) + f(y)\)</span>
+<ul>
+<li>Is addition preserving
+<ul>
+<li><span class="math inline">\(f(x) = x\)</span> <em>Trivial</em></li>
+</ul></li>
+<li>Is not addition preserving
+<ul>
+<li><span class="math inline">\(f(x) = 1/x\)</span></li>
+</ul></li>
+</ul></li>
+</ul>
+<p><em>Quaere: Is the identity <span class="math inline">\(f\)</span> always preserving?</em></p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Fong, B., &amp; Spivak, D. (2019). An Invitation to Applied Category Theory: Seven Sketches in Compositionality. Cambridge: Cambridge University Press.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>

@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Dates can be fussy. (Especially when they come to you mangled by manual formatting in spreadsheets.)
 
-Sometimes, it's easier, when there are consecutive dates, it's simply easier to create them with `seq`. For `ts`, don't even bother, just use `object <- ts(source, start = c(2018,1 ) ...)`
+Sometimes it's easier, when there are consecutive dates, simply to create them with `seq`. For `ts`, don't even bother, just use `object <- ts(source, start = c(2018,1 ) ...)`
 
 The `date` can be unpacked multiple ways to make presentation easier. Here's what can be done with days of the week.
 

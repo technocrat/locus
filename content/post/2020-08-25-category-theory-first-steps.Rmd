@@ -1,0 +1,44 @@
+---
+title: Category theory, first steps
+author: technocrat
+date: '2020-08-25'
+slug: category-theory-first-steps
+categories:
+  - Maths
+tags:
+  - heuristics
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+> observation is "lossy" -- *Fong & Spivak^[Fong, B., & Spivak, D. (2019). An Invitation to Applied Category Theory: Seven Sketches in Compositionality. Cambridge: Cambridge University Press.]*
+
+*compositionality* systems or relationships combined to form new systems or relationships
+
+*structures* and  *structure-preserving maps* $f: X \rightarrow Y$: which aspects of $X$ are preserved by $f$?
+
+Consider functions in $\mathbb{R}$: only *some* preserve order, distance, sum:
+
+A function $f: \mathbb{R} \Rightarrow \mathbb{R}$ is said to be
+
+* *order-preserving*   $\iff x \leq y \Rightarrow f(x)  \leq f(y), \forall x \in \mathbb{R}$ (*aka* monotonically increasing)
+  + Is order preserving
+    - Let $f(x) = x$; arguments and results are identical so order is preserved. *Trivial*
+  + Is not order preserving
+    - $f(x) = 1/x$
+* *metric-preserving* $\iff |x-y| = |f(x)-f(y)|$
+  + Is order preserving
+    - $f(x) = x$ *Trivial*
+  + Is not order preserving
+    - $f(x) = 1/x$
+* *addition-preserving* $\iff f(x+y) = f(x) + f(y)$
+  + Is addition preserving
+    - $f(x) = x$ *Trivial*
+  + Is not addition preserving
+    - $f(x) = 1/x$
+
+*Quaere: Is the identity $f$ always preserving?*

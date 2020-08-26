@@ -13,7 +13,7 @@ tags:
 
 
 <p>Dates can be fussy. (Especially when they come to you mangled by manual formatting in spreadsheets.)</p>
-<p>Sometimes, it’s easier, when there are consecutive dates, it’s simply easier to create them with <code>seq</code>. For <code>ts</code>, don’t even bother, just use <code>object &lt;- ts(source, start = c(2018,1 ) ...)</code></p>
+<p>Sometimes it’s easier, when there are consecutive dates, simply to create them with <code>seq</code>. For <code>ts</code>, don’t even bother, just use <code>object &lt;- ts(source, start = c(2018,1 ) ...)</code></p>
 <p>The <code>date</code> can be unpacked multiple ways to make presentation easier. Here’s what can be done with days of the week.</p>
 <pre class="r"><code>suppressPackageStartupMessages(library(lubridate))
 seq(c(ISOdate(2020,7,19)), by = &quot;day&quot;, length.out = 7) -&gt; the_days

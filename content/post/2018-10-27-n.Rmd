@@ -18,9 +18,9 @@ Got **n**?
 
 It appears to be hardwired into our wetware to forget to look for the underlying integers. You might ask, for example *from what to what?* and learn that it went up from a nickle to a dime.
 
-This is a manifestation what Daniel Kahneman, author of *Thinking Fast, and Slow* (2011, Ferrar, Straus and Giroux, New York) calls *The Law of Small Numbers.* Our favorite ballplayer has a *hot hand* (random variation), an image of a religious figure appears in the bird tracks on a beach (randonness doesn't *look* uniform, there are all sorts of random patterns) and, the big tell, statistical finidings based on a small sample size, ***n*** are particularly vulnerable to random effects. 
+This is a manifestation what Daniel Kahneman, author of *Thinking Fast, and Slow* (2011, Ferrar, Straus and Giroux, New York) calls *The Law of Small Numbers.* Our favorite ballplayer has a *hot hand* (random variation), an image of a religious figure appears in the bird tracks on a beach (randomness doesn't *look* uniform, there are all sorts of random patterns) and, the big tell, statistical findings based on a small sample size, ***n*** are particularly vulnerable to random effects. 
 
-In one example the author gives as an example a survey of 1,662 schools in Pennsylvania. Of the top 50, six were small schools, about four times as many as you would expect to be exceptional. So, a well-known philantropist, joined by some famous foundations, set up a program to split larger schools up into smaller schools. If small schools do better than average, after all, it only makes sense.
+In one example the author gives as an example a survey of 1,662 schools in Pennsylvania. Of the top 50, six were small schools, about four times as many as you would expect to be exceptional. So, a well-known philanthropist, joined by some famous foundations, set up a program to split larger schools up into smaller schools. If small schools do better than average, after all, it only makes sense.
 
 Unfortunately, turning the question around, small schools *also* tend to have worse outcomes than average. The smaller schools, good, bad or indifferent, are simply more variable.
 
