@@ -11,13 +11,12 @@ tags:
   - heuristics
 ---
 
-$f: X \rightarrow Y$
 
-Just as visualizing tensors degrades as $n > 3$, juggling pieces in an `R` script can get jiggly when they do not `%>%` neatly. A [post](https://community.rstudio.com/t/appending-dataframes-to-list-named-by-variable/77689/5) recently reminded me so.
+Just as visualizing tensors degrades as n > 3, juggling pieces in an `R` script can get jiggly when they do not `%>%` neatly. A [post](https://community.rstudio.com/t/appending-dataframes-to-list-named-by-variable/77689/5) recently reminded me so.
 
 Despite strides in deconstructing `R` to make it more commercially attractive no obvious point (aside from the richness of statistical subroutines) in using it appears if its `functional` nature is neglected.
 
-If conceptualized as school algebra ($f(x)=y$) writ large, every discrete `R` tasks is to find or compose $f$.
+If conceptualized as school algebra (*fx)=y* writ large, every discrete `R` tasks is to find or compose *f*.
 
 ``` r
 # https://community.rstudio.com/t/appending-dataframes-to-list-named-by-variable/77689/5
